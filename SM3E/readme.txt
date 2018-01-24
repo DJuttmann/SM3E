@@ -29,6 +29,7 @@ implemented. For now the program functions as a level viewer for Super Metroid.
 -- USAGE --
 
 Should you decide to build the project, make sure to place the contents of Resources.zip 
-in the same folder as the executable.
+in the same folder as the executable. Furthermore, a valid Super Metroid ROM (Unheadered)
+must be placed in the same folder with the file name 'SuperMetroid.sfc'.
 
 ==========================================================================================
