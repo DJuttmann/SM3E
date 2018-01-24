@@ -1,5 +1,5 @@
 ﻿﻿﻿==========================================================================================
-Super Metroid Memory Managed Editor
+Super Metroid Memory Managed Editor.
 Created: ~2018-01-01
 Version: -- [2018-01-24]
 License: TBA
@@ -7,7 +7,7 @@ License: TBA
 
 -- DESCRIPTION --
 
-SM3E is a A ROM hacking tool for editing super metroid. It will feature automatic
+SM3E is a A ROM hacking tool for editing Super Metroid. It will feature automatic
 management of the data in the ROM, so there is no need to repoint anything manually.
 
 
