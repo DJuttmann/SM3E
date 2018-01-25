@@ -441,7 +441,7 @@ namespace SM3E
       }
     }
 
-    public int DoorsPtrPC
+    public int DoorsPtrPC // [wip] why does this still exist?
     {
       get {return Tools.LRtoPC (DoorsPtr);}
       set {DoorsPtr = Tools.PCtoLR (value);}

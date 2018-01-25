@@ -256,7 +256,9 @@ namespace SM3E
 
       for (int n = 0; n < DoorCount; n++)
         DoorPtrs [n] = Tools.ConcatBytes (b [2 * n], b [2 * n + 1], 0x83);
-      return false;
+
+      startAddressPC = addressPC;
+      return true;
     }
 
 

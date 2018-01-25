@@ -92,6 +92,8 @@ namespace SM3E
       MainGrid.PreviewMouseMove += TileViewer_MouseMove;
       MainGrid.PreviewMouseDown += TileViewer_MouseDown;
       MainGrid.PreviewMouseUp += TileViewer_MouseUp;
+      MainGrid.MouseEnter += TileViewer_MouseEnter;
+      MainGrid.MouseLeave += TileViewer_MouseLeave;
 
       TileClickX = 0;
       TileClickY = 0;
@@ -150,6 +152,7 @@ namespace SM3E
       }
 
       // Add selection.
+      Selection.Visibility = Visibility.Hidden;
       MainGrid.Children.Add (Selection);
     }
 
@@ -163,6 +166,18 @@ namespace SM3E
 
 //========================================================================================
 // Event handlers
+
+
+    private void TileViewer_MouseEnter (object sender, MouseEventArgs e)
+    {
+      Selection.Visibility = Visibility.Visible;
+    }
+
+
+    private void TileViewer_MouseLeave (object sender, MouseEventArgs e)
+    {
+      Selection.Visibility = Visibility.Hidden;
+    }
 
 
     private void TileViewer_MouseMove (object sender, MouseEventArgs e)

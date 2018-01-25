@@ -51,10 +51,11 @@ namespace SM3E
       MainProject.AreaListChanged += LoadAreaListBox;
       MainProject.RoomListChanged += LoadRoomListBox;
       MainProject.RoomStateListChanged += LoadRoomStateListBox;
+      MainProject.DoorListChanged += LoadDoorListBox;
 
       MainProject.AreaSelected += UpdateMapEditor;
-      // MainProject.RoomSelected += DoNothing;
-      // MainProject.RoomStateSelected += DoNothing;
+      MainProject.RoomSelected += LoadRoomData;
+      MainProject.RoomStateSelected += LoadRoomStateData;
       MainProject.LevelDataSelected += NewLevelData;
       MainProject.TileSetSelected += UpdateTileSelector;
     }

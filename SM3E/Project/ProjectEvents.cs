@@ -19,6 +19,7 @@ namespace SM3E
     public event ListLoadEventHandler AreaListChanged;
     public event ListLoadEventHandler RoomListChanged;
     public event ListLoadEventHandler RoomStateListChanged;
+    public event ListLoadEventHandler DoorListChanged;
     
     // Active area/room/state/... changes.
     public event EventHandler AreaSelected;

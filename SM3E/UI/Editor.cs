@@ -164,6 +164,45 @@ namespace SM3E
     }
 
 
+    private void LoadDoorListBox (object sender, ListLoadEventArgs e)
+    {
+      List <string> names = MainProject.DoorNames;
+      DoorListBox.Items.Clear ();
+      foreach (string name in names)
+        DoorListBox.Items.Add (name);
+      DoorListBox.SelectedIndex = e.SelectItem;
+    }
+
+
+    private void LoadRoomData (object sender, EventArgs e)
+    {
+      RoomAreaSelect.SelectedIndex = MainProject.RoomArea;
+      RoomNameInput.Text = MainProject.RoomName;
+      UpScrollerInput.Text = Tools.IntToHex (MainProject.UpScroller, 2);
+      DownScrollerInput.Text = Tools.IntToHex (MainProject.DownScroller, 2);
+      SpecialGfxInput.Text = Tools.IntToHex (MainProject.SpecialGfx, 2);
+    }
+
+
+    private void LoadRoomStateData (object sender, EventArgs e)
+    {
+      StateTypeSelect.SelectedIndex = 0; // [wip]
+      StateEventNumberInput.Text = Tools.IntToHex (MainProject.RoomStateEventNumber, 2);
+      StateSongeSetInput.Text = Tools.IntToHex (MainProject.SongSet, 2);
+      StateSongIndexInput.Text = Tools.IntToHex (MainProject.PlayIndex, 2);
+      StateBgScrollingInput.Text = Tools.IntToHex (MainProject.BackgroundScrolling, 4);
+
+      LavelDataPtrInput.Text = Tools.IntToHex (MainProject.LevelDataPtr, 6);
+      ScrollsPtrInput.Text = Tools.IntToHex (MainProject.RoomScrollsPtr, 6);
+      PlmSetPtrInput.Text = Tools.IntToHex (MainProject.PlmSetPtr, 6);
+      EnemySetPtrInput.Text = Tools.IntToHex (MainProject.EnemySetPtr, 6);
+      EnemyGfxPtrInput.Text = Tools.IntToHex (MainProject.EnemyGfxPtr, 6);
+      FxPtrInput.Text = Tools.IntToHex (MainProject.FxPtr, 6);
+      SetupAsmPtrInput.Text = Tools.IntToHex (MainProject.SetupAsmPtr, 6);
+      MainAsmPtrInput.Text = Tools.IntToHex (MainProject.MainAsmPtr, 6);
+    }
+
+
 //========================================================================================
 // Event handlers
 
@@ -183,11 +222,6 @@ namespace SM3E
     private void RoomStateListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
     {
       MainProject.RoomStateIndex = RoomStateListBox.SelectedIndex;
-    }
-
-
-    private void DoNothing (object sender, EventArgs e)
-    {
     }
 
 
@@ -378,12 +412,12 @@ namespace SM3E
 
     private void BtsVFlipButton_Click (object sender, RoutedEventArgs e)
     {
-
+      MainProject.VFlipBts ();
     }
 
     private void BtsHFlipButton_Click (object sender, RoutedEventArgs e)
     {
-
+      MainProject.HFlipBts ();
     }
 
   } // class MainWindow

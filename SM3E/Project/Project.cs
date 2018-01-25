@@ -138,6 +138,7 @@ namespace SM3E
           RoomStateIndex = 0;
           RoomSelected?.Invoke (this, null);
           RoomStateListChanged?.Invoke (this, new ListLoadEventArgs (0));
+          DoorListChanged?.Invoke (this, new ListLoadEventArgs (0));
         }
       }
     }
@@ -252,6 +253,193 @@ namespace SM3E
       }
     }
 
+    // Area of the selected room.
+    public int RoomArea
+    {
+      get
+      {
+        return ActiveRoom?.RoomArea ?? -1;
+      }
+      set
+      {
+        if (ActiveRoom != null)
+          ActiveRoom.RoomArea = (byte) value;
+      }
+    }
+
+    // Name of the selected room.
+    public string RoomName
+    {
+      get
+      {
+        return ActiveRoom?.Name ?? "";
+      }
+      set
+      {
+        if (ActiveRoom != null)
+          ActiveRoom.Name = value;
+      }
+    }
+
+    // Up scroller value for the selected room.
+    public int UpScroller
+    {
+      get
+      {
+        return ActiveRoom?.UpScroller ?? 0;
+      }
+      set
+      {
+        if (ActiveRoom != null)
+          ActiveRoom.UpScroller = (byte) value;
+      }
+    }
+
+    // Down scroller value for the selected room.
+    public int DownScroller
+    {
+      get
+      {
+        return ActiveRoom?.DownScroller ?? 0;
+      }
+      set
+      {
+        if (ActiveRoom != null)
+          ActiveRoom.DownScroller = (byte) value;
+      }
+    }
+
+    // Special graphics bitflag for the selected room.
+    public int SpecialGfx
+    {
+      get
+      {
+        return ActiveRoom?.SpecialGfxBitflag ?? 0;
+      }
+      set
+      {
+        if (ActiveRoom != null)
+          ActiveRoom.SpecialGfxBitflag = (byte) value;
+      }
+    }
+
+    // Type of the selected room state.
+    public StateType RoomStateType
+    {
+      get
+      {
+        if (RoomStateIndex != IndexNone)
+          return ActiveRoom.RoomStateHeaders [RoomStateIndex].HeaderType;
+        return StateType.None;
+      }
+      set
+      {
+        if (RoomStateIndex != IndexNone)
+          ActiveRoom.RoomStateHeaders [RoomStateIndex].HeaderType = value;
+      }
+    }
+
+    // Event number of the selected room state.
+    public int RoomStateEventNumber
+    {
+      get
+      {
+        if (RoomStateIndex != IndexNone)
+          return ActiveRoom.RoomStateHeaders [RoomStateIndex].Value;
+        return 0x00;
+      }
+      set
+      {
+        if (RoomStateIndex != IndexNone)
+          ActiveRoom.RoomStateHeaders [RoomStateIndex].Value = (byte) value;
+      }
+    }
+
+    // Song set of the selected room state.
+    public int SongSet
+    {
+      get
+      {
+        return ActiveRoomState?.SongSet ?? 0;
+      }
+      set
+      {
+        if (ActiveRoomState != null)
+          ActiveRoomState.SongSet = (byte) value;
+      }
+    }
+
+    // Song index of the selected rooms state.
+    public int PlayIndex
+    {
+      get
+      {
+        return ActiveRoomState?.PlayIndex ?? 0;
+      }
+      set
+      {
+        if (ActiveRoomState != null)
+          ActiveRoomState.PlayIndex = (byte) value;
+      }
+    }
+
+    // Background scrolling value of the selected rooms state.
+    public int BackgroundScrolling
+    {
+      get
+      {
+        return ActiveRoomState?.BackgroundScrolling ?? 0;
+      }
+      set
+      {
+        if (ActiveRoomState != null)
+          ActiveRoomState.BackgroundScrolling = value;
+      }
+    }
+
+    // Pointers
+    public int LevelDataPtr
+    {
+      get {return ActiveRoomState?.LevelDataPtr ?? 0;}
+    }
+
+    public int RoomScrollsPtr
+    {
+      get {return ActiveRoomState?.RoomScrollsPtr ?? 0;}
+    }
+
+    public int PlmSetPtr
+    {
+      get {return ActiveRoomState?.PlmSetPtr ?? 0;}
+    }
+
+    public int EnemySetPtr
+    {
+      get {return ActiveRoomState?.EnemySetPtr ?? 0;}
+    }
+
+    public int EnemyGfxPtr
+    {
+      get {return ActiveRoomState?.EnemyGfxPtr ?? 0;}
+    }
+
+    public int FxPtr
+    {
+      get {return ActiveRoomState?.FxPtr ?? 0;}
+    }
+
+    public int SetupAsmPtr
+    {
+      get {return ActiveRoomState?.SetupAsmPtr ?? 0;}
+    }
+
+    public int MainAsmPtr
+    {
+      get {return ActiveRoomState?.MainAsmPtr ?? 0;}
+    }
+
+
+
 //---------------------------------------------------------------------------------------------------
 // Other
 
@@ -291,6 +479,24 @@ namespace SM3E
           foreach (RoomStateHeader r in Rooms [RoomIndex].RoomStateHeaders)
             names.Add (r.HeaderType.ToString ());
         return names;
+      }
+    }
+
+    // List of room state names for active room.
+    public List <string> DoorNames
+    {
+      get
+      {
+        List <string> doorNames = new List <string> ();
+        if (ActiveRoom != null && ActiveRoom.MyDoorSet != null)
+        {
+          for (int n = 0; n < ActiveRoom.MyDoorSet.DoorCount; n++)
+          {
+            Room destRoom = ActiveRoom.MyDoorSet.MyDoors [n].MyTargetRoom;
+            doorNames.Add (Tools.IntToHex (n) + " " + (destRoom?.Name ?? ""));
+          }
+        }
+        return doorNames;
       }
     }
 
@@ -457,6 +663,52 @@ namespace SM3E
       if (ActiveLevelDataInfo (out LevelData data, out int width))
         return data.GetLayer2VFlip (row * width + col);
       return false;
+    }
+
+
+    // Flip the active BTS horizontally.
+    public void HFlipBts ()
+    {
+      switch (BtsType) {
+      case 0x1: // Slope
+        BtsValue ^= 0x40;
+        break;
+      case 0x3: // Treadmill
+        if (BtsValue == 0x08 || BtsValue == 0x09)
+          BtsValue ^= 1;
+        break;
+      case 0x5: // H-copy
+        if (BtsValue != 0)
+          BtsValue = 0x100 - BtsValue;
+        break;
+      case 0xC: // Door cap
+        if (BtsValue == 0x40 || BtsValue == 0x41)
+          BtsValue ^= 1;
+        break;
+      default:
+        break;
+      }
+    }
+
+
+    // Flip the active BTS vertically.
+    public void VFlipBts ()
+    {
+      switch (BtsType) {
+      case 0x1: // Slope
+        BtsValue ^= 0x80;
+        break;
+      case 0xC: // Door cap
+        if (BtsValue == 0x42 || BtsValue == 0x43)
+          BtsValue ^= 1;
+        break;
+      case 0xD: // V-copy
+        if (BtsValue != 0)
+          BtsValue = 0x100 - BtsValue;
+        break;
+      default:
+        break;
+      }
     }
 
 //----------------------------------------------------------------------------------------
