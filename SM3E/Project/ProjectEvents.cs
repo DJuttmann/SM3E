@@ -31,7 +31,7 @@ namespace SM3E
     public event EventHandler BtsSelected;
 
     // Level data of the current room state is changed.
-    public event EventHandler LevelDataModified;
+    public event LevelDataEventHandler LevelDataModified;
 
     // RoomState data changed
     public event EventHandler RoomStateModified;
@@ -60,6 +60,21 @@ namespace SM3E
     {
       SelectItem = selectItem;
     }
+  }
+
+
+  // Delegate for level data changing.
+  public delegate void LevelDataEventHandler (object sender, LevelDataEventArgs e);
+
+  // Contains affected screens.
+  public class LevelDataEventArgs: EventArgs
+  {
+    public int ScreenXmin;
+    public int ScreenXmax;
+    public int ScreenYmin;
+    public int ScreenYmax;
+
+    public LevelDataEventArgs () {}
   }
 
 }

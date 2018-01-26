@@ -175,7 +175,7 @@ namespace SM3E
       if (!rom.Read (b, 0, 1))
         return false;
       RequiredToKill = b [0];
-      startAddressPC = addressPC;
+      startAddressPC = sAddress;
       return true;
     }
 
@@ -321,7 +321,7 @@ namespace SM3E
     {
       bool success = true;
       for (int i = 0; i < EnemyIDs.Count; i++) {
-        MyEnemyTypes.Add (enemyTypes.Find (x => x.EnemyID == MyEnemyTypes [i].EnemyID));
+        MyEnemyTypes.Add (enemyTypes.Find (x => x.EnemyID == EnemyIDs [i]));
         if (MyEnemyTypes [i] == null)
           success = false;
       }
@@ -339,11 +339,12 @@ namespace SM3E
   class EnemyType
   {
     public int EnemyID = 0;
-    public int TileX = 0;  //  <- [wip] are these two necessary?
-    public int TileY = 0;  //  <-
-    public int TileWidth = 0;
-    public int TileHeight = 0;
+    // public int TileX = 0;  //  <- [wip] are these two necessary?
+    // public int TileY = 0;  //  <-
+    // public int TileWidth = 0;
+    // public int TileHeight = 0;
     public string Name = String.Empty;
+    public BlitImage Graphics;
 
     public int Index = 0;  // index in the enemy_types array that stores all available types.
   } // class EnemyType

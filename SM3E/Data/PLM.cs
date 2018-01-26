@@ -20,13 +20,13 @@ namespace SM3E
     public const int TerminatorSize = 2;
     public const int ScrollID = 0xB703;
 
-    int PlmID;
-    byte XPosition;
-    byte YPosition;
-    int MainVariable;
+    public int PlmID;
+    public byte PosX;
+    public byte PosY;
+    public int MainVariable;
 
-    PlmType MyPlmType;
-    ScrollPlmData MyScrollPlmData;
+    public PlmType MyPlmType;
+    public ScrollPlmData MyScrollPlmData;
 
     public override int Size
     {
@@ -48,8 +48,8 @@ namespace SM3E
     public Plm (): base ()
     {
       PlmID        = 0;
-      XPosition    = 0;
-      YPosition    = 0;
+      PosX    = 0;
+      PosY    = 0;
       MainVariable = 0;
 
       MyPlmType = null;
@@ -66,8 +66,8 @@ namespace SM3E
         return false;
       
       PlmID        = Tools.ConcatBytes (b [0], b [1]);
-      XPosition    = b [2];
-      YPosition    = b [3];
+      PosX    = b [2];
+      PosY    = b [3];
       MainVariable = Tools.ConcatBytes (b [4], b [5], 0x8F);
 
       startAddressPC = addressPC;
@@ -80,8 +80,8 @@ namespace SM3E
     {
       byte [] b = new byte [DefaultSize];
       Tools.CopyBytes (PlmID       , b, 0, 2);
-      Tools.CopyBytes (XPosition   , b, 2, 1);
-      Tools.CopyBytes (YPosition   , b, 3, 1);
+      Tools.CopyBytes (PosX   , b, 2, 1);
+      Tools.CopyBytes (PosY   , b, 3, 1);
       Tools.CopyBytes (MainVariable, b, 4, 2);
       rom.Write (b, 0, DefaultSize);
       addressPC += Size;
@@ -93,8 +93,8 @@ namespace SM3E
     public override void SetDefault ()
     {
       PlmID        = 0xB63B;
-      XPosition    = 0;
-      YPosition    = 0;
+      PosX    = 0;
+      PosY    = 0;
       MainVariable = 0x8000;
 
       startAddressPC = -1;
@@ -127,8 +127,8 @@ namespace SM3E
 
     public void Shift (int dx, int dy)
     {
-      XPosition += (byte) dx;
-      YPosition += (byte) dy;
+      PosX += (byte) dx;
+      PosY += (byte) dy;
     }
 
   } // Class Plm
@@ -329,11 +329,12 @@ namespace SM3E
   class PlmType
   {
     public int PlmID = 0;
-    public int TileX = 0;
-    public int TileY = 0;
-    public int TileWidth = 0;
-    public int TileHeight = 0;
+//    public int TileX = 0;
+//    public int TileY = 0;
+//    public int TileWidth = 0;
+//    public int TileHeight = 0;
     public string Name = String.Empty;
+    public BlitImage Graphics;
 
     public int Index = 0;  // index in the plm_types array that stores all available types.
   } // class PlmType

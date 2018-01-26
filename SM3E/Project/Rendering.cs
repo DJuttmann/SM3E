@@ -196,6 +196,7 @@ namespace SM3E
       return image;
     }
 
+
 //----------------------------------------------------------------------------------------
 
 
@@ -212,6 +213,10 @@ namespace SM3E
         RenderSceenLayer2 (screenImage, rowMin, colMin);
       if (ForegroundVisible)
         RenderSceenLayer1 (screenImage, rowMin, colMin);
+      if (PlmsVisible)
+        RenderScreenPlms (screenImage, rowMin, colMin);
+      if (EnemiesVisible)
+        RenderScreenEnemies (screenImage, rowMin, colMin);
       if (BtsVisible)
         RenderScreenBts (screenImage, rowMin, colMin);
       if (ScrollsVisible)
@@ -253,6 +258,38 @@ namespace SM3E
           screenImage.Blit (RoomTiles [tile], 16 * col, 16 * row, hFlip, vFlip);
         }
       }
+    }
+
+
+    // Renders PLMs on a screen.
+    private void RenderScreenPlms (BlitImage screenImage, int rowMin, int colMin)
+    {
+      PlmSet plms = ActiveRoomState?.MyPlmSet;
+      if (plms != null)
+        foreach (Plm p in plms.Plms)
+        {
+          BlitImage graphics = p.MyPlmType?.Graphics ?? PlmTypes [0].Graphics;
+          screenImage.Blit (graphics,
+                            16 * (p.PosX - colMin),
+                            16 * (p.PosY - rowMin),
+                            false, false);
+        }
+    }
+
+
+    // Renders Enemies on a screen.
+    private void RenderScreenEnemies (BlitImage screenImage, int rowMin, int colMin)
+    {
+      EnemySet enemies = ActiveRoomState?.MyEnemySet;
+      if (enemies != null)
+        foreach (Enemy e in enemies.Enemies)
+        {
+          BlitImage graphics = e.MyEnemyType?.Graphics ?? EnemyTypes [0].Graphics;
+          screenImage.Blit (graphics,
+                            e.PosX - 16 * colMin - graphics.Width / 2,
+                            e.PosY - 16 * rowMin - graphics.Height / 2,
+                            false, false);
+        }
     }
 
 
@@ -761,8 +798,13 @@ namespace SM3E
     // [wip] MOVE THIS TO BETTER PLACE
     public static BitmapSource LoadBitmap (string fileName)
     {
-      Uri uri = new Uri (Environment.CurrentDirectory + "\\" + fileName);
-      return new BitmapImage (uri);
+      Uri uri = new Uri (fileName, UriKind.RelativeOrAbsolute);
+      // Uri uri = new Uri (Environment.CurrentDirectory + "\\" + fileName);
+      BitmapSource b = new BitmapImage (uri);
+      if (b.Format != PixelFormats.Bgra32)
+        b = new FormatConvertedBitmap (b, PixelFormats.Bgra32, null, 0);
+      Logging.WriteLine (b.Format.ToString ());
+      return b;
     }
 
   }

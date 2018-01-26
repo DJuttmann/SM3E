@@ -712,6 +712,96 @@ namespace SM3E
     }
 
 //----------------------------------------------------------------------------------------
+    
+    public void SetLayer1 (int rowMin, int colMin, int rowMax, int colMax)
+    {
+      if (ActiveLevelData == null)
+        return;
+      Tools.Order (ref rowMin, ref rowMax);
+      Tools.Order (ref colMin, ref colMax);
+      if (rowMin < 0)
+        rowMin = 0;
+      if (colMin < 0)
+        colMin = 0;
+      if (rowMax >= RoomHeightInTiles)
+        rowMax = RoomHeightInTiles - 1;
+      if (colMax >= RoomWidthInTiles)
+        colMax = RoomWidthInTiles - 1;
+      if (rowMax < rowMin || colMax < colMin)
+        return;
+      for (int row = rowMin; row <= rowMax; row++)
+        for (int col = colMin; col <= colMax; col++)
+          ActiveLevelData.SetLayer1 (row * RoomWidthInTiles + col,
+                                     TileIndex, TileHFlip, TileVFlip);
+      LevelDataEventArgs e = new LevelDataEventArgs ()
+      {
+        ScreenXmin = colMin / 16,
+        ScreenXmax = colMax / 16,
+        ScreenYmin = rowMin / 16,
+        ScreenYmax = rowMax / 16
+      };
+      LevelDataModified?.Invoke (this, e);
+    }
+
+
+    public void SetLayer2 (int rowMin, int colMin, int rowMax, int colMax)
+    {
+      if (ActiveLevelData == null)
+        return;
+      Tools.Order (ref rowMin, ref rowMax);
+      Tools.Order (ref colMin, ref colMax);
+      if (rowMin < 0)
+        rowMin = 0;
+      if (colMin < 0)
+        colMin = 0;
+      if (rowMax >= RoomHeightInTiles)
+        rowMax = RoomHeightInTiles - 1;
+      if (colMax >= RoomWidthInTiles)
+        colMax = RoomWidthInTiles - 1;
+      for (int row = rowMin; row <= rowMax; row++)
+        for (int col = colMin; col <= colMax; col++)
+          ActiveLevelData.SetLayer2 (row * RoomWidthInTiles + col,
+                                     TileIndex, TileHFlip, TileVFlip);
+      LevelDataEventArgs e = new LevelDataEventArgs ()
+      {
+        ScreenXmin = colMin / 16,
+        ScreenXmax = colMax / 16,
+        ScreenYmin = rowMin / 16,
+        ScreenYmax = rowMax / 16
+      };
+      LevelDataModified?.Invoke (this, e);
+    }
+
+
+    public void SetBts (int rowMin, int colMin, int rowMax, int colMax)
+    {
+      if (ActiveLevelData == null)
+        return;
+      Tools.Order (ref rowMin, ref rowMax);
+      Tools.Order (ref colMin, ref colMax);
+      if (rowMin < 0)
+        rowMin = 0;
+      if (colMin < 0)
+        colMin = 0;
+      if (rowMax >= RoomHeightInTiles)
+        rowMax = RoomHeightInTiles - 1;
+      if (colMax >= RoomWidthInTiles)
+        colMax = RoomWidthInTiles - 1;
+      for (int row = rowMin; row <= rowMax; row++)
+        for (int col = colMin; col <= colMax; col++)
+          ActiveLevelData.SetBts (row * RoomWidthInTiles + col,
+                                  BtsType, BtsValue);
+      LevelDataEventArgs e = new LevelDataEventArgs ()
+      {
+        ScreenXmin = colMin / 16,
+        ScreenXmax = colMax / 16,
+        ScreenYmin = rowMin / 16,
+        ScreenYmax = rowMax / 16
+      };
+      LevelDataModified?.Invoke (this, e);
+    }
+
+//========================================================================================
 // Scrolls
 
     public ScrollColor GetScroll (int x, int y)

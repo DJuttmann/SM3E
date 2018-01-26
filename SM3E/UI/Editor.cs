@@ -30,6 +30,8 @@ namespace SM3E
     UITileViewer TileSelector;
     UITileViewer BtsSelector;
 
+    UITileViewer RoomSizeEditor;
+
     LevelDataRenderer MainRenderer;
 
 //========================================================================================
@@ -48,12 +50,19 @@ namespace SM3E
     {
       MapEditor = new UITileViewer (8.0, 64, 32, 64, 32, null);
       MapViewer.Children.Add (MapEditor.Element);
+
+      RoomSizeEditor = new UITileViewer (16.0, 64, 32, 64, 32, null);
+      RoomSizeEditor.Screens [0, 0].SetValue (RenderOptions.BitmapScalingModeProperty,
+                                              BitmapScalingMode.NearestNeighbor);
+      RoomSizeViewer.Content = RoomSizeEditor.Element;
     }
 
 
     private void UpdateMapEditor (object sender, EventArgs e)
     {
-      MapEditor.Screens [0, 0].Source = MainProject.RenderAreaMap ().ToBitmap ();
+      ImageSource source = MainProject.RenderAreaMap ().ToBitmap ();
+      MapEditor.Screens [0, 0].Source = source;
+      RoomSizeEditor.Screens [0, 0].Source = source;
     }
   
 
@@ -141,6 +150,7 @@ namespace SM3E
       AreaListBox.Items.Clear ();
       foreach (string name in names)
         AreaListBox.Items.Add (name);
+      AreaListBox.SelectedItem = e.SelectItem;
     }
 
 
@@ -237,6 +247,15 @@ namespace SM3E
     }
 
 
+    private void LevelDataModified (object sender, LevelDataEventArgs e)
+    {
+      for (int x = e.ScreenXmin; x <= e.ScreenXmax; x++)
+        for (int y = e.ScreenYmin; y <= e.ScreenYmax; y++)
+          MainRenderer.InvalidateScreen (x, y);
+      LevelData.ReloadVisibleTiles ();
+    }
+
+
     private void LayerForegroundCheckBox_Click (object sender, RoutedEventArgs e)
     {
       MainProject.ForegroundVisible = LayerForegroundCheckBox.IsChecked ?? false;
@@ -301,7 +320,7 @@ namespace SM3E
       switch (EditorTabs.SelectedIndex)
       {
       case 0: // Navigate
-        LevelViewerNavigate_MouseDown (e);
+        // LevelViewerNavigate_MouseDown (e);
         break;
 
       case 1: // Edit
@@ -347,7 +366,7 @@ namespace SM3E
         break;
 
       case 1: // Edit
-        // LevelViewerEdit_MouseDown (e)
+        LevelViewerEdit_MouseUp (e);
         break;
 
       case 2: // Properties
@@ -364,7 +383,21 @@ namespace SM3E
       switch (e.Button)
       {
       case MouseButton.Left:
-        // Place tiles in selected are.
+        // Place tiles in selected area.
+        switch (LayerSelect.SelectedIndex)
+        {
+        case 0: // Layer 1
+          MainProject.SetLayer1 (e.PosTileY, e.PosTileX, e.ClickTileY, e.ClickTileX);
+          break;
+        case 1: // Bts
+          MainProject.SetBts (e.PosTileY, e.PosTileX, e.ClickTileY, e.ClickTileX);
+          break;
+        case 2: // Layer 2
+          MainProject.SetLayer2 (e.PosTileY, e.PosTileX, e.ClickTileY, e.ClickTileX);
+          break;
+        default:
+          break;
+        }
         break;
 
       case MouseButton.Right:

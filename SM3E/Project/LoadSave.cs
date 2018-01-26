@@ -11,6 +11,9 @@ namespace SM3E
 
   partial class Project
   {
+    private const string PlmFolder = "\\Data\\PLMs";
+    private const string EnemyFolder = "\\Data\\Enemies";
+
 
 //========================================================================================
 // Reading ROM data.
@@ -54,13 +57,16 @@ namespace SM3E
       ReadPalettes (rom);
       LoadMapTiles (rom);
 
+      ReadPlmTypes ();
+      ReadEnemyTypes ();
+
       // Connect the data objects.
       Connect ();
       AreaIndex = 0;
       TileSetIndex = 0;
 
       // Raise events.
-      AreaListChanged (this, null);
+      AreaListChanged (this, new ListLoadEventArgs (0));
       //RoomListChanged (this, null);
       //RoomStateListChanged (this, null);
     }
@@ -488,8 +494,57 @@ namespace SM3E
     }
 
 
+    // Read all PLM types from PLM folder.
+    private void ReadPlmTypes ()
+    {
+      string [] paths = Directory.GetFiles (Environment.CurrentDirectory +
+                                            PlmFolder);
+      for (int i = 0; i < paths.Length; i++)
+      {
+        var newPlm = new PlmType ();
+        string filename = Tools.FilenameFromPath (paths [i]);
+        Tools.TrimFileExtension (ref filename, out string extension);
+        if (extension.ToLower () == ".png" && filename.Length > 5)
+        {
+          newPlm.PlmID = Tools.HexToInt (filename.Substring (0, 4));
+          newPlm.Name = filename.Substring (5, filename.Length - 5);
+          newPlm.Graphics = new BlitImage (GraphicsIO.LoadBitmap (paths [i]));
+          PlmTypes.Add (newPlm);
+        }
+      }
+      PlmTypes.Sort ((x, y) => x.PlmID - y.PlmID);
+      for (int i = 0; i < PlmTypes.Count; i++)
+        PlmTypes [i].Index = i;
+    }
+
+
+    // Read all enemy types from enemy folder.
+    private void ReadEnemyTypes ()
+    {
+      string [] paths = Directory.GetFiles (Environment.CurrentDirectory +
+                                            EnemyFolder);
+      for (int i = 0; i < paths.Length; i++)
+      {
+        var newEnemy = new EnemyType ();
+        string filename = Tools.FilenameFromPath (paths [i]);
+        Tools.TrimFileExtension (ref filename, out string extension);
+        if (extension.ToLower () == ".png" && filename.Length > 5)
+        {
+          newEnemy.EnemyID = Tools.HexToInt (filename.Substring (0, 4));
+          newEnemy.Name = filename.Substring (5, filename.Length - 5);
+          newEnemy.Graphics = new BlitImage (GraphicsIO.LoadBitmap (paths [i]));
+          EnemyTypes.Add (newEnemy);
+        }
+      }
+      EnemyTypes.Sort ((x, y) => x.EnemyID - y.EnemyID);
+      for (int i = 0; i < EnemyTypes.Count; i++)
+        EnemyTypes [i].Index = i;
+    }
+
+
 //========================================================================================
 // Writing ROM data.
 
-  }
+  } // partial class project
+
 }

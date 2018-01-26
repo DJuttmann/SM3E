@@ -161,6 +161,26 @@ namespace SM3E
     }
 
 
+    // Swap the values of two ints.
+    public static void Swap (ref int x, ref int y)
+    {
+      int temp = y;
+      y = x;
+      x = temp;
+    }
+
+
+    // Swap if y < x, otherwise leave as is.
+    public static void Order (ref int x, ref int y)
+    {
+      if (y < x)
+      {
+        int temp = y;
+        y = x;
+        x = temp;
+      }
+    }
+
 //----------------------------------------------------------------------------------------
 
     // Removes duplicates from a List, List is sorted in the process.
@@ -215,6 +235,32 @@ namespace SM3E
       return segments;
     }
 
+//----------------------------------------------------------------------------------------
+
+    public static string FilenameFromPath (string path)
+    {
+      int i = path.Length - 1;
+      while (i >= 0 && path [i] != '\\')
+        i--;
+      if (path [i] == '\\')
+        i++;
+      return path.Substring (i, path.Length - i);
+    }
+
+
+    public static void TrimFileExtension (ref string filename, out string extension)
+    {
+      int i = filename.Length - 1;
+      while (i >= 0 && filename [i] != '.')
+        i--;
+      if (filename [i] == '.')
+      {
+        extension = filename.Substring (i, filename.Length - i);
+        filename = filename.Substring (0, i);
+      }
+      else
+        extension = String.Empty;
+    }
 
   } // class Tools
 

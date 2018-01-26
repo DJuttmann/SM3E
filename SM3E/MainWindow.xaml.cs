@@ -21,7 +21,7 @@ namespace SM3E
   public partial class MainWindow: Window
   {
     // Fields
-    Project MainProject = new Project ();
+    Project MainProject;
 
     // Constructor
     public MainWindow ()
@@ -33,6 +33,7 @@ namespace SM3E
           System.Windows.MessageBox.Show ("log failed");
           return;
         }
+      MainProject = new Project ();
 
       SetupLevelData ();
       SetupTileSelector ();
@@ -58,6 +59,8 @@ namespace SM3E
       MainProject.RoomStateSelected += LoadRoomStateData;
       MainProject.LevelDataSelected += NewLevelData;
       MainProject.TileSetSelected += UpdateTileSelector;
+
+      MainProject.LevelDataModified += LevelDataModified;
     }
 
   }
