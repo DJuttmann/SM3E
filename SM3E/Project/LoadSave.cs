@@ -62,7 +62,7 @@ namespace SM3E
 
       // Connect the data objects.
       Connect ();
-      // SelectTileSet (0);
+      LoadRoomTiles (0); //
       SelectArea (0);
 
       // Raise events.

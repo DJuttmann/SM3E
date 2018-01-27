@@ -62,7 +62,7 @@
           <RowDefinition Height="8*"/>
           <RowDefinition Height="5*"/>
         </Grid.RowDefinitions>
-        <ListBox x:Name="AreaListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,10,10,5" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="AreaListBox_SelectionChanged"/>
+        <ListBox x:Name="AreaListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,10,10,5" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="AreaListBox_SelectionChanged" />
         <ListBox x:Name="RoomListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,5,10,5" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="RoomListBox_SelectionChanged"/>
         <ListBox x:Name="RoomStateListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,5,10,10" Grid.Row="2" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="RoomStateListBox_SelectionChanged"/>
       </Grid>

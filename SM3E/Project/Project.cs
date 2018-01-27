@@ -68,14 +68,21 @@ namespace SM3E
     // Reference to the active room state.
     private RoomState ActiveRoomState = null;
 
-    // Reference to the active room state's level data.
-    private LevelData ActiveLevelData = null;
-
-    // Reference to the active tile set.
-    private TileSet ActiveTileSet = null;
-
     // Reference to the active door.
     private Door ActiveDoor = null;
+
+    // Reference to the active tile set.
+    private TileSet ActiveTileSet
+    {
+      get {return TileSetIndex != IndexNone ? TileSets [TileSetIndex] : TileSets [0];}
+    }
+
+    // Reference to the active room state's level data.
+    private LevelData ActiveLevelData
+    {
+      get {return ActiveRoomState?.MyLevelData;}
+    }
+
 
 
     // Index of the selected area.
@@ -88,10 +95,13 @@ namespace SM3E
     public int RoomStateIndex {get; private set;} = IndexNone;
 
     // Index of the selected room state's tile set.
-    public int TileSetIndex {get; private set;} = 0;
+    public int DoorIndex {get; private set;} = IndexNone;
 
     // Index of the selected room state's tile set.
-    public int DoorIndex {get; private set;} = IndexNone;
+    public int TileSetIndex
+    {
+      get {return ActiveRoomState?.TileSet ?? 0;}
+    }
 
 
     // Index/H-flip/V-Flip of the selected room tile.
@@ -718,16 +728,6 @@ namespace SM3E
 //========================================================================================
 // Selecting things
 
-    
-    private enum ListUpdate
-    {
-      Area = 0,
-      Room = 1,
-      RoomState = 2,
-      TileSet = 3,
-      Door = 4
-    }
-
 
     // A class tracking which selected items have changed.
     private class ActiveItems
@@ -737,68 +737,84 @@ namespace SM3E
       public RoomState ActiveRoomState;
       public TileSet ActiveTileSet;
       public Door ActiveDoor;
+      public LevelData ActiveLevelData;
 
 
       public ActiveItems (int activeArea, Room activeRoom, RoomState activeRoomState,
-                          TileSet activeTileSet, Door activeDoor)
+                          TileSet activeTileSet, Door activeDoor, LevelData activeLevelData)
       {
         ActiveArea = activeArea;
         ActiveRoom = activeRoom;
         ActiveRoomState = activeRoomState;
         ActiveTileSet = activeTileSet;
         ActiveDoor = activeDoor;
+        ActiveLevelData = activeLevelData;
       }
     }
+
+    private bool HandlingSelection = false;
     
 
     public void SelectArea (int index)
     {
+      if (HandlingSelection)
+        return;
+      HandlingSelection = true;
       var a = new ActiveItems (AreaIndex, ActiveRoom, ActiveRoomState,
-                               ActiveTileSet, ActiveDoor);
+                               ActiveTileSet, ActiveDoor, ActiveLevelData);
       if (index == AreaIndex || index < -1 || index >= AreaCount)
         return;
-      var update = new List <ListUpdate> ();
-      ForceSelectArea (index, update);
+      ForceSelectArea (index);
       RaiseChangeEvents (a);
+      HandlingSelection = false;
     }
     
 
     public void SelectRoom (int index)
     {
+      if (HandlingSelection)
+        return;
+      HandlingSelection = true;
       var a = new ActiveItems (AreaIndex, ActiveRoom, ActiveRoomState,
-                               ActiveTileSet, ActiveDoor);
+                               ActiveTileSet, ActiveDoor, ActiveLevelData);
       if (AreaIndex == IndexNone || index == RoomIndex || index < -1 ||
           index >= Rooms [AreaIndex].Count)
         return;
-      var update = new List <ListUpdate> ();
-      ForceSelectRoom (index, update);
+      ForceSelectRoom (index);
       RaiseChangeEvents (a);
+      HandlingSelection = false;
     }
     
 
     public void SelectRoomState (int index)
     {
+      if (HandlingSelection)
+        return;
+      HandlingSelection = true;
       var a = new ActiveItems (AreaIndex, ActiveRoom, ActiveRoomState,
-                               ActiveTileSet, ActiveDoor);
+                               ActiveTileSet, ActiveDoor, ActiveLevelData);
       if (ActiveRoom == null || index == RoomStateIndex || index < -1 ||
           index >= ActiveRoom.RoomStates.Count)
         return;
-      var update = new List <ListUpdate> ();
-      ForceSelectRoomState (index, update);
+      ForceSelectRoomState (index);
       RaiseChangeEvents (a);
+      HandlingSelection = false;
     }
     
 
     public void SelectDoor (int index)
     {
+      if (HandlingSelection)
+        return;
+      HandlingSelection = true;
       var a = new ActiveItems (AreaIndex, ActiveRoom, ActiveRoomState,
-                               ActiveTileSet, ActiveDoor);
+                               ActiveTileSet, ActiveDoor, ActiveLevelData);
       if (ActiveRoom == null || index == DoorIndex || index < -1 ||
           index >= ActiveRoom.MyDoorSet.DoorCount)
         return;
-      var update = new List <ListUpdate> ();
-      ForceSelectDoor (index, update);
+      ForceSelectDoor (index);
       RaiseChangeEvents (a);
+      HandlingSelection = false;
     }
 
 
@@ -806,6 +822,7 @@ namespace SM3E
     {
       if (a.ActiveTileSet != ActiveTileSet)
       {
+        LoadRoomTiles (TileSetIndex);
         TileSetSelected?.Invoke (this, null);
       }
       if (a.ActiveDoor != ActiveDoor)
@@ -815,6 +832,11 @@ namespace SM3E
       if (a.ActiveRoomState != ActiveRoomState)
       {
         RoomStateSelected?.Invoke (this, null);
+        LevelDataSelected.Invoke (this, null);
+      }
+      else if (a.ActiveLevelData != ActiveLevelData)
+      {
+        LevelDataSelected.Invoke (this, null);
       }
       if (a.ActiveRoom != ActiveRoom)
       {
@@ -830,60 +852,60 @@ namespace SM3E
     }
     
 
-    private void ForceSelectArea (int index, List <ListUpdate> update)
+    private void ForceSelectArea (int index)
     {
       if (index >= 0 && index < AreaCount)
       {
         AreaIndex = index;
-        ForceSelectRoom (0, update);
+        ForceSelectRoom (0);
       }
       else
       {
         AreaIndex = IndexNone;
-        ForceSelectRoom (IndexNone, update);
+        ForceSelectRoom (IndexNone);
       }
     }
 
 
-    private void ForceSelectRoom (int index, List <ListUpdate> update)
+    private void ForceSelectRoom (int index)
     {
       if (AreaIndex != IndexNone && index >= 0 && index < Rooms [AreaIndex].Count)
       {
         RoomIndex = index;
         ActiveRoom = Rooms [AreaIndex] [RoomIndex];
-        ForceSelectRoomState (0, update);
-        ForceSelectDoor (0, update);
+        ForceSelectRoomState (0);
+        ForceSelectDoor (0);
       }
       else
       {
         RoomIndex = IndexNone;
         ActiveRoom = null;
-        ForceSelectRoomState (IndexNone, update);
-        ForceSelectDoor (IndexNone, update);
+        ForceSelectRoomState (IndexNone);
+        ForceSelectDoor (IndexNone);
       }
     }
 
 
-    private void ForceSelectRoomState (int index, List <ListUpdate> update)
+    private void ForceSelectRoomState (int index)
     {
       if (ActiveRoom != null && index >= 0 && index < ActiveRoom.RoomStates.Count)
       {
         RoomStateIndex = index;
         ActiveRoomState = ActiveRoom.RoomStates [RoomStateIndex];
-        ForceSelectTileSet (ActiveRoom.RoomStates [RoomStateIndex].TileSet, update);
+        // ForceSelectTileSet (ActiveRoom.RoomStates [RoomStateIndex].TileSet);
       }
       else
       {
         RoomStateIndex = IndexNone;
         ActiveRoomState = null;
-        ForceSelectTileSet (0, update);
+        // ForceSelectTileSet (0);
       }
     }
 
 
-    private void ForceSelectTileSet (int index, List <ListUpdate> update)
+    /*
+    private void ForceSelectTileSet (int index)
     {
-      
       if (index < 0 || index > TileSets.Count)
         index = 0;
       if (index != TileSetIndex)
@@ -892,10 +914,10 @@ namespace SM3E
         TileSetIndex = index;
         ActiveTileSet = TileSets [TileSetIndex];
       }
-    }
+    }*/
 
 
-    private void ForceSelectDoor (int index, List <ListUpdate> update)
+    private void ForceSelectDoor (int index)
     {
       if (ActiveRoom != null && index >= 0 && index < ActiveRoom.MyDoorSet.DoorCount)
       {
