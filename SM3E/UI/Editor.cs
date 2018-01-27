@@ -51,6 +51,8 @@ namespace SM3E
     private void SetupMapEditor ()
     {
       MapEditor = new UITileViewer (8.0, 64, 32, 64, 32, null);
+      MapEditor.MouseDown += MapEditor_MouseDown;
+      MapEditor.MouseUp += MapEditor_MouseUp;
       MapViewer.Children.Add (MapEditor.Element);
 
       RoomSizeEditor = new UITileViewer (16.0, 64, 32, 64, 32, null);
@@ -153,7 +155,15 @@ namespace SM3E
       foreach (string name in names)
         AreaListBox.Items.Add (name);
       QuietSelect = true;
-      AreaListBox.SelectedItem = e.SelectItem;
+      AreaListBox.SelectedIndex = e.SelectItem;
+      QuietSelect = false;
+    }
+
+
+    private void AreaSelected (object sender, EventArgs e)
+    {
+      QuietSelect = true;
+      AreaListBox.SelectedIndex = MainProject.AreaIndex;
       QuietSelect = false;
     }
 
@@ -170,6 +180,14 @@ namespace SM3E
     }
 
 
+    private void RoomSelected (object sender, EventArgs e)
+    {
+      QuietSelect = true;
+      RoomListBox.SelectedIndex = MainProject.RoomIndex;
+      QuietSelect = false;
+    }
+
+
     private void LoadRoomStateListBox (object sender, ListLoadEventArgs e)
     {
       List <string> names = MainProject.RoomStateNames;
@@ -182,6 +200,14 @@ namespace SM3E
     }
 
 
+    private void RoomStateSelected (object sender, EventArgs e)
+    {
+      QuietSelect = true;
+      RoomStateListBox.SelectedIndex = MainProject.RoomStateIndex;
+      QuietSelect = false;
+    }
+
+
     private void LoadDoorListBox (object sender, ListLoadEventArgs e)
     {
       List <string> names = MainProject.DoorNames;
@@ -190,6 +216,34 @@ namespace SM3E
         DoorListBox.Items.Add (name);
       QuietSelect = true;
       DoorListBox.SelectedIndex = e.SelectItem;
+      QuietSelect = false;
+    }
+
+
+    private void DoorSelected (object sender, EventArgs e)
+    {
+      QuietSelect = true;
+      DoorListBox.SelectedIndex = MainProject.DoorIndex;
+      QuietSelect = false;
+    }
+
+
+    private void LoadPlmListBox (object sender, ListLoadEventArgs e)
+    {
+      List <string> names = MainProject.PlmNames;
+      PlmListBox.Items.Clear ();
+      foreach (string name in names)
+        PlmListBox.Items.Add (name);
+      QuietSelect = true;
+      PlmListBox.SelectedIndex = e.SelectItem;
+      QuietSelect = false;
+    }
+
+
+    private void PlmSelected (object sender, EventArgs e)
+    {
+      QuietSelect = true;
+      PlmListBox.SelectedIndex = MainProject.PlmIndex;
       QuietSelect = false;
     }
 
@@ -223,12 +277,25 @@ namespace SM3E
     }
 
 
+    private void LoadDoorData (object sender, EventArgs e)
+    {
+      // [wip]
+    }
+
+
+    private void LoadPlmData (object sender, EventArgs e)
+    {
+      // [wip]
+    }
+
+
 //========================================================================================
 // Event handlers
 
 
     private void AreaListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
     {
+      AreaListBox.ScrollIntoView (AreaListBox.SelectedItem);
       if (!QuietSelect)
         MainProject.SelectArea (AreaListBox.SelectedIndex);
     }
@@ -236,6 +303,7 @@ namespace SM3E
 
     private void RoomListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
     {
+      RoomListBox.ScrollIntoView (RoomListBox.SelectedItem);
       if (!QuietSelect)
         MainProject.SelectRoom (RoomListBox.SelectedIndex);
     }
@@ -243,6 +311,7 @@ namespace SM3E
 
     private void RoomStateListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
     {
+      RoomStateListBox.ScrollIntoView (RoomStateListBox.SelectedItem);
       if (!QuietSelect)
         MainProject.SelectRoomState (RoomStateListBox.SelectedIndex);
     }
@@ -250,8 +319,17 @@ namespace SM3E
 
     private void DoorListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
     {
+      DoorListBox.ScrollIntoView (DoorListBox.SelectedItem);
       if (!QuietSelect)
         MainProject.SelectDoor (DoorListBox.SelectedIndex);
+    }
+
+
+    private void PlmListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
+    {
+      PlmListBox.ScrollIntoView (PlmListBox.SelectedItem);
+      if (!QuietSelect)
+        MainProject.SelectPlm (PlmListBox.SelectedIndex);
     }
 
 
@@ -361,6 +439,7 @@ namespace SM3E
       switch (e.Button)
       {
       case MouseButton.Left:
+        MainProject.NavigateThroughDoor (e.ClickTileY, e.ClickTileX);
         // Check if door and navigate through there.
         break;
 
@@ -452,6 +531,7 @@ namespace SM3E
       MainProject.BtsType = btsType;
     }
 
+
     // H/V-flip buttons
     private void TileVFlipButton_Click (object sender, RoutedEventArgs e)
     {
@@ -471,6 +551,19 @@ namespace SM3E
     private void BtsHFlipButton_Click (object sender, RoutedEventArgs e)
     {
       MainProject.HFlipBts ();
+    }
+
+//----------------------------------------------------------------------------------------
+// Map viewer events
+
+    private void MapEditor_MouseDown (object sender, TileViewerMouseEventArgs e)
+    {
+      MainProject.NavigateToMapPosition (e.ClickTileX, e.ClickTileY - 1);
+    }
+
+
+    private void MapEditor_MouseUp (object sender, TileViewerMouseEventArgs e)
+    {
     }
 
   } // class MainWindow

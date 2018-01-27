@@ -128,29 +128,61 @@
 
         <!-- LEVEL DATA EDITOR -->
         <TabItem x:Name="EditTab" Header="Edit">
+          <!-- TILE LAYERS -->
           <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="371*"/>
-              <ColumnDefinition Width="152"/>
-              <ColumnDefinition Width="542"/>
-            </Grid.ColumnDefinitions>
-            <ScrollViewer x:Name="TileSelectorViewer" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,8,8,8"/>
-            <ScrollViewer x:Name="BtsSelectorViewer" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,8,4,8"/>
-            <!-- ACTIVE TILES -->
-            <Grid x:Name="ActiveTiles" Visibility="Visible">
-              <Grid HorizontalAlignment="Right" Height="48" Margin="0,10,40,0" VerticalAlignment="Top" Width="48" Background="Black">
-                <Image x:Name="SelectedTileImage" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+            <Grid x:Name="TileLayersEditor" Visibility="Hidden">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="371*"/>
+                <ColumnDefinition Width="152"/>
+                <ColumnDefinition Width="542"/>
+              </Grid.ColumnDefinitions>
+              <ScrollViewer x:Name="TileSelectorViewer" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,8,8,8"/>
+              <ScrollViewer x:Name="BtsSelectorViewer" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,8,4,8"/>
+              <!-- ACTIVE TILES -->
+              <Grid x:Name="ActiveTiles" Visibility="Visible">
+                <Grid HorizontalAlignment="Right" Height="48" Margin="0,10,40,0" VerticalAlignment="Top" Width="48" Background="Black">
+                  <Image x:Name="SelectedTileImage" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                </Grid>
+                <Grid HorizontalAlignment="Right" Height="48" Margin="0,110,40,0" VerticalAlignment="Top" Width="48" Background="Black">
+                  <Image x:Name="SelectedBtsImage" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                </Grid>
+                <Button x:Name="TileVFlipButton" Content="&#x2195;" HorizontalAlignment="Right" Height="48" Margin="0,10,10,0" VerticalAlignment="Top" Width="20" Click="TileVFlipButton_Click"/>
+                <Button x:Name="TileHFlipButton" Content="&#x2194;" HorizontalAlignment="Right" Height="20" Margin="0,70,40,0" VerticalAlignment="Top" Width="48" Click="TileHFlipButton_Click"/>
+                <Button x:Name="BtsVFlipButton" Content="&#x2195;" HorizontalAlignment="Right" Height="48" Margin="0,110,10,0" VerticalAlignment="Top" Width="20" Click="BtsVFlipButton_Click"/>
+                <Button x:Name="BtsHFlipButton" Content="&#x2194;" HorizontalAlignment="Right" Height="20" Margin="0,170,40,0" VerticalAlignment="Top" Width="48" Click="BtsHFlipButton_Click"/>
               </Grid>
-              <Grid HorizontalAlignment="Right" Height="48" Margin="0,110,40,0" VerticalAlignment="Top" Width="48" Background="Black">
-                <Image x:Name="SelectedBtsImage" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+              <!-- CLIPBOARD -->
+              <Grid x:Name="Clipboard" Visibility="Hidden">
               </Grid>
-              <Button x:Name="TileVFlipButton" Content="&#x2195;" HorizontalAlignment="Right" Height="48" Margin="0,10,10,0" VerticalAlignment="Top" Width="20" Click="TileVFlipButton_Click"/>
-              <Button x:Name="TileHFlipButton" Content="&#x2194;" HorizontalAlignment="Right" Height="20" Margin="0,70,40,0" VerticalAlignment="Top" Width="48" Click="TileHFlipButton_Click"/>
-              <Button x:Name="BtsVFlipButton" Content="&#x2195;" HorizontalAlignment="Right" Height="48" Margin="0,110,10,0" VerticalAlignment="Top" Width="20" Click="BtsVFlipButton_Click"/>
-              <Button x:Name="BtsHFlipButton" Content="&#x2194;" HorizontalAlignment="Right" Height="20" Margin="0,170,40,0" VerticalAlignment="Top" Width="48" Click="BtsHFlipButton_Click"/>
             </Grid>
-            <!-- CLIPBOARD -->
-            <Grid x:Name="Clipboard" Visibility="Hidden">
+            
+            <!-- PLM LAYER -->
+            <Grid x:Name="PlmLayerEditor" Visibility="Visible">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" MaxWidth="200"/>
+                <ColumnDefinition Width="175"/>
+                <ColumnDefinition Width="1*" MaxWidth="200"/>
+                <ColumnDefinition Width="Auto"/>
+              </Grid.ColumnDefinitions>
+              <Label Grid.Row="0" Content="PLMs" HorizontalAlignment="Stretch" Margin="0,-3,0,-3" FontSize="16" FontWeight="Bold"/>
+              <Button Grid.Row="0" Grid.Column="0" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,33.2,0" VerticalAlignment="Top" Width="20"/>
+              <Button Grid.Row="0" Grid.Column="0" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8.2,0" VerticalAlignment="Top" Width="20"/>
+              <ListBox x:Name="PlmListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,28,8,8" SelectionChanged="PlmListBox_SelectionChanged" IsTextSearchCaseSensitive="True"/>
+              <Label x:Name="PlmName" Grid.Row="0" Grid.Column="1" Content="[selected plm]" HorizontalAlignment="Stretch" Margin="0,-3,0,-3"/>
+              <Image x:Name="PlmImage" Grid.Column="1" HorizontalAlignment="Left" Width="Auto" Height="Auto" Margin="8,28,8,8" VerticalAlignment="Top"/>
+              <ListBox x:Name="PlmSelector" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,8"/>
+            </Grid>
+            
+            <!-- ENEMY LAYER -->
+            <Grid x:Name="EnemyLayerEditor" Visibility="Hidden">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="175"/>
+                <ColumnDefinition Width="1*"/>
+              </Grid.ColumnDefinitions>
+              <Label Grid.Row="0" Content="Enemies" HorizontalAlignment="Stretch" Margin="0,-3,0,-3" FontSize="16" FontWeight="Bold"/>
+              <Button Grid.Row="0" Grid.Column="0" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,33,0" VerticalAlignment="Top" Width="20"/>
+              <Button Grid.Row="0" Grid.Column="0" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8,0" VerticalAlignment="Top" Width="20"/>
+              <ListBox x:Name="EnemyListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,28,8,8"/>
             </Grid>
           </Grid>
         </TabItem>

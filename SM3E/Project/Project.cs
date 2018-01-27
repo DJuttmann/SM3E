@@ -71,6 +71,9 @@ namespace SM3E
     // Reference to the active door.
     private Door ActiveDoor = null;
 
+    // Reference to the active PLM.
+    private Plm ActivePlm = null;
+
     // Reference to the active tile set.
     private TileSet ActiveTileSet
     {
@@ -96,6 +99,9 @@ namespace SM3E
 
     // Index of the selected room state's tile set.
     public int DoorIndex {get; private set;} = IndexNone;
+
+    // Index of the selected PLM.
+    public int PlmIndex {get; private set;} = IndexNone;
 
     // Index of the selected room state's tile set.
     public int TileSetIndex
@@ -419,6 +425,24 @@ namespace SM3E
       }
     }
 
+    // List of Plm names for active room
+    public List <string> PlmNames
+    {
+      get
+      {
+        List <string> plmNames = new List <string> ();
+        if (ActiveRoomState != null && ActiveRoomState.MyPlmSet != null)
+        {
+          for (int n = 0; n < ActiveRoomState.MyPlmSet.PlmCount; n++)
+          {
+            plmNames.Add (ActiveRoomState.MyPlmSet.Plms [n].MyPlmType?.Name ??
+                          Tools.IntToHex (ActiveRoomState.MyPlmSet.Plms [n].PlmID));
+          }
+        }
+        return plmNames;
+      }
+    }
+
     // Width of active room in tiles.
     public int RoomWidthInTiles
     {
@@ -738,20 +762,22 @@ namespace SM3E
       public TileSet ActiveTileSet;
       public Door ActiveDoor;
       public LevelData ActiveLevelData;
+      public Plm ActivePlm;
 
 
-      public ActiveItems (int activeArea, Room activeRoom, RoomState activeRoomState,
-                          TileSet activeTileSet, Door activeDoor, LevelData activeLevelData)
+      public ActiveItems (Project p)
       {
-        ActiveArea = activeArea;
-        ActiveRoom = activeRoom;
-        ActiveRoomState = activeRoomState;
-        ActiveTileSet = activeTileSet;
-        ActiveDoor = activeDoor;
-        ActiveLevelData = activeLevelData;
+        ActiveArea = p.AreaIndex;
+        ActiveRoom = p.ActiveRoom;
+        ActiveRoomState = p.ActiveRoomState;
+        ActiveTileSet = p.ActiveTileSet;
+        ActiveDoor = p.ActiveDoor;
+        ActiveLevelData = p.ActiveLevelData;
+        ActivePlm = p.ActivePlm;
       }
     }
 
+    // Flag for detecting if a selection is being handled.
     private bool HandlingSelection = false;
     
 
@@ -759,11 +785,10 @@ namespace SM3E
     {
       if (HandlingSelection)
         return;
-      HandlingSelection = true;
-      var a = new ActiveItems (AreaIndex, ActiveRoom, ActiveRoomState,
-                               ActiveTileSet, ActiveDoor, ActiveLevelData);
       if (index == AreaIndex || index < -1 || index >= AreaCount)
         return;
+      HandlingSelection = true;
+      var a = new ActiveItems (this);
       ForceSelectArea (index);
       RaiseChangeEvents (a);
       HandlingSelection = false;
@@ -774,12 +799,11 @@ namespace SM3E
     {
       if (HandlingSelection)
         return;
-      HandlingSelection = true;
-      var a = new ActiveItems (AreaIndex, ActiveRoom, ActiveRoomState,
-                               ActiveTileSet, ActiveDoor, ActiveLevelData);
       if (AreaIndex == IndexNone || index == RoomIndex || index < -1 ||
           index >= Rooms [AreaIndex].Count)
         return;
+      HandlingSelection = true;
+      var a = new ActiveItems (this);
       ForceSelectRoom (index);
       RaiseChangeEvents (a);
       HandlingSelection = false;
@@ -790,12 +814,11 @@ namespace SM3E
     {
       if (HandlingSelection)
         return;
-      HandlingSelection = true;
-      var a = new ActiveItems (AreaIndex, ActiveRoom, ActiveRoomState,
-                               ActiveTileSet, ActiveDoor, ActiveLevelData);
       if (ActiveRoom == null || index == RoomStateIndex || index < -1 ||
           index >= ActiveRoom.RoomStates.Count)
         return;
+      HandlingSelection = true;
+      var a = new ActiveItems (this);
       ForceSelectRoomState (index);
       RaiseChangeEvents (a);
       HandlingSelection = false;
@@ -806,13 +829,27 @@ namespace SM3E
     {
       if (HandlingSelection)
         return;
-      HandlingSelection = true;
-      var a = new ActiveItems (AreaIndex, ActiveRoom, ActiveRoomState,
-                               ActiveTileSet, ActiveDoor, ActiveLevelData);
       if (ActiveRoom == null || index == DoorIndex || index < -1 ||
           index >= ActiveRoom.MyDoorSet.DoorCount)
         return;
+      HandlingSelection = true;
+      var a = new ActiveItems (this);
       ForceSelectDoor (index);
+      RaiseChangeEvents (a);
+      HandlingSelection = false;
+    }
+
+
+    public void SelectPlm (int index)
+    {
+      if (HandlingSelection)
+        return;
+      if (ActiveRoomState == null || index == PlmIndex || index < -1 ||
+          index >= ActiveRoomState.MyPlmSet.PlmCount)
+        return;
+      HandlingSelection = true;
+      var a = new ActiveItems (this);
+      ForceSelectPlm (index);
       RaiseChangeEvents (a);
       HandlingSelection = false;
     }
@@ -825,6 +862,10 @@ namespace SM3E
         LoadRoomTiles (TileSetIndex);
         TileSetSelected?.Invoke (this, null);
       }
+      if (a.ActivePlm != ActivePlm)
+      {
+        PlmSelected?.Invoke (this, null);
+      }
       if (a.ActiveDoor != ActiveDoor)
       {
         DoorSelected?.Invoke (this, null);
@@ -832,7 +873,8 @@ namespace SM3E
       if (a.ActiveRoomState != ActiveRoomState)
       {
         RoomStateSelected?.Invoke (this, null);
-        LevelDataSelected.Invoke (this, null);
+        LevelDataSelected?.Invoke (this, null);
+        PlmListChanged?.Invoke (this, new ListLoadEventArgs (PlmIndex));
       }
       else if (a.ActiveLevelData != ActiveLevelData)
       {
@@ -892,29 +934,15 @@ namespace SM3E
       {
         RoomStateIndex = index;
         ActiveRoomState = ActiveRoom.RoomStates [RoomStateIndex];
-        // ForceSelectTileSet (ActiveRoom.RoomStates [RoomStateIndex].TileSet);
+        ForceSelectPlm (0);
       }
       else
       {
         RoomStateIndex = IndexNone;
         ActiveRoomState = null;
-        // ForceSelectTileSet (0);
+        ForceSelectPlm (IndexNone);
       }
     }
-
-
-    /*
-    private void ForceSelectTileSet (int index)
-    {
-      if (index < 0 || index > TileSets.Count)
-        index = 0;
-      if (index != TileSetIndex)
-      {
-        LoadRoomTiles (TileSetIndex);
-        TileSetIndex = index;
-        ActiveTileSet = TileSets [TileSetIndex];
-      }
-    }*/
 
 
     private void ForceSelectDoor (int index)
@@ -932,19 +960,70 @@ namespace SM3E
     }
 
 
+    private void ForceSelectPlm (int index)
+    {
+      if (ActiveRoomState != null && index >= 0 && index < ActiveRoomState.MyPlmSet.PlmCount)
+      {
+        PlmIndex = index;
+        ActivePlm = ActiveRoomState.MyPlmSet.Plms [PlmIndex];
+      }
+      else
+      {
+        PlmIndex = IndexNone;
+        ActivePlm = null;
+      }
+    }
+
+
+    // Check if tile in room is door tile; if it is, select the destination room.
     public void NavigateThroughDoor (int row, int col)
     {
       if (ActiveRoom?.MyDoorSet == null || ActiveLevelData == null)
         return;
       List <Door> doors = ActiveRoom.MyDoorSet.MyDoors;
-      if (GetBtsType (row, col) == 0x9) // if door
+      if (GetBtsType (row, col) != 0x9) // return if not door
+        return;
+      int index = GetBtsValue (row, col);
+      if (index >= doors.Count)
+        return;
+      Room targetRoom = doors [index].MyTargetRoom;
+      if (targetRoom == null)
+        return;
+      int targetArea = targetRoom.Area;
+
+      HandlingSelection = true;
+      var a = new ActiveItems (this);
+      ForceSelectArea (targetArea);
+      ForceSelectRoom (Rooms [targetArea].FindIndex (x => x == targetRoom));
+      RaiseChangeEvents (a);
+      HandlingSelection = false;
+    }
+
+
+    // Try to move to a room at position on the map.
+    public void NavigateToMapPosition (int x, int y)
+    {
+      if (AreaIndex == IndexNone)
+        return;
+      int startIndex = RoomIndex;
+      if (startIndex == IndexNone)
+        startIndex = Rooms [AreaIndex].Count - 1;
+      int i = startIndex;
+      do
       {
-        int index = GetBtsValue (row, col);
-        if (index < doors.Count)
+        i = (i + 1) % Rooms [AreaIndex].Count;
+        Room r = Rooms [AreaIndex] [i];
+        if (x >= r.MapX && x < r.MapX + r.RoomW &&
+            y >= r.MapY && y < r.MapY + r.RoomH)
         {
-          //doors [index].MyTargetRoom;
+          HandlingSelection = true;
+          var a = new ActiveItems (this);
+          ForceSelectRoom (i);
+          RaiseChangeEvents (a);
+          HandlingSelection = false;
+          break;
         }
-      }
+      } while (i != startIndex);
     }
 
   } // class Project
