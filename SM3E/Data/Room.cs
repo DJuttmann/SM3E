@@ -411,7 +411,7 @@ namespace SM3E
     public const int HeaderSize = 11;
 
     public byte RoomIndex;
-    public byte RoomArea;
+    public byte Area;
     public byte MapX;
     public byte MapY;
     public byte RoomW;
@@ -451,7 +451,7 @@ namespace SM3E
     public Room (): base ()
     {
       RoomIndex         = 0;
-      RoomArea          = 0;
+      Area          = 0;
       MapX              = 0;
       MapY              = 0;
       RoomW             = 0;
@@ -479,7 +479,7 @@ namespace SM3E
         return false;
 
       RoomIndex         = b [0];
-      RoomArea          = b [1];
+      Area          = b [1];
       MapX              = b [2];
       MapY              = b [3];
       RoomW             = b [4];
@@ -527,7 +527,7 @@ namespace SM3E
     {
       byte [] b = new byte [HeaderSize];
       b [0] = RoomIndex;
-      b [1] = RoomArea;
+      b [1] = Area;
       b [2] = MapX;
       b [3] = MapY;
       b [4] = RoomW;
@@ -574,7 +574,7 @@ namespace SM3E
         "ROOM at $" + Tools.IntToHex (startAddressPC) +
         " of size " + Size + " byte");
       Logging.WriteLine ("  RoomIndex        : " + Tools.IntToHex (RoomIndex, 2));
-      Logging.WriteLine ("  RoomArea         : " + Tools.IntToHex (RoomArea, 2));
+      Logging.WriteLine ("  RoomArea         : " + Tools.IntToHex (Area, 2));
       Logging.WriteLine ("  MapX             : " + Tools.IntToHex (MapX, 2));
       Logging.WriteLine ("  MapY             : " + Tools.IntToHex (MapY, 2));
       Logging.WriteLine ("  RoomW            : " + Tools.IntToHex (RoomW, 2));

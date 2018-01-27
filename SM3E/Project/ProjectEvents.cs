@@ -25,6 +25,7 @@ namespace SM3E
     public event EventHandler AreaSelected;
     public event EventHandler RoomSelected;
     public event EventHandler RoomStateSelected;
+    public event EventHandler DoorSelected;
     public event EventHandler LevelDataSelected;
     public event EventHandler TileSetSelected;
     public event EventHandler TileSelected;

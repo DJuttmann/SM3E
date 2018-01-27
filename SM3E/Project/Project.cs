@@ -34,7 +34,7 @@ namespace SM3E
 
 
     // Fields
-    private List <Room         > Rooms;
+    private List <Room         > [] Rooms = new List <Room> [AreaCount];
     private List <DoorSet      > DoorSets;
     private List <Door         > Doors;
     private List <RoomState    > RoomStates;
@@ -63,126 +63,36 @@ namespace SM3E
 // Active items (private reference to object)
 
     // Reference to the active room.
-    private Room ActiveRoom
-    {
-      get {return roomIndex != IndexNone ? Rooms [roomIndex] : null;}
-    }
+    private Room ActiveRoom = null;
     
     // Reference to the active room state.
-    private RoomState ActiveRoomState
-    {
-      get {return roomStateIndex != IndexNone ? ActiveRoom.RoomStates [roomStateIndex] : null;}
-    }
+    private RoomState ActiveRoomState = null;
 
     // Reference to the active room state's level data.
-    private LevelData ActiveLevelData
-    {
-      get {return ActiveRoomState?.MyLevelData;}
-    }
+    private LevelData ActiveLevelData = null;
 
     // Reference to the active tile set.
-    private TileSet ActiveTileSet
-    {
-      get {return tileSetIndex != IndexNone ? TileSets [tileSetIndex] : null;}
-    }
+    private TileSet ActiveTileSet = null;
+
+    // Reference to the active door.
+    private Door ActiveDoor = null;
 
 
     // Index of the selected area.
-    private int areaIndex = IndexNone;
-    public int AreaIndex
-    {
-      get {return areaIndex;}
-      set
-      {
-        if (value >= -1 && value < AreaCount && value != areaIndex)
-        {
-          areaIndex = value;
-          roomIndex = IndexNone;
-          roomStateIndex = IndexNone;
-          AreaSelected?.Invoke (this, null);
-          RoomListChanged?.Invoke (this, new ListLoadEventArgs (0));
-        }
-      }
-    }
+    public int AreaIndex {get; private set;} = IndexNone;
 
     // Index of the selected room.
-    private int roomIndex = IndexNone;
-    public int RoomIndex
-    {
-      get
-      {
-        int index = -1;
-        for (int n = 0; n <= roomIndex; n++)
-          if (Rooms [n].RoomArea == AreaIndex)
-            index++;
-        return index;
-      }
-      set
-      {
-        if (areaIndex == IndexNone)
-        {
-          roomIndex = IndexNone;
-          roomStateIndex = IndexNone;
-        }
-        else if (value >= -1 && value < Rooms.Count && value != RoomIndex)
-        {
-          int index = -1;
-          for (int n = 0; n <= value; n++)
-          {
-            index = Rooms.FindIndex (index + 1, x => x.RoomArea == AreaIndex);
-            if (index == -1)
-              break;
-          }
-          roomIndex = index;
-          roomStateIndex = IndexNone;
-          RoomStateIndex = 0;
-          RoomSelected?.Invoke (this, null);
-          RoomStateListChanged?.Invoke (this, new ListLoadEventArgs (0));
-          DoorListChanged?.Invoke (this, new ListLoadEventArgs (0));
-        }
-      }
-    }
+    public int RoomIndex {get; private set;} = IndexNone;
 
     // Index of the selected room state.
-    private int roomStateIndex = IndexNone;
-    public int RoomStateIndex
-    {
-      get {return roomStateIndex;}
-      set
-      {
-        LevelData oldLevelData = ActiveLevelData;
-        int oldTileSetIndex = TileSetIndex;
-        if (roomIndex == IndexNone)
-        {
-          roomStateIndex = IndexNone;
-        }
-        else if (value >= -1 && value < ActiveRoom.RoomStates.Count
-                             && value != roomStateIndex)
-        {
-          roomStateIndex = value;
-          TileSetIndex = ActiveRoomState != null ? ActiveRoomState.TileSet : IndexNone;
-          RoomStateSelected?.Invoke (this, null);
-          if (oldLevelData != ActiveLevelData || oldTileSetIndex != TileSetIndex)
-            LevelDataSelected?.Invoke (this, null);
-        }
-      }
-    }
+    public int RoomStateIndex {get; private set;} = IndexNone;
 
     // Index of the selected room state's tile set.
-    private int tileSetIndex = IndexNone;
-    public int TileSetIndex
-    {
-      get {return tileSetIndex;}
-      private set
-      {
-        if (value >= 0 && value < TileSetCount && value != tileSetIndex)
-        {
-          tileSetIndex = value;
-          LoadRoomTiles (tileSetIndex);
-          TileSetSelected?.Invoke (this, null);
-        }
-      }
-    }
+    public int TileSetIndex {get; private set;} = 0;
+
+    // Index of the selected room state's tile set.
+    public int DoorIndex {get; private set;} = IndexNone;
+
 
     // Index/H-flip/V-Flip of the selected room tile.
     private int tileIndex = IndexNone;
@@ -258,12 +168,12 @@ namespace SM3E
     {
       get
       {
-        return ActiveRoom?.RoomArea ?? -1;
+        return ActiveRoom?.Area ?? -1;
       }
       set
       {
         if (ActiveRoom != null)
-          ActiveRoom.RoomArea = (byte) value;
+          ActiveRoom.Area = (byte) value;
       }
     }
 
@@ -462,9 +372,8 @@ namespace SM3E
       {
         var names = new List <string> ();
         if (AreaIndex != IndexNone)
-          foreach (Room r in Rooms)
-            if (r.RoomArea == AreaIndex)
-              names.Add (r.Name);
+          foreach (Room r in Rooms [AreaIndex])
+            names.Add (r.Name);
         return names;
       }
     }
@@ -475,8 +384,8 @@ namespace SM3E
       get
       {
         var names = new List <string> ();
-        if (RoomIndex != IndexNone)
-          foreach (RoomStateHeader r in Rooms [RoomIndex].RoomStateHeaders)
+        if (AreaIndex != IndexNone && RoomIndex != IndexNone)
+          foreach (RoomStateHeader r in Rooms [AreaIndex] [RoomIndex].RoomStateHeaders)
             names.Add (r.HeaderType.ToString ());
         return names;
       }
@@ -503,45 +412,25 @@ namespace SM3E
     // Width of active room in tiles.
     public int RoomWidthInTiles
     {
-      get
-      {
-        if (roomIndex != IndexNone)
-          return Rooms [roomIndex].RoomW * 16;
-        return 0;
-      }
+      get {return ActiveRoom?.RoomW * 16 ?? 0; }
     }
 
     // Height of active room in tiles.
     public int RoomHeightInTiles
     {
-      get
-      {
-        if (roomIndex != IndexNone)
-          return Rooms [roomIndex].RoomH * 16;
-        return 0;
-      }
+      get {return ActiveRoom?.RoomH * 16 ?? 0; }
     }
 
     // Width of active room in Screens.
     public int RoomWidthInScreens
     {
-      get
-      {
-        if (roomIndex != IndexNone)
-          return Rooms [roomIndex].RoomW;
-        return 0;
-      }
+      get {return ActiveRoom?.RoomW ?? 0; }
     }
 
     // Height of active room in Screens.
     public int RoomHeightInScreens
     {
-      get
-      {
-        if (roomIndex != IndexNone)
-          return Rooms [roomIndex].RoomH;
-        return 0;
-      }
+      get {return ActiveRoom?.RoomH ?? 0; }
     }
 
 
@@ -552,7 +441,8 @@ namespace SM3E
     // Constructor.
     public Project ()
     {
-      Rooms          = new List <Room         > ();
+      for (int i = 0; i < AreaCount; i++)
+        Rooms [i]    = new List <Room         > ();
       DoorSets       = new List <DoorSet      > ();
       Doors          = new List <Door         > ();
       RoomStates     = new List <RoomState    > ();
@@ -825,6 +715,215 @@ namespace SM3E
     }
 
 
+//========================================================================================
+// Selecting things
+
+    
+    private enum ListUpdate
+    {
+      Area = 0,
+      Room = 1,
+      RoomState = 2,
+      TileSet = 3,
+      Door = 4
+    }
+
+
+    // A class tracking which selected items have changed.
+    private class ActiveItems
+    {
+      public int ActiveArea;
+      public Room ActiveRoom;
+      public RoomState ActiveRoomState;
+      public TileSet ActiveTileSet;
+      public Door ActiveDoor;
+
+
+      public ActiveItems (int activeArea, Room activeRoom, RoomState activeRoomState,
+                          TileSet activeTileSet, Door activeDoor)
+      {
+        ActiveArea = activeArea;
+        ActiveRoom = activeRoom;
+        ActiveRoomState = activeRoomState;
+        ActiveTileSet = activeTileSet;
+        ActiveDoor = activeDoor;
+      }
+    }
+    
+
+    public void SelectArea (int index)
+    {
+      var a = new ActiveItems (AreaIndex, ActiveRoom, ActiveRoomState,
+                               ActiveTileSet, ActiveDoor);
+      if (index == AreaIndex || index < -1 || index >= AreaCount)
+        return;
+      var update = new List <ListUpdate> ();
+      ForceSelectArea (index, update);
+      RaiseChangeEvents (a);
+    }
+    
+
+    public void SelectRoom (int index)
+    {
+      var a = new ActiveItems (AreaIndex, ActiveRoom, ActiveRoomState,
+                               ActiveTileSet, ActiveDoor);
+      if (AreaIndex == IndexNone || index == RoomIndex || index < -1 ||
+          index >= Rooms [AreaIndex].Count)
+        return;
+      var update = new List <ListUpdate> ();
+      ForceSelectRoom (index, update);
+      RaiseChangeEvents (a);
+    }
+    
+
+    public void SelectRoomState (int index)
+    {
+      var a = new ActiveItems (AreaIndex, ActiveRoom, ActiveRoomState,
+                               ActiveTileSet, ActiveDoor);
+      if (ActiveRoom == null || index == RoomStateIndex || index < -1 ||
+          index >= ActiveRoom.RoomStates.Count)
+        return;
+      var update = new List <ListUpdate> ();
+      ForceSelectRoomState (index, update);
+      RaiseChangeEvents (a);
+    }
+    
+
+    public void SelectDoor (int index)
+    {
+      var a = new ActiveItems (AreaIndex, ActiveRoom, ActiveRoomState,
+                               ActiveTileSet, ActiveDoor);
+      if (ActiveRoom == null || index == DoorIndex || index < -1 ||
+          index >= ActiveRoom.MyDoorSet.DoorCount)
+        return;
+      var update = new List <ListUpdate> ();
+      ForceSelectDoor (index, update);
+      RaiseChangeEvents (a);
+    }
+
+
+    private void RaiseChangeEvents (ActiveItems a)
+    {
+      if (a.ActiveTileSet != ActiveTileSet)
+      {
+        TileSetSelected?.Invoke (this, null);
+      }
+      if (a.ActiveDoor != ActiveDoor)
+      {
+        DoorSelected?.Invoke (this, null);
+      }
+      if (a.ActiveRoomState != ActiveRoomState)
+      {
+        RoomStateSelected?.Invoke (this, null);
+      }
+      if (a.ActiveRoom != ActiveRoom)
+      {
+        RoomSelected?.Invoke (this, null);
+        RoomStateListChanged?.Invoke (this, new ListLoadEventArgs (RoomStateIndex));
+        DoorListChanged?.Invoke (this, new ListLoadEventArgs (DoorIndex));
+      }
+      if (a.ActiveArea != AreaIndex)
+      {
+        AreaSelected?.Invoke (this, null);
+        RoomListChanged?.Invoke (this, new ListLoadEventArgs (RoomIndex));
+      }
+    }
+    
+
+    private void ForceSelectArea (int index, List <ListUpdate> update)
+    {
+      if (index >= 0 && index < AreaCount)
+      {
+        AreaIndex = index;
+        ForceSelectRoom (0, update);
+      }
+      else
+      {
+        AreaIndex = IndexNone;
+        ForceSelectRoom (IndexNone, update);
+      }
+    }
+
+
+    private void ForceSelectRoom (int index, List <ListUpdate> update)
+    {
+      if (AreaIndex != IndexNone && index >= 0 && index < Rooms [AreaIndex].Count)
+      {
+        RoomIndex = index;
+        ActiveRoom = Rooms [AreaIndex] [RoomIndex];
+        ForceSelectRoomState (0, update);
+        ForceSelectDoor (0, update);
+      }
+      else
+      {
+        RoomIndex = IndexNone;
+        ActiveRoom = null;
+        ForceSelectRoomState (IndexNone, update);
+        ForceSelectDoor (IndexNone, update);
+      }
+    }
+
+
+    private void ForceSelectRoomState (int index, List <ListUpdate> update)
+    {
+      if (ActiveRoom != null && index >= 0 && index < ActiveRoom.RoomStates.Count)
+      {
+        RoomStateIndex = index;
+        ActiveRoomState = ActiveRoom.RoomStates [RoomStateIndex];
+        ForceSelectTileSet (ActiveRoom.RoomStates [RoomStateIndex].TileSet, update);
+      }
+      else
+      {
+        RoomStateIndex = IndexNone;
+        ActiveRoomState = null;
+        ForceSelectTileSet (0, update);
+      }
+    }
+
+
+    private void ForceSelectTileSet (int index, List <ListUpdate> update)
+    {
+      
+      if (index < 0 || index > TileSets.Count)
+        index = 0;
+      if (index != TileSetIndex)
+      {
+        LoadRoomTiles (TileSetIndex);
+        TileSetIndex = index;
+        ActiveTileSet = TileSets [TileSetIndex];
+      }
+    }
+
+
+    private void ForceSelectDoor (int index, List <ListUpdate> update)
+    {
+      if (ActiveRoom != null && index >= 0 && index < ActiveRoom.MyDoorSet.DoorCount)
+      {
+        DoorIndex = index;
+        ActiveDoor = ActiveRoom.MyDoorSet.MyDoors [DoorIndex];
+      }
+      else
+      {
+        DoorIndex = IndexNone;
+        ActiveDoor = null;
+      }
+    }
+
+
+    public void NavigateThroughDoor (int row, int col)
+    {
+      if (ActiveRoom?.MyDoorSet == null || ActiveLevelData == null)
+        return;
+      List <Door> doors = ActiveRoom.MyDoorSet.MyDoors;
+      if (GetBtsType (row, col) == 0x9) // if door
+      {
+        int index = GetBtsValue (row, col);
+        if (index < doors.Count)
+        {
+          //doors [index].MyTargetRoom;
+        }
+      }
+    }
 
   } // class Project
 

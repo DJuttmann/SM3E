@@ -62,8 +62,8 @@ namespace SM3E
 
       // Connect the data objects.
       Connect ();
-      AreaIndex = 0;
-      TileSetIndex = 0;
+      // SelectTileSet (0);
+      SelectArea (0);
 
       // Raise events.
       AreaListChanged (this, new ListLoadEventArgs (0));
@@ -144,12 +144,16 @@ namespace SM3E
     // Connect all loaded data objects.
     private bool Connect ()
     {
-      for (int n = 0; n < Rooms.Count; n++)
-        Rooms [n].Connect (DoorSets);
+      List <Room> AllRooms = new List <Room> ();
+      foreach (var areaRooms in Rooms)
+        AllRooms.AddRange (areaRooms);
+
+      for (int n = 0; n < AllRooms.Count; n++)
+        AllRooms [n].Connect (DoorSets);
       for (int n = 0; n < DoorSets.Count; n++)
         DoorSets [n].Connect (Doors);
       for (int n = 0; n < Doors.Count; n++)
-        Doors [n].Connect (Rooms, ScrollAsms);
+        Doors [n].Connect (AllRooms, ScrollAsms);
       for (int n = 0; n < RoomStates.Count; n++)
         RoomStates [n].Connect (PlmSets, ScrollSets, Backgrounds, Fxs, 
                                 LevelDatas, EnemySets, EnemyGfxs);
@@ -158,7 +162,7 @@ namespace SM3E
       for (int n = 0; n < Fxs.Count; n++)
         Fxs [n].Connect (Doors);
       for (int n = 0; n < SaveRooms.Count; n++)
-        SaveRooms [n].Connect (Rooms, Doors);
+        SaveRooms [n].Connect (AllRooms, Doors);
       for (int n = 0; n < EnemySets.Count; n++)
         EnemySets [n].Connect (EnemyTypes);
       for (int n = 0; n < EnemyGfxs.Count; n++)
@@ -175,18 +179,19 @@ namespace SM3E
     private void ReadRooms (Rom rom, List <int> Addresses, List <string> Names,
                             List <int> DoorCounts)
     {
-
-      Rooms.Clear ();
+      foreach (var areaRooms in Rooms)
+        areaRooms.Clear ();
       for (int n = 0; n < Addresses.Count; n++)
       {
-        Rooms.Add (new Room ());
-        Rooms [n].ReadFromROM (rom, Addresses [n]);
-        Rooms [n].Name = Names [n];
+        Room newRoom = new Room ();
+        newRoom.ReadFromROM (rom, Addresses [n]);
+        newRoom.Name = Names [n];
+        Rooms [newRoom.Area].Add (newRoom);
         DoorSets.Add (new DoorSet ());
         DoorSets [n].DoorCount = DoorCounts [n];
-        DoorSets [n].ReadFromROM (rom, Rooms [n].DoorsPtrPC);
-        for (int i = 0; i < Rooms [n].RoomStates.Count; i++)
-          RoomStates.Add (Rooms [n].RoomStates [i]);
+        DoorSets [n].ReadFromROM (rom, newRoom.DoorsPtrPC);
+        for (int i = 0; i < newRoom.RoomStates.Count; i++)
+          RoomStates.Add (newRoom.RoomStates [i]);
       }
     }
 
@@ -216,26 +221,27 @@ namespace SM3E
     {
       ScrollSets.Clear ();
       List <int> addressesPC = new List <int> ();
-      for (int n = 0; n < Rooms.Count; n++)
-      {
-        int roomArea = Rooms [n].RoomW * Rooms [n].RoomH;
-        int stateCount = Rooms [n].RoomStates.Count;
-        addressesPC.Clear ();
-        for (int i = 0; i < stateCount; i++)
+      for (int k = 0; k < AreaCount; k++)
+        for (int n = 0; n < Rooms [k].Count; n++)
         {
-          int address = Tools.LRtoPC (Rooms [n].RoomStates [i].RoomScrollsPtr);
-          if (address != ScrollSet.AllBlue && address != ScrollSet.AllGreen)
-          addressesPC.Add (address);
+          int roomArea = Rooms [k] [n].RoomW * Rooms [k] [n].RoomH;
+          int stateCount = Rooms [k] [n].RoomStates.Count;
+          addressesPC.Clear ();
+          for (int i = 0; i < stateCount; i++)
+          {
+            int address = Tools.LRtoPC (Rooms [k] [n].RoomStates [i].RoomScrollsPtr);
+            if (address != ScrollSet.AllBlue && address != ScrollSet.AllGreen)
+            addressesPC.Add (address);
+          }
+          Tools.RemoveDuplicates (addressesPC);
+          for (int i = 0; i < addressesPC.Count; i++)
+          {
+            var s = new ScrollSet ();
+            s.SetSize (roomArea);
+            s.ReadFromROM (rom, addressesPC [i]);
+            ScrollSets.Add (s);
+          }
         }
-        Tools.RemoveDuplicates (addressesPC);
-        for (int i = 0; i < addressesPC.Count; i++)
-        {
-          var s = new ScrollSet ();
-          s.SetSize (roomArea);
-          s.ReadFromROM (rom, addressesPC [i]);
-          ScrollSets.Add (s);
-        }
-      }
     }
 
 

@@ -34,6 +34,8 @@ namespace SM3E
 
     LevelDataRenderer MainRenderer;
 
+    bool QuietSelect = false;
+
 //========================================================================================
 // Navigate
 
@@ -150,7 +152,9 @@ namespace SM3E
       AreaListBox.Items.Clear ();
       foreach (string name in names)
         AreaListBox.Items.Add (name);
+      QuietSelect = true;
       AreaListBox.SelectedItem = e.SelectItem;
+      QuietSelect = false;
     }
 
 
@@ -160,7 +164,9 @@ namespace SM3E
       RoomListBox.Items.Clear ();
       foreach (string name in names)
         RoomListBox.Items.Add (name);
+      QuietSelect = true;
       RoomListBox.SelectedIndex = e.SelectItem;
+      QuietSelect = false;
     }
 
 
@@ -170,7 +176,9 @@ namespace SM3E
       RoomStateListBox.Items.Clear ();
       foreach (string name in names)
         RoomStateListBox.Items.Add (name);
+      QuietSelect = true;
       RoomStateListBox.SelectedIndex = e.SelectItem;
+      QuietSelect = false;
     }
 
 
@@ -180,7 +188,9 @@ namespace SM3E
       DoorListBox.Items.Clear ();
       foreach (string name in names)
         DoorListBox.Items.Add (name);
+      QuietSelect = true;
       DoorListBox.SelectedIndex = e.SelectItem;
+      QuietSelect = false;
     }
 
 
@@ -219,19 +229,29 @@ namespace SM3E
 
     private void AreaListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
     {
-      MainProject.AreaIndex = AreaListBox.SelectedIndex;
+      if (!QuietSelect)
+        MainProject.SelectArea (AreaListBox.SelectedIndex);
     }
 
 
     private void RoomListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
     {
-      MainProject.RoomIndex = RoomListBox.SelectedIndex;
+      if (!QuietSelect)
+        MainProject.SelectRoom (RoomListBox.SelectedIndex);
     }
 
 
     private void RoomStateListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
     {
-      MainProject.RoomStateIndex = RoomStateListBox.SelectedIndex;
+      if (!QuietSelect)
+        MainProject.SelectRoomState (RoomStateListBox.SelectedIndex);
+    }
+
+
+    private void DoorListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
+    {
+      if (!QuietSelect)
+        MainProject.SelectDoor (DoorListBox.SelectedIndex);
     }
 
 
