@@ -23,12 +23,11 @@ namespace SM3E
     public void Load (string projectFile)
     {
       string romFile;
-      string [] areaNames; 
       List <int> roomAddresses;
       List <int> roomDoorCounts;
       List <string> roomNames;
 
-      ReadProjectFile (projectFile, out romFile, out areaNames,
+      ReadProjectFile (projectFile, out romFile,
                        out roomAddresses, out roomDoorCounts, out roomNames);
 
       // Read uncompressed data from ROM.
@@ -63,12 +62,14 @@ namespace SM3E
       // Connect the data objects.
       Connect ();
       LoadRoomTiles (0); //
-      SelectArea (0);
 
       // Raise events.
-      AreaListChanged (this, new ListLoadEventArgs (0));
-      //RoomListChanged (this, null);
-      //RoomStateListChanged (this, null);
+      AreaListChanged?.Invoke (this, new ListLoadEventArgs (0));
+      SelectArea (0);
+      PlmTypeListChanged?.Invoke (this, new ListLoadEventArgs (0));
+      SelectPlmType (0);
+      EnemyTypeListChanged?.Invoke (this, new ListLoadEventArgs (0));
+      SelectEnemyType (0);
     }
 
 
@@ -79,13 +80,11 @@ namespace SM3E
     // - Information about available spaces in different banks.
     private bool ReadProjectFile (string filename,
                                   out string romFile,
-                                  out string [] areaNames, 
                                   out List <int> roomAddresses,
                                   out List <int> roomDoorCounts,
                                   out List <string> roomNames)
     {
       romFile = "Test";
-      areaNames = new string [AreaMap.Count];
       roomAddresses = new List <int> ();
       roomDoorCounts = new List <int> ();
       roomNames = new List <string> ();
@@ -102,11 +101,11 @@ namespace SM3E
         if (segments [0] == "rom" && segments.Count > 1)
           romFile = segments [1];
         if (segments [0] == "areas") {
-          for (int i = 0; i < AreaMap.Count; i++) {
-            if (segments.Count > n + 1)
-              areaNames [i] = segments [i + 1];
+          for (int i = 0; i < AreaCount; i++) {
+            if (i + 1 < segments.Count)
+              Areas [i] = segments [i + 1];
             else
-              areaNames [i] = Tools.IntToHex (n);
+              Areas [i] = Tools.IntToHex (n);
           }
         }
 

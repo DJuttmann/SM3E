@@ -54,6 +54,10 @@ namespace SM3E
       MainProject.RoomStateListChanged += LoadRoomStateListBox;
       MainProject.DoorListChanged += LoadDoorListBox;
       MainProject.PlmListChanged += LoadPlmListBox;
+      MainProject.PlmTypeListChanged += LoadPlmTypeListBox;
+      MainProject.EnemyListChanged += LoadEnemyListBox;
+      MainProject.EnemyGfxListChanged += LoadEnemyGfxListBox;
+      MainProject.EnemyTypeListChanged += LoadEnemyTypeListBox;
 
       MainProject.AreaSelected += UpdateMapEditor;
       MainProject.AreaSelected += AreaSelected;
@@ -65,6 +69,15 @@ namespace SM3E
       MainProject.DoorSelected += DoorSelected;
       MainProject.PlmSelected += LoadPlmData;
       MainProject.PlmSelected += PlmSelected;
+      MainProject.PlmTypeSelected += LoadPlmTypeData;
+      MainProject.PlmTypeSelected += PlmTypeSelected;
+      MainProject.EnemySelected += LoadEnemyData;
+      MainProject.EnemySelected += EnemySelected;
+      MainProject.EnemyGfxSelected += LoadEnemyGfxData;
+      MainProject.EnemyGfxSelected += EnemyGfxSelected;
+      MainProject.EnemyTypeSelected += LoadEnemyTypeData;
+      MainProject.EnemyTypeSelected += EnemyTypeSelected;
+
       MainProject.LevelDataSelected += NewLevelData;
       MainProject.TileSetSelected += UpdateTileSelector;
 

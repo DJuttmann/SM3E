@@ -51,11 +51,13 @@ namespace SM3E
     private void SetupMapEditor ()
     {
       MapEditor = new UITileViewer (8.0, 64, 32, 64, 32, null);
+      MapEditor.MarkerVisible = true;
       MapEditor.MouseDown += MapEditor_MouseDown;
       MapEditor.MouseUp += MapEditor_MouseUp;
       MapViewer.Children.Add (MapEditor.Element);
 
-      RoomSizeEditor = new UITileViewer (16.0, 64, 32, 64, 32, null);
+      RoomSizeEditor = new UITileViewer (16.0, 64, 32, 64, 32, RoomSizeViewer);
+      RoomSizeEditor.MarkerVisible = true;
       RoomSizeEditor.Screens [0, 0].SetValue (RenderOptions.BitmapScalingModeProperty,
                                               BitmapScalingMode.NearestNeighbor);
       RoomSizeViewer.Content = RoomSizeEditor.Element;
@@ -157,6 +159,10 @@ namespace SM3E
       QuietSelect = true;
       AreaListBox.SelectedIndex = e.SelectItem;
       QuietSelect = false;
+
+      // Also load area select box for room.
+      for (int n = 0; n < 8; n++)
+        RoomAreaSelect.Items [n] = names [n];
     }
 
 
@@ -248,6 +254,86 @@ namespace SM3E
     }
 
 
+    private void LoadPlmTypeListBox (object sender, ListLoadEventArgs e)
+    {
+      List <string> names = MainProject.PlmTypeNames;
+      PlmTypeListBox.Items.Clear ();
+      foreach (string name in names)
+        PlmTypeListBox.Items.Add (name);
+      QuietSelect = true;
+      PlmTypeListBox.SelectedIndex = e.SelectItem;
+      QuietSelect = false;
+    }
+
+
+    private void PlmTypeSelected (object sender, EventArgs e)
+    {
+      QuietSelect = true;
+      PlmTypeListBox.SelectedIndex = MainProject.PlmTypeIndex;
+      QuietSelect = false;
+    }
+
+
+    private void LoadEnemyListBox (object sender, ListLoadEventArgs e)
+    {
+      List <string> names = MainProject.EnemyNames;
+      EnemyListBox.Items.Clear ();
+      foreach (string name in names)
+        EnemyListBox.Items.Add (name);
+      QuietSelect = true;
+      EnemyListBox.SelectedIndex = e.SelectItem;
+      QuietSelect = false;
+    }
+
+
+    private void EnemySelected (object sender, EventArgs e)
+    {
+      QuietSelect = true;
+      EnemyListBox.SelectedIndex = MainProject.EnemyIndex;
+      QuietSelect = false;
+    }
+
+
+    private void LoadEnemyGfxListBox (object sender, ListLoadEventArgs e)
+    {
+      List <string> names = MainProject.EnemyGfxNames;
+      EnemyGfxListBox.Items.Clear ();
+      foreach (string name in names)
+        EnemyGfxListBox.Items.Add (name);
+      QuietSelect = true;
+      EnemyGfxListBox.SelectedIndex = e.SelectItem;
+      QuietSelect = false;
+    }
+
+
+    private void EnemyGfxSelected (object sender, EventArgs e)
+    {
+      QuietSelect = true;
+      EnemyGfxListBox.SelectedIndex = MainProject.EnemyGfxIndex;
+      QuietSelect = false;
+    }
+
+
+    private void LoadEnemyTypeListBox (object sender, ListLoadEventArgs e)
+    {
+      List <string> names = MainProject.EnemyTypeNames;
+      EnemyTypeListBox.Items.Clear ();
+      foreach (string name in names)
+        EnemyTypeListBox.Items.Add (name);
+      QuietSelect = true;
+      EnemyTypeListBox.SelectedIndex = e.SelectItem;
+      QuietSelect = false;
+    }
+
+
+    private void EnemyTypeSelected (object sender, EventArgs e)
+    {
+      QuietSelect = true;
+      EnemyTypeListBox.SelectedIndex = MainProject.EnemyTypeIndex;
+      QuietSelect = false;
+    }
+
+
     private void LoadRoomData (object sender, EventArgs e)
     {
       RoomAreaSelect.SelectedIndex = MainProject.RoomArea;
@@ -255,6 +341,11 @@ namespace SM3E
       UpScrollerInput.Text = Tools.IntToHex (MainProject.UpScroller, 2);
       DownScrollerInput.Text = Tools.IntToHex (MainProject.DownScroller, 2);
       SpecialGfxInput.Text = Tools.IntToHex (MainProject.SpecialGfx, 2);
+      MapEditor.SetMarker (MainProject.RoomX, MainProject.RoomY + 1,
+        MainProject.RoomWidthInScreens, MainProject.RoomHeightInScreens);
+      RoomSizeEditor.SetMarker (MainProject.RoomX, MainProject.RoomY + 1,
+        MainProject.RoomWidthInScreens, MainProject.RoomHeightInScreens);
+      RoomSizeEditor.ScrollToMarker ();
     }
 
 
@@ -289,8 +380,73 @@ namespace SM3E
     }
 
 
+    private void LoadPlmTypeData (object sender, EventArgs e)
+    {
+      PlmName.Content = MainProject.PlmTypeName;
+      PlmImage.Source = MainProject.PlmTypeImage?.ToBitmap ();
+    }
+
+
+    private void LoadEnemyData (object sender, EventArgs e)
+    {
+      // [wip]
+    }
+
+
+    private void LoadEnemyGfxData (object sender, EventArgs e)
+    {
+      // [wip] maybe do nothing?
+    }
+
+
+    private void LoadEnemyTypeData (object sender, EventArgs e)
+    {
+      EnemyName.Content = MainProject.EnemyTypeName;
+      EnemyImage.Source = MainProject.EnemyTypeImage?.ToBitmap ();
+    }
+
 //========================================================================================
 // Event handlers
+
+
+    private void LayerSelect_SelectionChanged (object sender, SelectionChangedEventArgs e)
+    {
+      if (LayerSelect.SelectedItem == null)
+      {
+        var removedItems = e.RemovedItems;
+        if (removedItems.Count > 0)
+          LayerSelect.SelectedItem = removedItems [0];
+        else
+          LayerSelect.SelectedIndex = 0;
+        return;
+      }
+
+      TileLayersEditor.Visibility = Visibility.Hidden;
+      PlmLayerEditor.Visibility = Visibility.Hidden;
+      EnemyLayerEditor.Visibility = Visibility.Hidden;
+      ScrollLayerEditor.Visibility = Visibility.Hidden;
+      GfxLayerEditor.Visibility = Visibility.Hidden;
+      switch (LayerSelect.SelectedIndex)
+      {
+      case 0:
+      case 1:
+      case 2:
+        TileLayersEditor.Visibility = Visibility.Visible;
+        break;
+      case 3:
+        PlmLayerEditor.Visibility = Visibility.Visible;
+        break;
+      case 4:
+        EnemyLayerEditor.Visibility = Visibility.Visible;
+        break;
+      case 5:
+        ScrollLayerEditor.Visibility = Visibility.Visible;
+        break;
+      case 6:
+        GfxLayerEditor.Visibility = Visibility.Visible;
+        break;
+      }
+    }
 
 
     private void AreaListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
@@ -330,6 +486,38 @@ namespace SM3E
       PlmListBox.ScrollIntoView (PlmListBox.SelectedItem);
       if (!QuietSelect)
         MainProject.SelectPlm (PlmListBox.SelectedIndex);
+    }
+
+
+    private void PlmTypeListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
+    {
+      PlmTypeListBox.ScrollIntoView (PlmTypeListBox.SelectedItem);
+      if (!QuietSelect)
+        MainProject.SelectPlmType (PlmTypeListBox.SelectedIndex);
+    }
+
+
+    private void EnemyListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
+    {
+      EnemyListBox.ScrollIntoView (EnemyListBox.SelectedItem);
+      if (!QuietSelect)
+        MainProject.SelectEnemy (EnemyListBox.SelectedIndex);
+    }
+
+
+    private void EnemyGfxListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
+    {
+      EnemyGfxListBox.ScrollIntoView (EnemyGfxListBox.SelectedItem);
+      if (!QuietSelect)
+        MainProject.SelectEnemyGfx (EnemyGfxListBox.SelectedIndex);
+    }
+
+
+    private void EnemyTypeListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
+    {
+      EnemyTypeListBox.ScrollIntoView (EnemyTypeListBox.SelectedItem);
+      if (!QuietSelect)
+        MainProject.SelectEnemyType (EnemyTypeListBox.SelectedIndex);
     }
 
 
@@ -422,6 +610,8 @@ namespace SM3E
         break;
 
       case 1: // Edit
+        if (LayerSelect.SelectedIndex == 3) // Plm layer
+          MainProject.SelectPlmAt (e.ClickTileY, e.ClickTileX);
         // LevelViewerEdit_MouseDown (e)
         break;
 
@@ -438,13 +628,12 @@ namespace SM3E
     {
       switch (e.Button)
       {
-      case MouseButton.Left:
+      case MouseButton.Left: // Check if door and navigate through there.
         MainProject.NavigateThroughDoor (e.ClickTileY, e.ClickTileX);
-        // Check if door and navigate through there.
         break;
 
-      case MouseButton.Right:
-        // Check if door and select it in the editor.
+      case MouseButton.Right: // Check if door and select it in the editor.
+        MainProject.SelectDoorAt (e.ClickTileY, e.ClickTileX);
         break;
 
       default:

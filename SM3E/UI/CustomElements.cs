@@ -28,8 +28,8 @@ namespace SM3E
 
     private ScrollViewer Parent;
     private Grid MainGrid;
-//    private Image TileMap;
     private Border Selection;
+    private Rectangle Marker;
     public double TileSize {get; private set;}
     public int RowCount {get; private set;}
     public int ColCount {get; private set;}
@@ -74,6 +74,12 @@ namespace SM3E
       }
     }
 
+    public bool MarkerVisible
+    {
+      get {return Marker.IsVisible;}
+      set {Marker.Visibility = value ? Visibility.Visible : Visibility.Hidden;}
+    }
+
 
     // Constructor;
     public UITileViewer (double tileSize, int colCount, int rowCount,
@@ -84,6 +90,10 @@ namespace SM3E
       Selection = new Border ();
       Selection.BorderBrush = new SolidColorBrush (Color.FromRgb (0xFF, 0xFF, 0xFF));
       Selection.BorderThickness = new Thickness (1);
+      Marker = new Rectangle ();
+      Marker.Opacity = 0.4;
+      Marker.Fill = new SolidColorBrush (Color.FromRgb (0xFF, 0x00, 0x00));
+      MarkerVisible = false;
 
       ScreenWidth = screenWidth;
       ScreenHeight = screenHeight;
@@ -151,8 +161,9 @@ namespace SM3E
         MainGrid.RowDefinitions.Add (rowDef);
       }
 
-      // Add selection.
+      // Add marker and selection.
       Selection.Visibility = Visibility.Hidden;
+      MainGrid.Children.Add (Marker);
       MainGrid.Children.Add (Selection);
     }
 
@@ -161,6 +172,33 @@ namespace SM3E
     public void ReloadVisibleTiles ()
     {
       ScrollHandler (null, null);
+    }
+
+
+    // Set the coordinates of the marker, in tiles, allows fractional values.
+    public void SetMarker (double x, double y, double width, double height)
+    {
+      Marker.SetValue (Grid.ColumnProperty, 0);
+      Marker.SetValue (Grid.RowProperty, 0);
+      Marker.HorizontalAlignment = HorizontalAlignment.Left;
+      Marker.VerticalAlignment = VerticalAlignment.Top;
+      Marker.Margin = new Thickness (x * TileSize, y * TileSize, 0.0, 0.0);
+      Marker.Width = width * TileSize;
+      Marker.Height = height * TileSize;
+      Marker.SetValue (Grid.ColumnSpanProperty, ColCount);
+      Marker.SetValue (Grid.RowSpanProperty, RowCount);
+    }
+
+
+    // Scroll Marker into view.
+    public void ScrollToMarker ()
+    {
+      if (MarkerVisible && Parent != null)
+      {
+        Thickness t = (Thickness) Marker.GetValue (Grid.MarginProperty);
+        Parent.ScrollToHorizontalOffset (t.Left + (Marker.Width - Parent.ViewportWidth) / 2);
+        Parent.ScrollToVerticalOffset (t.Top + (Marker.Height - Parent.ViewportHeight) / 2);
+      }
     }
 
 

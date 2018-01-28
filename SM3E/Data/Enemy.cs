@@ -140,6 +140,11 @@ namespace SM3E
       get {return Enemies.Count * Enemy.DefaultSize + TerminatorSize;}
     }
 
+    public int EnemyCount
+    {
+      get {return Enemies.Count;}
+    }
+
 
     // Constructor.
     public EnemySet (): base ()
@@ -255,6 +260,11 @@ namespace SM3E
     public override int Size
     {
       get {return EnemyIDs.Count * BlockSize + TerminatorSize;}
+    }
+
+    public int EnemyGfxCount
+    {
+      get {return EnemyIDs.Count;}
     }
 
 

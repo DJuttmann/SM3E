@@ -21,13 +21,22 @@ namespace SM3E
     public event ListLoadEventHandler RoomStateListChanged;
     public event ListLoadEventHandler DoorListChanged;
     public event ListLoadEventHandler PlmListChanged;
+    public event ListLoadEventHandler PlmTypeListChanged;
+    public event ListLoadEventHandler EnemyListChanged;
+    public event ListLoadEventHandler EnemyGfxListChanged;
+    public event ListLoadEventHandler EnemyTypeListChanged;
     
-    // Active area/room/state/... changes.
+    // New active area/room/state/... selected.
     public event EventHandler AreaSelected;
     public event EventHandler RoomSelected;
     public event EventHandler RoomStateSelected;
     public event EventHandler DoorSelected;
     public event EventHandler PlmSelected;
+    public event EventHandler PlmTypeSelected;
+    public event EventHandler EnemySelected;
+    public event EventHandler EnemyGfxSelected;
+    public event EventHandler EnemyTypeSelected;
+
     public event EventHandler LevelDataSelected;
     public event EventHandler TileSetSelected;
     public event EventHandler TileSelected;

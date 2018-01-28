@@ -34,7 +34,8 @@ namespace SM3E
 
 
     // Fields
-    private List <Room         > [] Rooms = new List <Room> [AreaCount];
+    private string []            Areas = new string [AreaCount];
+    private List <Room      > [] Rooms = new List <Room> [AreaCount];
     private List <DoorSet      > DoorSets;
     private List <Door         > Doors;
     private List <RoomState    > RoomStates;
@@ -74,6 +75,18 @@ namespace SM3E
     // Reference to the active PLM.
     private Plm ActivePlm = null;
 
+    // Reference to the active PLM type.
+    private PlmType ActivePlmType = null;
+    
+    // Reference to the active PLM.
+    private Enemy ActiveEnemy = null;
+    
+    // Reference to the active PLM type.
+    private EnemyType ActiveEnemyType = null;
+
+    // Reference to the active PLM.
+    private EnemyType ActiveEnemyGfx = null;
+
     // Reference to the active tile set.
     private TileSet ActiveTileSet
     {
@@ -85,6 +98,12 @@ namespace SM3E
     {
       get {return ActiveRoomState?.MyLevelData;}
     }
+
+    private PlmSet ActivePlmSet
+    {
+      get {return ActiveRoomState?.MyPlmSet;}
+    }
+
 
 
 
@@ -102,6 +121,18 @@ namespace SM3E
 
     // Index of the selected PLM.
     public int PlmIndex {get; private set;} = IndexNone;
+
+    // Index of the selected PlmType
+    public int PlmTypeIndex {get; private set;} = IndexNone;
+
+    // Index of the selected PLM.
+    public int EnemyIndex {get; private set;} = IndexNone;
+
+    // Index of the selected PLM.
+    public int EnemyGfxIndex {get; private set;} = IndexNone;
+
+    // Index of the selected PLM.
+    public int EnemyTypeIndex {get; private set;} = IndexNone;
 
     // Index of the selected room state's tile set.
     public int TileSetIndex
@@ -364,7 +395,27 @@ namespace SM3E
       get {return ActiveRoomState?.MainAsmPtr ?? 0;}
     }
 
+    // Plm type
+    public string PlmTypeName
+    {
+      get {return ActivePlmType?.Name ?? "<none>";}
+    }
 
+    public BlitImage PlmTypeImage
+    {
+      get {return ActivePlmType?.Graphics;}
+    }
+
+    // Enemy type
+    public string EnemyTypeName
+    {
+      get {return ActiveEnemyType?.Name ?? "<none>";}
+    }
+
+    public BlitImage EnemyTypeImage
+    {
+      get {return ActiveEnemyType?.Graphics;}
+    }
 
 //---------------------------------------------------------------------------------------------------
 // Other
@@ -372,13 +423,7 @@ namespace SM3E
     // List of area names.
     public List <string> AreaNames
     {
-      get
-      {
-        var names = new List <string> ();
-        for (int i = 0; i < 8; i++)
-          names.Add (i.ToString ());
-        return names;
-      }
+      get {return Areas.ToList ();}
     }
 
     // List of room names for active area.
@@ -412,16 +457,16 @@ namespace SM3E
     {
       get
       {
-        List <string> doorNames = new List <string> ();
+        var names = new List <string> ();
         if (ActiveRoom != null && ActiveRoom.MyDoorSet != null)
         {
           for (int n = 0; n < ActiveRoom.MyDoorSet.DoorCount; n++)
           {
             Room destRoom = ActiveRoom.MyDoorSet.MyDoors [n].MyTargetRoom;
-            doorNames.Add (Tools.IntToHex (n) + " " + (destRoom?.Name ?? ""));
+            names.Add (Tools.IntToHex (n) + " " + (destRoom?.Name ?? ""));
           }
         }
-        return doorNames;
+        return names;
       }
     }
 
@@ -430,16 +475,80 @@ namespace SM3E
     {
       get
       {
-        List <string> plmNames = new List <string> ();
+        var names = new List <string> ();
         if (ActiveRoomState != null && ActiveRoomState.MyPlmSet != null)
         {
           for (int n = 0; n < ActiveRoomState.MyPlmSet.PlmCount; n++)
           {
-            plmNames.Add (ActiveRoomState.MyPlmSet.Plms [n].MyPlmType?.Name ??
+            names.Add (ActiveRoomState.MyPlmSet.Plms [n].MyPlmType?.Name ??
                           Tools.IntToHex (ActiveRoomState.MyPlmSet.Plms [n].PlmID));
           }
         }
-        return plmNames;
+        return names;
+      }
+    }
+
+    // List of Plm type names.
+    public List <string> PlmTypeNames
+    {
+      get
+      {
+        var names = new List <string> ();
+        for (int n = 0; n < PlmTypes.Count; n++)
+        {
+          names.Add (PlmTypes [n].Name);
+        }
+        return names;
+      }
+    }
+
+    // List of enemy names for active room
+    public List <string> EnemyNames
+    {
+      get
+      {
+        var names = new List <string> ();
+        if (ActiveRoomState != null && ActiveRoomState.MyEnemySet != null)
+        {
+          for (int n = 0; n < ActiveRoomState.MyEnemySet.EnemyCount; n++)
+          {
+            names.Add (ActiveRoomState.MyEnemySet.Enemies [n].MyEnemyType?.Name ??
+                       Tools.IntToHex (ActiveRoomState.MyEnemySet.Enemies [n].EnemyID));
+          }
+        }
+        return names;
+      }
+    }
+
+    // List of enemy gfx names for active room
+    public List <string> EnemyGfxNames
+    {
+      get
+      {
+        var names = new List <string> ();
+        if (ActiveRoomState != null && ActiveRoomState.MyEnemyGfx != null)
+        {
+          for (int n = 0; n < ActiveRoomState.MyEnemyGfx.EnemyGfxCount; n++)
+          {
+            names.Add (ActiveRoomState.MyEnemyGfx.MyEnemyTypes [n]?.Name ??
+                       Tools.IntToHex (ActiveRoomState.MyEnemyGfx.EnemyIDs [n]));
+          }
+        }
+        return names;
+      }
+    }
+
+    // List of enemy type names.
+    public List <string> EnemyTypeNames
+    {
+      get
+      {
+        var names = new List <string> ();
+        for (int n = 0; n < EnemyTypes.Count; n++)
+        {
+          names.Add (EnemyTypes [n].Name);
+        }
+        return names;
       }
     }
 
@@ -465,6 +574,16 @@ namespace SM3E
     public int RoomHeightInScreens
     {
       get {return ActiveRoom?.RoomH ?? 0; }
+    }
+
+    // Position of room on map
+    public int RoomX
+    {
+      get {return ActiveRoom?.MapX ?? 0;}
+    }
+    public int RoomY
+    {
+      get {return ActiveRoom?.MapY ?? 0;}
     }
 
 
@@ -763,7 +882,10 @@ namespace SM3E
       public Door ActiveDoor;
       public LevelData ActiveLevelData;
       public Plm ActivePlm;
-
+      public PlmType ActivePlmType;
+      public Enemy ActiveEnemy;
+      public EnemyType ActiveEnemyGfx;
+      public EnemyType ActiveEnemyType;
 
       public ActiveItems (Project p)
       {
@@ -774,6 +896,10 @@ namespace SM3E
         ActiveDoor = p.ActiveDoor;
         ActiveLevelData = p.ActiveLevelData;
         ActivePlm = p.ActivePlm;
+        ActivePlmType = p.ActivePlmType;
+        ActiveEnemy = p.ActiveEnemy;
+        ActiveEnemyGfx = p.ActiveEnemyGfx;
+        ActiveEnemyType = p.ActiveEnemyType;
       }
     }
 
@@ -855,6 +981,64 @@ namespace SM3E
     }
 
 
+    public void SelectPlmType (int index)
+    {
+      if (HandlingSelection)
+        return;
+      if (index == PlmTypeIndex || index < -1 || index >= PlmTypes.Count)
+        return;
+      HandlingSelection = true;
+      var a = new ActiveItems (this);
+      ForceSelectPlmType (index);
+      RaiseChangeEvents (a);
+      HandlingSelection = false;
+    }
+
+
+    public void SelectEnemy (int index)
+    {
+      if (HandlingSelection)
+        return;
+      if (ActiveRoomState == null || index == EnemyIndex || index < -1 ||
+          index >= ActiveRoomState.MyEnemySet.EnemyCount)
+        return;
+      HandlingSelection = true;
+      var a = new ActiveItems (this);
+      ForceSelectEnemy (index);
+      RaiseChangeEvents (a);
+      HandlingSelection = false;
+    }
+
+
+    public void SelectEnemyGfx (int index)
+    {
+      if (HandlingSelection)
+        return;
+      if (ActiveRoomState == null || index == EnemyGfxIndex || index < -1 ||
+          index >= ActiveRoomState.MyEnemyGfx.EnemyGfxCount)
+        return;
+      HandlingSelection = true;
+      var a = new ActiveItems (this);
+      ForceSelectEnemyGfx (index);
+      RaiseChangeEvents (a);
+      HandlingSelection = false;
+    }
+
+
+    public void SelectEnemyType (int index)
+    {
+      if (HandlingSelection)
+        return;
+      if (index == EnemyTypeIndex || index < -1 || index >= EnemyTypes.Count)
+        return;
+      HandlingSelection = true;
+      var a = new ActiveItems (this);
+      ForceSelectEnemyType (index);
+      RaiseChangeEvents (a);
+      HandlingSelection = false;
+    }
+
+
     private void RaiseChangeEvents (ActiveItems a)
     {
       if (a.ActiveTileSet != ActiveTileSet)
@@ -862,19 +1046,25 @@ namespace SM3E
         LoadRoomTiles (TileSetIndex);
         TileSetSelected?.Invoke (this, null);
       }
+      if (a.ActiveEnemyType != ActiveEnemyType)
+        EnemyTypeSelected (this, null);
+      if (a.ActiveEnemyGfx != ActiveEnemyGfx)
+        EnemyGfxSelected?.Invoke (this, null);
+      if (a.ActiveEnemy != ActiveEnemy)
+        EnemySelected?.Invoke (this, null);
+      if (a.ActivePlmType != ActivePlmType)
+        PlmTypeSelected?.Invoke (this, null);
       if (a.ActivePlm != ActivePlm)
-      {
         PlmSelected?.Invoke (this, null);
-      }
       if (a.ActiveDoor != ActiveDoor)
-      {
         DoorSelected?.Invoke (this, null);
-      }
       if (a.ActiveRoomState != ActiveRoomState)
       {
         RoomStateSelected?.Invoke (this, null);
         LevelDataSelected?.Invoke (this, null);
         PlmListChanged?.Invoke (this, new ListLoadEventArgs (PlmIndex));
+        EnemyListChanged?.Invoke (this, new ListLoadEventArgs (EnemyIndex));
+        EnemyGfxListChanged?.Invoke (this, new ListLoadEventArgs (EnemyGfxIndex));
       }
       else if (a.ActiveLevelData != ActiveLevelData)
       {
@@ -966,11 +1156,79 @@ namespace SM3E
       {
         PlmIndex = index;
         ActivePlm = ActiveRoomState.MyPlmSet.Plms [PlmIndex];
+        ForceSelectPlmType (ActivePlm.MyPlmType?.Index ?? IndexNone);
       }
       else
       {
         PlmIndex = IndexNone;
         ActivePlm = null;
+        ForceSelectPlmType (IndexNone);
+      }
+    }
+
+
+    private void ForceSelectPlmType (int index)
+    {
+      if (index >= 0 && index < PlmTypes.Count)
+      {
+        PlmTypeIndex = index;
+        ActivePlmType = PlmTypes [PlmTypeIndex];
+      }
+      else
+      {
+        PlmTypeIndex = IndexNone;
+        ActivePlmType = null;
+      }
+    }
+
+
+    private void ForceSelectEnemy (int index)
+    {
+      if (ActiveRoomState != null && index >= 0 &&
+          index < ActiveRoomState.MyEnemySet.EnemyCount)
+      {
+        EnemyIndex = index;
+        ActiveEnemy = ActiveRoomState.MyEnemySet.Enemies [EnemyIndex];
+        ForceSelectEnemyType (ActiveEnemy.MyEnemyType?.Index ?? IndexNone);
+      }
+      else
+      {
+        EnemyIndex = IndexNone;
+        ActiveEnemy = null;
+        ForceSelectEnemyType (IndexNone);
+      }
+    }
+
+
+    private void ForceSelectEnemyGfx (int index)
+    {
+      if (ActiveRoomState != null && index >= 0 &&
+          index < ActiveRoomState.MyEnemyGfx.EnemyGfxCount)
+      {
+        EnemyGfxIndex = index;
+        ActiveEnemyGfx = ActiveRoomState?.MyEnemyGfx?.MyEnemyTypes [EnemyGfxIndex];
+        ForceSelectEnemyType (ActiveEnemyGfx?.Index ?? IndexNone);
+      }
+      else
+      {
+        EnemyGfxIndex = IndexNone;
+        ActiveEnemyGfx = null;
+        ForceSelectEnemyType (IndexNone);
+      }
+    }
+
+
+    private void ForceSelectEnemyType (int index)
+    {
+      if (index >= 0 && index < EnemyTypes.Count)
+      {
+        EnemyTypeIndex = index;
+        ActiveEnemyType = EnemyTypes [EnemyTypeIndex];
+      }
+      else
+      {
+        EnemyTypeIndex = IndexNone;
+        ActiveEnemyType = null;
       }
     }
 
@@ -1021,9 +1279,53 @@ namespace SM3E
           ForceSelectRoom (i);
           RaiseChangeEvents (a);
           HandlingSelection = false;
-          break;
+          return;
         }
       } while (i != startIndex);
+    }
+
+
+    // Select door at given square.
+    public void SelectDoorAt (int row, int col)
+    {
+      if (ActiveRoom?.MyDoorSet == null || ActiveLevelData == null)
+        return;
+      List <Door> doors = ActiveRoom.MyDoorSet.MyDoors;
+      if (GetBtsType (row, col) != 0x9) // return if not door
+        return;
+      int index = GetBtsValue (row, col);
+      if (index >= doors.Count)
+        return;
+
+      HandlingSelection = true;
+      var a = new ActiveItems (this);
+      ForceSelectDoor (index);
+      RaiseChangeEvents (a);
+      HandlingSelection = false;
+    }
+
+
+    // Select plm at given square
+    public void SelectPlmAt (int row, int col)
+    {
+      if (ActivePlmSet == null)
+        return;
+      for (int index = 0; index < ActivePlmSet.PlmCount; index++)
+      {
+        Plm p = ActivePlmSet.Plms [index];
+        int width = p.MyPlmType?.Graphics.Width / 16 ?? 0;
+        int height = p.MyPlmType?.Graphics.Height / 16 ?? 0;
+        if (col >= p.PosX && col < p.PosX + width &&
+            row >= p.PosY && row < p.PosY + height)
+        {
+          HandlingSelection = true;
+          var a = new ActiveItems (this);
+          ForceSelectPlm (index);
+          RaiseChangeEvents (a);
+          HandlingSelection = false;
+          return;
+        }
+      }
     }
 
   } // class Project
