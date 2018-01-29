@@ -174,7 +174,7 @@
             </Grid>
             
             <!-- ENEMY LAYER -->
-            <Grid x:Name="EnemyLayerEditor" Visibility="Visible">
+            <Grid x:Name="EnemyLayerEditor" Visibility="Hidden">
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*" MaxWidth="200"/>
                 <ColumnDefinition Width="1*" MaxWidth="200"/>
@@ -198,11 +198,18 @@
             </Grid>
             
             <!-- SCROLL LAYER -->
-            <Grid x:Name="ScrollLayerEditor" Visibility="Hidden">
+            <Grid x:Name="ScrollLayerEditor" Visibility="Visible">
               <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="175"/>
-                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*" MaxWidth="200"/>
+                <ColumnDefinition Width="1*" MaxWidth="200"/>
+                <ColumnDefinition Width="Auto"/>
               </Grid.ColumnDefinitions>
+              <Label Grid.Row="0" Content="Scroll Data" HorizontalAlignment="Stretch" Margin="0,-3,0,-3" FontSize="16" FontWeight="Bold"/>
+              <Button Grid.Row="0" Grid.Column="0" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,33.2,0" VerticalAlignment="Top" Width="20"/>
+              <Button Grid.Row="0" Grid.Column="0" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8.2,0" VerticalAlignment="Top" Width="20"/>
+              <ListBox x:Name="ScrollDataListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,28,8,8" IsTextSearchCaseSensitive="True" SelectionChanged="ScrollDataListBox_SelectionChanged"/>
+              <Label x:Name="ScrollColorName" Grid.Row="0" Grid.Column="1" Content="Color selector" HorizontalAlignment="Stretch" Margin="0,-3,0,-3"/>
+              <ListBox x:Name="ScrollColorListBox" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="Auto" Margin="8,28,8,8" SelectionChanged="ScrollColorListBox_SelectionChanged"/>
             </Grid>
             
             <!-- EFFECTS LAYER -->

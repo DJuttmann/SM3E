@@ -70,6 +70,7 @@ namespace SM3E
       SelectPlmType (0);
       EnemyTypeListChanged?.Invoke (this, new ListLoadEventArgs (0));
       SelectEnemyType (0);
+      ScrollColorListChanged?.Invoke (this, new ListLoadEventArgs (0));
     }
 
 

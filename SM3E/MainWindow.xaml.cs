@@ -58,6 +58,8 @@ namespace SM3E
       MainProject.EnemyListChanged += LoadEnemyListBox;
       MainProject.EnemyGfxListChanged += LoadEnemyGfxListBox;
       MainProject.EnemyTypeListChanged += LoadEnemyTypeListBox;
+      MainProject.ScrollDataListChanged += LoadScrollDataListBox;
+      MainProject.ScrollColorListChanged += LoadScrollColorListBox;
 
       MainProject.AreaSelected += UpdateMapEditor;
       MainProject.AreaSelected += AreaSelected;
@@ -77,6 +79,8 @@ namespace SM3E
       MainProject.EnemyGfxSelected += EnemyGfxSelected;
       MainProject.EnemyTypeSelected += LoadEnemyTypeData;
       MainProject.EnemyTypeSelected += EnemyTypeSelected;
+      MainProject.ScrollDataSelected += ScrollDataSelected;
+      MainProject.ScrollColorSelected += ScrollColorSelected;
 
       MainProject.LevelDataSelected += NewLevelData;
       MainProject.TileSetSelected += UpdateTileSelector;

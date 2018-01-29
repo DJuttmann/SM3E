@@ -169,6 +169,7 @@ namespace SM3E
           Bytes.Add (0);
     }
 
+
     // Read raw data from ROM at given PC address.
     public override bool ReadFromROM (Rom rom, int addressPC)
     {

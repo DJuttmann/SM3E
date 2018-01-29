@@ -334,6 +334,46 @@ namespace SM3E
     }
 
 
+    private void LoadScrollDataListBox (object sender, ListLoadEventArgs e)
+    {
+      List <string> names = MainProject.ScrollDataNames;
+      ScrollDataListBox.Items.Clear ();
+      foreach (string name in names)
+        ScrollDataListBox.Items.Add (name);
+      QuietSelect = true;
+      ScrollDataListBox.SelectedIndex = e.SelectItem;
+      QuietSelect = false;
+    }
+
+
+    private void ScrollDataSelected (object sender, EventArgs e)
+    {
+      QuietSelect = true;
+      ScrollDataListBox.SelectedIndex = MainProject.ScrollDataIndex;
+      QuietSelect = false;
+    }
+
+
+    private void LoadScrollColorListBox (object sender, ListLoadEventArgs e)
+    {
+      List <string> names = MainProject.ScrollColorNames;
+      ScrollColorListBox.Items.Clear ();
+      foreach (string name in names)
+        ScrollColorListBox.Items.Add (name);
+      QuietSelect = true;
+      ScrollColorListBox.SelectedIndex = e.SelectItem;
+      QuietSelect = false;
+    }
+
+
+    private void ScrollColorSelected (object sender, EventArgs e)
+    {
+      QuietSelect = true;
+      ScrollColorListBox.SelectedIndex = MainProject.ScrollColorIndex;
+      QuietSelect = false;
+    }
+
+
     private void LoadRoomData (object sender, EventArgs e)
     {
       RoomAreaSelect.SelectedIndex = MainProject.RoomArea;
@@ -404,6 +444,7 @@ namespace SM3E
       EnemyName.Content = MainProject.EnemyTypeName;
       EnemyImage.Source = MainProject.EnemyTypeImage?.ToBitmap ();
     }
+
 
 //========================================================================================
 // Event handlers
@@ -518,6 +559,22 @@ namespace SM3E
       EnemyTypeListBox.ScrollIntoView (EnemyTypeListBox.SelectedItem);
       if (!QuietSelect)
         MainProject.SelectEnemyType (EnemyTypeListBox.SelectedIndex);
+    }
+
+
+    private void ScrollDataListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
+    {
+      ScrollDataListBox.ScrollIntoView (ScrollDataListBox.SelectedItem);
+      if (!QuietSelect)
+        MainProject.SelectScrollData (ScrollDataListBox.SelectedIndex);
+    }
+
+
+    private void ScrollColorListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
+    {
+      ScrollColorListBox.ScrollIntoView (ScrollColorListBox.SelectedItem);
+      if (!QuietSelect)
+        MainProject.SelectScrollColor (ScrollColorListBox.SelectedIndex);
     }
 
 

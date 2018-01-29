@@ -58,86 +58,36 @@ namespace SM3E
     private List <PlmType      > PlmTypes;
     private List <EnemyType    > EnemyTypes;
 
+
 //========================================================================================
 // Properties
 
-// Active items (private reference to object)
 
-    // Reference to the active room.
-    private Room ActiveRoom = null;
-    
-    // Reference to the active room state.
-    private RoomState ActiveRoomState = null;
-
-    // Reference to the active door.
-    private Door ActiveDoor = null;
-
-    // Reference to the active PLM.
-    private Plm ActivePlm = null;
-
-    // Reference to the active PLM type.
-    private PlmType ActivePlmType = null;
-    
-    // Reference to the active PLM.
-    private Enemy ActiveEnemy = null;
-    
-    // Reference to the active PLM type.
-    private EnemyType ActiveEnemyType = null;
-
-    // Reference to the active PLM.
-    private EnemyType ActiveEnemyGfx = null;
-
-    // Reference to the active tile set.
-    private TileSet ActiveTileSet
+    // List of all scroll data associated with active room state.
+    private List <IScrollData> ScrollDatas
     {
-      get {return TileSetIndex != IndexNone ? TileSets [TileSetIndex] : TileSets [0];}
-    }
+      get
+      {
+        var data = new List <IScrollData> ();
+        if (ActiveRoomState == null)
+          return data;
+        data.Add (ActiveRoomState.MyScrollSet);
+        
+        if (ActivePlmSet != null)
+        {
+          foreach (Plm p in ActivePlmSet.Plms)
+            if (p.MyScrollPlmData != null)
+              data.Add (p.MyScrollPlmData);
+        }
 
-    // Reference to the active room state's level data.
-    private LevelData ActiveLevelData
-    {
-      get {return ActiveRoomState?.MyLevelData;}
-    }
-
-    private PlmSet ActivePlmSet
-    {
-      get {return ActiveRoomState?.MyPlmSet;}
-    }
-
-
-
-
-    // Index of the selected area.
-    public int AreaIndex {get; private set;} = IndexNone;
-
-    // Index of the selected room.
-    public int RoomIndex {get; private set;} = IndexNone;
-
-    // Index of the selected room state.
-    public int RoomStateIndex {get; private set;} = IndexNone;
-
-    // Index of the selected room state's tile set.
-    public int DoorIndex {get; private set;} = IndexNone;
-
-    // Index of the selected PLM.
-    public int PlmIndex {get; private set;} = IndexNone;
-
-    // Index of the selected PlmType
-    public int PlmTypeIndex {get; private set;} = IndexNone;
-
-    // Index of the selected PLM.
-    public int EnemyIndex {get; private set;} = IndexNone;
-
-    // Index of the selected PLM.
-    public int EnemyGfxIndex {get; private set;} = IndexNone;
-
-    // Index of the selected PLM.
-    public int EnemyTypeIndex {get; private set;} = IndexNone;
-
-    // Index of the selected room state's tile set.
-    public int TileSetIndex
-    {
-      get {return ActiveRoomState?.TileSet ?? 0;}
+        if (ActiveRoom != null)
+        {
+          foreach (Door d in ActiveRoom.MyIncomingDoors)
+            if (d.MyScrollAsm != null)
+              data.Add (d.MyScrollAsm);
+        }
+        return data;
+      }
     }
 
 
@@ -418,7 +368,7 @@ namespace SM3E
     }
 
 //---------------------------------------------------------------------------------------------------
-// Other
+// Name lists.
 
     // List of area names.
     public List <string> AreaNames
@@ -552,28 +502,65 @@ namespace SM3E
       }
     }
 
+    // List of scroll data names.
+    public List <string> ScrollDataNames
+    {
+      get
+      {
+        var names = new List <string> ();
+        names.Add ("Room Scrolls");
+        
+        if (ActivePlmSet != null)
+        {
+          foreach (Plm p in ActivePlmSet.Plms)
+            if (p.MyScrollPlmData != null)
+              names.Add ("PLM (" + p.PosX + "," + p.PosY + ")");
+        }
+
+        if (ActiveRoom != null)
+        {
+          foreach (Door d in ActiveRoom.MyIncomingDoors)
+            if (d.MyScrollAsm != null)
+              names.Add ("ASM (" + d.ScreenX + "," + d.ScreenY + ")");
+        }
+        return names;
+      }
+    }
+
+    // List of scroll color names
+    public List <string> ScrollColorNames
+    {
+      get
+      {
+        return new List <string> (new [] {"Red", "Green", "Blue", "Unchanged"});
+      }
+    }
+
+//---------------------------------------------------------------------------------------------------
+// Other.
+
     // Width of active room in tiles.
     public int RoomWidthInTiles
     {
-      get {return ActiveRoom?.RoomW * 16 ?? 0; }
+      get {return ActiveRoom?.RoomW * 16 ?? 0;}
     }
 
     // Height of active room in tiles.
     public int RoomHeightInTiles
     {
-      get {return ActiveRoom?.RoomH * 16 ?? 0; }
+      get {return ActiveRoom?.RoomH * 16 ?? 0;}
     }
 
     // Width of active room in Screens.
     public int RoomWidthInScreens
     {
-      get {return ActiveRoom?.RoomW ?? 0; }
+      get {return ActiveRoom?.RoomW ?? 0;}
     }
 
     // Height of active room in Screens.
     public int RoomHeightInScreens
     {
-      get {return ActiveRoom?.RoomH ?? 0; }
+      get {return ActiveRoom?.RoomH ?? 0;}
     }
 
     // Position of room on map
@@ -864,468 +851,7 @@ namespace SM3E
         }
       }
       int index = ActiveRoom.RoomW * y + x;
-      return ActiveRoomState.MyScrollSet.GetScroll (index);
-    }
-
-
-//========================================================================================
-// Selecting things
-
-
-    // A class tracking which selected items have changed.
-    private class ActiveItems
-    {
-      public int ActiveArea;
-      public Room ActiveRoom;
-      public RoomState ActiveRoomState;
-      public TileSet ActiveTileSet;
-      public Door ActiveDoor;
-      public LevelData ActiveLevelData;
-      public Plm ActivePlm;
-      public PlmType ActivePlmType;
-      public Enemy ActiveEnemy;
-      public EnemyType ActiveEnemyGfx;
-      public EnemyType ActiveEnemyType;
-
-      public ActiveItems (Project p)
-      {
-        ActiveArea = p.AreaIndex;
-        ActiveRoom = p.ActiveRoom;
-        ActiveRoomState = p.ActiveRoomState;
-        ActiveTileSet = p.ActiveTileSet;
-        ActiveDoor = p.ActiveDoor;
-        ActiveLevelData = p.ActiveLevelData;
-        ActivePlm = p.ActivePlm;
-        ActivePlmType = p.ActivePlmType;
-        ActiveEnemy = p.ActiveEnemy;
-        ActiveEnemyGfx = p.ActiveEnemyGfx;
-        ActiveEnemyType = p.ActiveEnemyType;
-      }
-    }
-
-    // Flag for detecting if a selection is being handled.
-    private bool HandlingSelection = false;
-    
-
-    public void SelectArea (int index)
-    {
-      if (HandlingSelection)
-        return;
-      if (index == AreaIndex || index < -1 || index >= AreaCount)
-        return;
-      HandlingSelection = true;
-      var a = new ActiveItems (this);
-      ForceSelectArea (index);
-      RaiseChangeEvents (a);
-      HandlingSelection = false;
-    }
-    
-
-    public void SelectRoom (int index)
-    {
-      if (HandlingSelection)
-        return;
-      if (AreaIndex == IndexNone || index == RoomIndex || index < -1 ||
-          index >= Rooms [AreaIndex].Count)
-        return;
-      HandlingSelection = true;
-      var a = new ActiveItems (this);
-      ForceSelectRoom (index);
-      RaiseChangeEvents (a);
-      HandlingSelection = false;
-    }
-    
-
-    public void SelectRoomState (int index)
-    {
-      if (HandlingSelection)
-        return;
-      if (ActiveRoom == null || index == RoomStateIndex || index < -1 ||
-          index >= ActiveRoom.RoomStates.Count)
-        return;
-      HandlingSelection = true;
-      var a = new ActiveItems (this);
-      ForceSelectRoomState (index);
-      RaiseChangeEvents (a);
-      HandlingSelection = false;
-    }
-    
-
-    public void SelectDoor (int index)
-    {
-      if (HandlingSelection)
-        return;
-      if (ActiveRoom == null || index == DoorIndex || index < -1 ||
-          index >= ActiveRoom.MyDoorSet.DoorCount)
-        return;
-      HandlingSelection = true;
-      var a = new ActiveItems (this);
-      ForceSelectDoor (index);
-      RaiseChangeEvents (a);
-      HandlingSelection = false;
-    }
-
-
-    public void SelectPlm (int index)
-    {
-      if (HandlingSelection)
-        return;
-      if (ActiveRoomState == null || index == PlmIndex || index < -1 ||
-          index >= ActiveRoomState.MyPlmSet.PlmCount)
-        return;
-      HandlingSelection = true;
-      var a = new ActiveItems (this);
-      ForceSelectPlm (index);
-      RaiseChangeEvents (a);
-      HandlingSelection = false;
-    }
-
-
-    public void SelectPlmType (int index)
-    {
-      if (HandlingSelection)
-        return;
-      if (index == PlmTypeIndex || index < -1 || index >= PlmTypes.Count)
-        return;
-      HandlingSelection = true;
-      var a = new ActiveItems (this);
-      ForceSelectPlmType (index);
-      RaiseChangeEvents (a);
-      HandlingSelection = false;
-    }
-
-
-    public void SelectEnemy (int index)
-    {
-      if (HandlingSelection)
-        return;
-      if (ActiveRoomState == null || index == EnemyIndex || index < -1 ||
-          index >= ActiveRoomState.MyEnemySet.EnemyCount)
-        return;
-      HandlingSelection = true;
-      var a = new ActiveItems (this);
-      ForceSelectEnemy (index);
-      RaiseChangeEvents (a);
-      HandlingSelection = false;
-    }
-
-
-    public void SelectEnemyGfx (int index)
-    {
-      if (HandlingSelection)
-        return;
-      if (ActiveRoomState == null || index == EnemyGfxIndex || index < -1 ||
-          index >= ActiveRoomState.MyEnemyGfx.EnemyGfxCount)
-        return;
-      HandlingSelection = true;
-      var a = new ActiveItems (this);
-      ForceSelectEnemyGfx (index);
-      RaiseChangeEvents (a);
-      HandlingSelection = false;
-    }
-
-
-    public void SelectEnemyType (int index)
-    {
-      if (HandlingSelection)
-        return;
-      if (index == EnemyTypeIndex || index < -1 || index >= EnemyTypes.Count)
-        return;
-      HandlingSelection = true;
-      var a = new ActiveItems (this);
-      ForceSelectEnemyType (index);
-      RaiseChangeEvents (a);
-      HandlingSelection = false;
-    }
-
-
-    private void RaiseChangeEvents (ActiveItems a)
-    {
-      if (a.ActiveTileSet != ActiveTileSet)
-      {
-        LoadRoomTiles (TileSetIndex);
-        TileSetSelected?.Invoke (this, null);
-      }
-      if (a.ActiveEnemyType != ActiveEnemyType)
-        EnemyTypeSelected (this, null);
-      if (a.ActiveEnemyGfx != ActiveEnemyGfx)
-        EnemyGfxSelected?.Invoke (this, null);
-      if (a.ActiveEnemy != ActiveEnemy)
-        EnemySelected?.Invoke (this, null);
-      if (a.ActivePlmType != ActivePlmType)
-        PlmTypeSelected?.Invoke (this, null);
-      if (a.ActivePlm != ActivePlm)
-        PlmSelected?.Invoke (this, null);
-      if (a.ActiveDoor != ActiveDoor)
-        DoorSelected?.Invoke (this, null);
-      if (a.ActiveRoomState != ActiveRoomState)
-      {
-        RoomStateSelected?.Invoke (this, null);
-        LevelDataSelected?.Invoke (this, null);
-        PlmListChanged?.Invoke (this, new ListLoadEventArgs (PlmIndex));
-        EnemyListChanged?.Invoke (this, new ListLoadEventArgs (EnemyIndex));
-        EnemyGfxListChanged?.Invoke (this, new ListLoadEventArgs (EnemyGfxIndex));
-      }
-      else if (a.ActiveLevelData != ActiveLevelData)
-      {
-        LevelDataSelected.Invoke (this, null);
-      }
-      if (a.ActiveRoom != ActiveRoom)
-      {
-        RoomSelected?.Invoke (this, null);
-        RoomStateListChanged?.Invoke (this, new ListLoadEventArgs (RoomStateIndex));
-        DoorListChanged?.Invoke (this, new ListLoadEventArgs (DoorIndex));
-      }
-      if (a.ActiveArea != AreaIndex)
-      {
-        AreaSelected?.Invoke (this, null);
-        RoomListChanged?.Invoke (this, new ListLoadEventArgs (RoomIndex));
-      }
-    }
-    
-
-    private void ForceSelectArea (int index)
-    {
-      if (index >= 0 && index < AreaCount)
-      {
-        AreaIndex = index;
-        ForceSelectRoom (0);
-      }
-      else
-      {
-        AreaIndex = IndexNone;
-        ForceSelectRoom (IndexNone);
-      }
-    }
-
-
-    private void ForceSelectRoom (int index)
-    {
-      if (AreaIndex != IndexNone && index >= 0 && index < Rooms [AreaIndex].Count)
-      {
-        RoomIndex = index;
-        ActiveRoom = Rooms [AreaIndex] [RoomIndex];
-        ForceSelectRoomState (0);
-        ForceSelectDoor (0);
-      }
-      else
-      {
-        RoomIndex = IndexNone;
-        ActiveRoom = null;
-        ForceSelectRoomState (IndexNone);
-        ForceSelectDoor (IndexNone);
-      }
-    }
-
-
-    private void ForceSelectRoomState (int index)
-    {
-      if (ActiveRoom != null && index >= 0 && index < ActiveRoom.RoomStates.Count)
-      {
-        RoomStateIndex = index;
-        ActiveRoomState = ActiveRoom.RoomStates [RoomStateIndex];
-        ForceSelectPlm (0);
-      }
-      else
-      {
-        RoomStateIndex = IndexNone;
-        ActiveRoomState = null;
-        ForceSelectPlm (IndexNone);
-      }
-    }
-
-
-    private void ForceSelectDoor (int index)
-    {
-      if (ActiveRoom != null && index >= 0 && index < ActiveRoom.MyDoorSet.DoorCount)
-      {
-        DoorIndex = index;
-        ActiveDoor = ActiveRoom.MyDoorSet.MyDoors [DoorIndex];
-      }
-      else
-      {
-        DoorIndex = IndexNone;
-        ActiveDoor = null;
-      }
-    }
-
-
-    private void ForceSelectPlm (int index)
-    {
-      if (ActiveRoomState != null && index >= 0 && index < ActiveRoomState.MyPlmSet.PlmCount)
-      {
-        PlmIndex = index;
-        ActivePlm = ActiveRoomState.MyPlmSet.Plms [PlmIndex];
-        ForceSelectPlmType (ActivePlm.MyPlmType?.Index ?? IndexNone);
-      }
-      else
-      {
-        PlmIndex = IndexNone;
-        ActivePlm = null;
-        ForceSelectPlmType (IndexNone);
-      }
-    }
-
-
-    private void ForceSelectPlmType (int index)
-    {
-      if (index >= 0 && index < PlmTypes.Count)
-      {
-        PlmTypeIndex = index;
-        ActivePlmType = PlmTypes [PlmTypeIndex];
-      }
-      else
-      {
-        PlmTypeIndex = IndexNone;
-        ActivePlmType = null;
-      }
-    }
-
-
-    private void ForceSelectEnemy (int index)
-    {
-      if (ActiveRoomState != null && index >= 0 &&
-          index < ActiveRoomState.MyEnemySet.EnemyCount)
-      {
-        EnemyIndex = index;
-        ActiveEnemy = ActiveRoomState.MyEnemySet.Enemies [EnemyIndex];
-        ForceSelectEnemyType (ActiveEnemy.MyEnemyType?.Index ?? IndexNone);
-      }
-      else
-      {
-        EnemyIndex = IndexNone;
-        ActiveEnemy = null;
-        ForceSelectEnemyType (IndexNone);
-      }
-    }
-
-
-    private void ForceSelectEnemyGfx (int index)
-    {
-      if (ActiveRoomState != null && index >= 0 &&
-          index < ActiveRoomState.MyEnemyGfx.EnemyGfxCount)
-      {
-        EnemyGfxIndex = index;
-        ActiveEnemyGfx = ActiveRoomState?.MyEnemyGfx?.MyEnemyTypes [EnemyGfxIndex];
-        ForceSelectEnemyType (ActiveEnemyGfx?.Index ?? IndexNone);
-      }
-      else
-      {
-        EnemyGfxIndex = IndexNone;
-        ActiveEnemyGfx = null;
-        ForceSelectEnemyType (IndexNone);
-      }
-    }
-
-
-    private void ForceSelectEnemyType (int index)
-    {
-      if (index >= 0 && index < EnemyTypes.Count)
-      {
-        EnemyTypeIndex = index;
-        ActiveEnemyType = EnemyTypes [EnemyTypeIndex];
-      }
-      else
-      {
-        EnemyTypeIndex = IndexNone;
-        ActiveEnemyType = null;
-      }
-    }
-
-
-    // Check if tile in room is door tile; if it is, select the destination room.
-    public void NavigateThroughDoor (int row, int col)
-    {
-      if (ActiveRoom?.MyDoorSet == null || ActiveLevelData == null)
-        return;
-      List <Door> doors = ActiveRoom.MyDoorSet.MyDoors;
-      if (GetBtsType (row, col) != 0x9) // return if not door
-        return;
-      int index = GetBtsValue (row, col);
-      if (index >= doors.Count)
-        return;
-      Room targetRoom = doors [index].MyTargetRoom;
-      if (targetRoom == null)
-        return;
-      int targetArea = targetRoom.Area;
-
-      HandlingSelection = true;
-      var a = new ActiveItems (this);
-      ForceSelectArea (targetArea);
-      ForceSelectRoom (Rooms [targetArea].FindIndex (x => x == targetRoom));
-      RaiseChangeEvents (a);
-      HandlingSelection = false;
-    }
-
-
-    // Try to move to a room at position on the map.
-    public void NavigateToMapPosition (int x, int y)
-    {
-      if (AreaIndex == IndexNone)
-        return;
-      int startIndex = RoomIndex;
-      if (startIndex == IndexNone)
-        startIndex = Rooms [AreaIndex].Count - 1;
-      int i = startIndex;
-      do
-      {
-        i = (i + 1) % Rooms [AreaIndex].Count;
-        Room r = Rooms [AreaIndex] [i];
-        if (x >= r.MapX && x < r.MapX + r.RoomW &&
-            y >= r.MapY && y < r.MapY + r.RoomH)
-        {
-          HandlingSelection = true;
-          var a = new ActiveItems (this);
-          ForceSelectRoom (i);
-          RaiseChangeEvents (a);
-          HandlingSelection = false;
-          return;
-        }
-      } while (i != startIndex);
-    }
-
-
-    // Select door at given square.
-    public void SelectDoorAt (int row, int col)
-    {
-      if (ActiveRoom?.MyDoorSet == null || ActiveLevelData == null)
-        return;
-      List <Door> doors = ActiveRoom.MyDoorSet.MyDoors;
-      if (GetBtsType (row, col) != 0x9) // return if not door
-        return;
-      int index = GetBtsValue (row, col);
-      if (index >= doors.Count)
-        return;
-
-      HandlingSelection = true;
-      var a = new ActiveItems (this);
-      ForceSelectDoor (index);
-      RaiseChangeEvents (a);
-      HandlingSelection = false;
-    }
-
-
-    // Select plm at given square
-    public void SelectPlmAt (int row, int col)
-    {
-      if (ActivePlmSet == null)
-        return;
-      for (int index = 0; index < ActivePlmSet.PlmCount; index++)
-      {
-        Plm p = ActivePlmSet.Plms [index];
-        int width = p.MyPlmType?.Graphics.Width / 16 ?? 0;
-        int height = p.MyPlmType?.Graphics.Height / 16 ?? 0;
-        if (col >= p.PosX && col < p.PosX + width &&
-            row >= p.PosY && row < p.PosY + height)
-        {
-          HandlingSelection = true;
-          var a = new ActiveItems (this);
-          ForceSelectPlm (index);
-          RaiseChangeEvents (a);
-          HandlingSelection = false;
-          return;
-        }
-      }
+      return ActiveRoomState.MyScrollSet [index];
     }
 
   } // class Project

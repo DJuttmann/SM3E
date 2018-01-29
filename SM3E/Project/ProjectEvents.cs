@@ -25,6 +25,8 @@ namespace SM3E
     public event ListLoadEventHandler EnemyListChanged;
     public event ListLoadEventHandler EnemyGfxListChanged;
     public event ListLoadEventHandler EnemyTypeListChanged;
+    public event ListLoadEventHandler ScrollDataListChanged;
+    public event ListLoadEventHandler ScrollColorListChanged;
     
     // New active area/room/state/... selected.
     public event EventHandler AreaSelected;
@@ -36,6 +38,8 @@ namespace SM3E
     public event EventHandler EnemySelected;
     public event EventHandler EnemyGfxSelected;
     public event EventHandler EnemyTypeSelected;
+    public event EventHandler ScrollDataSelected;
+    public event EventHandler ScrollColorSelected;
 
     public event EventHandler LevelDataSelected;
     public event EventHandler TileSetSelected;

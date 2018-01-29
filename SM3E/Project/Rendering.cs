@@ -220,7 +220,10 @@ namespace SM3E
       if (BtsVisible)
         RenderScreenBts (screenImage, rowMin, colMin);
       if (ScrollsVisible)
-        RenderScreenScroll (screenImage, x, y);
+      {
+        RenderRoomScroll (screenImage, x, y);
+        RenderScrollModification (screenImage, x, y);
+      }
       return true;
     }
 
@@ -311,33 +314,54 @@ namespace SM3E
 
 
     // Renders a screen scroll.
-    private void RenderScreenScroll (BlitImage screenImage, int x, int y)
+    private void RenderRoomScroll (BlitImage screenImage, int x, int y)
     {
-      byte red = 0x00;
-      byte green = 0x00;
-      byte blue = 0x00;
-      byte alpha = 0x80;
-      switch (GetScroll (x, y))
-      {
-      case ScrollColor.Red:
-        red = 0xFF;
-        break;
-      case ScrollColor.Green:
-        green = 0xFF;
-        break;
-      case ScrollColor.Blue:
-        red = 0x40;
-        green = 0x40;
-        blue = 0xFF;
-        break;
-      default:
-        alpha = 0x00;
-        break;
-      }
+      ScrollColorToRGBA (GetScroll (x, y), out byte red,  out byte green,
+                                           out byte blue, out byte alpha);
       screenImage.DrawRectangle (  0,   0, 256,   3, red, green, blue, alpha);
       screenImage.DrawRectangle (0,   253, 256,   3, red, green, blue, alpha);
       screenImage.DrawRectangle (  0,   3,   3, 250, red, green, blue, alpha);
       screenImage.DrawRectangle (253,   3,   3, 250, red, green, blue, alpha);
+    }
+
+
+    // Renders a PLM or ASM scroll
+    private void RenderScrollModification (BlitImage screenImage, int x, int y)
+    {
+      if (ActiveScrollData is ScrollSet || ActiveScrollData == null)
+        return;
+      ScrollColor color = ActiveScrollData [RoomWidthInScreens * y + x];
+      ScrollColorToRGBA (color, out byte red,  out byte green,
+                                out byte blue, out byte alpha);
+      screenImage.DrawRectangle (96, 96, 64, 64, red, green, blue, alpha);
+    }
+
+
+    // Convert a scroll color to RGBA values.
+    private void ScrollColorToRGBA (ScrollColor color, 
+                                    out byte R, out byte G, out byte B, out byte A)
+    {
+      R = 0x00;
+      G = 0x00;
+      B = 0x00;
+      A = 0x80;
+      switch (color)
+      {
+      case ScrollColor.Red:
+        R = 0xFF;
+        break;
+      case ScrollColor.Green:
+        G = 0xFF;
+        break;
+      case ScrollColor.Blue:
+        R = 0x40;
+        G = 0x40;
+        B = 0xFF;
+        break;
+      default:
+        A = 0x00;
+        break;
+      }
     }
 
 
