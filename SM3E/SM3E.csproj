@@ -79,6 +79,7 @@
     <Compile Include="Data\Scrolls.cs" />
     <Compile Include="Project\ProjectEvents.cs" />
     <Compile Include="Project\Selecting.cs" />
+    <Compile Include="Tools\Rom.cs" />
     <Compile Include="UI\Editor.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
