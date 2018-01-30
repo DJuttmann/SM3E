@@ -22,9 +22,9 @@ namespace SM3E
   partial class Project
   {
     // Consts
+    public const string BtsTilesFile = "Data/BTS.png";
+    public const string BtsTilesSmallFile = "Data/BTS_numbers.png";
     public const int TileSetCount = 29;
-    private const string BtsTilesFile = "BTS.png";
-    private const string BtsTilesSmallFile = "BTS_numbers.png";
     private const int MapTileSheetAddress = 0x1B0000; // PC 1B0000 = LR B68000 (uncomp)
     // private const int MapTileSheetAddress = 0x0D3200; // PC 0D3200 = LR 9AB200 (GB)
 
@@ -827,7 +827,6 @@ namespace SM3E
       BitmapSource b = new BitmapImage (uri);
       if (b.Format != PixelFormats.Bgra32)
         b = new FormatConvertedBitmap (b, PixelFormats.Bgra32, null, 0);
-      Logging.WriteLine (b.Format.ToString ());
       return b;
     }
 

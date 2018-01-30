@@ -23,13 +23,15 @@ code have been directly ported, other parts are new.
 -- FEATURES --
 
 At the moment, not even all functionality of the original C++ version has been
-implemented. For now the program functions as a level viewer for Super Metroid.
+implemented. For now the program mostly functions as a level viewer for Super Metroid. Any
+available editing functions are not permanent, since saving is not implemented either.
 
 
 -- USAGE --
 
 Should you decide to build the project, make sure to place the contents of Resources.zip 
 in the same folder as the executable. Furthermore, a valid Super Metroid ROM (Unheadered)
-must be placed in the same folder with the file name 'SuperMetroid.sfc'.
+must be placed in the same folder with the file name 'SuperMetroid.sfc' (or change the
+file name on the first line of SuperMetroid.txt to reflect the name of the ROM).
 
 ==========================================================================================

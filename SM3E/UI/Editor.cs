@@ -131,7 +131,8 @@ namespace SM3E
       BtsSelector.MouseDown += BtsSelector_MouseDown;
       BtsSelector.BackgroundColor = Color.FromRgb (0x00, 0x00, 0x00);
       BtsSelectorViewer.Content = BtsSelector.Element;
-      BtsSelector.Screens [0, 0].Source = GraphicsIO.LoadBitmap ("BTS.png");
+      // [wip] perhaps Bts tiles should be obtained from MainProject.
+      BtsSelector.Screens [0, 0].Source = GraphicsIO.LoadBitmap (Project.BtsTilesFile);
       MainProject.BtsSelected += UpdateActiveBts;
     }
 
