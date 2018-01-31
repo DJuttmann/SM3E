@@ -395,7 +395,7 @@ namespace SM3E
       StateTypeSelect.SelectedIndex = 0; // [wip]
       StateEventNumberInput.Text = Tools.IntToHex (MainProject.RoomStateEventNumber, 2);
       StateSongeSetInput.Text = Tools.IntToHex (MainProject.SongSet, 2);
-      StateSongIndexInput.Text = Tools.IntToHex (MainProject.PlayIndex, 2);
+      StatePlayIndexInput.Text = Tools.IntToHex (MainProject.PlayIndex, 2);
       StateBgScrollingInput.Text = Tools.IntToHex (MainProject.BackgroundScrolling, 4);
 
       LavelDataPtrInput.Text = Tools.IntToHex (MainProject.LevelDataPtr, 6);
@@ -813,6 +813,58 @@ namespace SM3E
     {
     }
 
+
+//========================================================================================
+// Room state data edit events
+
+
+    private void RoomNameInput_Update (object sender, RoutedEventArgs e)
+    {
+      MainProject.RoomName = RoomNameInput.Text;
+    }
+
+
+    private void UpScrollerInput_Update (object sender, RoutedEventArgs e)
+    {
+      MainProject.UpScroller = Tools.HexToInt (UpScrollerInput.Text);
+    }
+
+
+    private void DownScrollerInput_Update (object sender, RoutedEventArgs e)
+    {
+      MainProject.DownScroller = Tools.HexToInt (DownScrollerInput.Text);
+    }
+
+
+    private void SpecialGfxInput_Update (object sender, RoutedEventArgs e)
+    {
+      MainProject.SpecialGfx = Tools.HexToInt (SpecialGfxInput.Text);
+    }
+
+
+    private void StateEventNumberInput_Update (object sender, RoutedEventArgs e)
+    {
+      MainProject.RoomStateEventNumber = Tools.HexToInt (StateEventNumberInput.Text);
+    }
+
+
+    private void StateSongeSetInput_Update (object sender, RoutedEventArgs e)
+    {
+      MainProject.SongSet = Tools.HexToInt (StateSongeSetInput.Text);
+    }
+
+
+    private void StatePlayIndexInput_Update (object sender, RoutedEventArgs e)
+    {
+      MainProject.PlayIndex = Tools.HexToInt (StatePlayIndexInput.Text);
+    }
+
+
+    private void StateBgScrollingInput_Update (object sender, RoutedEventArgs e)
+    {
+      MainProject.BackgroundScrolling = Tools.HexToInt (StateBgScrollingInput.Text);
+    }
+
   } // class MainWindow
 
 
@@ -821,6 +873,7 @@ namespace SM3E
 //========================================================================================
 
 
+  // [wip] find a better place for this class
   static class BtsConvert
   {
 

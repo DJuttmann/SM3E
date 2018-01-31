@@ -169,8 +169,11 @@ namespace SM3E
       }
       set
       {
-        if (ActiveRoom != null)
+        if (ActiveRoom != null && (byte) value != ActiveRoom.Area)
+        {
           ActiveRoom.Area = (byte) value;
+          // [wip] select correct area & invoke events.
+        }
       }
     }
 
@@ -183,8 +186,11 @@ namespace SM3E
       }
       set
       {
-        if (ActiveRoom != null)
+        if (ActiveRoom != null && ActiveRoom.Name != value)
+        {
           ActiveRoom.Name = value;
+          RoomListChanged (this, new ListLoadEventArgs (RoomIndex));
+        }
       }
     }
 
@@ -197,8 +203,11 @@ namespace SM3E
       }
       set
       {
-        if (ActiveRoom != null)
+        if (ActiveRoom != null && ActiveRoom.UpScroller != (byte) value)
+        {
           ActiveRoom.UpScroller = (byte) value;
+          RoomDataModified?.Invoke (this, null);
+        }
       }
     }
 
@@ -211,8 +220,11 @@ namespace SM3E
       }
       set
       {
-        if (ActiveRoom != null)
+        if (ActiveRoom != null &&  ActiveRoom.DownScroller != (byte) value)
+        {
           ActiveRoom.DownScroller = (byte) value;
+          RoomDataModified?.Invoke (this, null);
+        }
       }
     }
 
@@ -225,8 +237,11 @@ namespace SM3E
       }
       set
       {
-        if (ActiveRoom != null)
+        if (ActiveRoom != null && ActiveRoom.SpecialGfxBitflag != (byte) value)
+        {
           ActiveRoom.SpecialGfxBitflag = (byte) value;
+          RoomDataModified?.Invoke (this, null);
+        }
       }
     }
 
@@ -241,8 +256,12 @@ namespace SM3E
       }
       set
       {
-        if (RoomStateIndex != IndexNone)
+        if (RoomStateIndex != IndexNone &&
+            ActiveRoom.RoomStateHeaders [RoomStateIndex].HeaderType != value)
+        {
           ActiveRoom.RoomStateHeaders [RoomStateIndex].HeaderType = value;
+          RoomStateDataModified?.Invoke (this, null);
+        }
       }
     }
 
@@ -257,8 +276,12 @@ namespace SM3E
       }
       set
       {
-        if (RoomStateIndex != IndexNone)
+        if (RoomStateIndex != IndexNone &&
+            ActiveRoom.RoomStateHeaders [RoomStateIndex].Value != (byte) value)
+        {
           ActiveRoom.RoomStateHeaders [RoomStateIndex].Value = (byte) value;
+          RoomStateDataModified?.Invoke (this, null);
+        }
       }
     }
 
@@ -271,8 +294,11 @@ namespace SM3E
       }
       set
       {
-        if (ActiveRoomState != null)
+        if (ActiveRoomState != null && ActiveRoomState.SongSet != (byte) value)
+        {
           ActiveRoomState.SongSet = (byte) value;
+          RoomStateDataModified?.Invoke (this, null);
+        }
       }
     }
 
@@ -285,8 +311,11 @@ namespace SM3E
       }
       set
       {
-        if (ActiveRoomState != null)
+        if (ActiveRoomState != null && ActiveRoomState.PlayIndex != (byte) value)
+        {
           ActiveRoomState.PlayIndex = (byte) value;
+          RoomStateDataModified?.Invoke (this, null);
+        }
       }
     }
 
@@ -299,8 +328,11 @@ namespace SM3E
       }
       set
       {
-        if (ActiveRoomState != null)
+        if (ActiveRoomState != null && ActiveRoomState.BackgroundScrolling != value)
+        {
           ActiveRoomState.BackgroundScrolling = value;
+          RoomStateDataModified?.Invoke (this, null);
+        }
       }
     }
 
@@ -831,8 +863,10 @@ namespace SM3E
       LevelDataModified?.Invoke (this, e);
     }
 
+
 //========================================================================================
 // Scrolls
+
 
     public ScrollColor GetScroll (int x, int y)
     {
@@ -853,6 +887,23 @@ namespace SM3E
       int index = ActiveRoom.RoomW * y + x;
       return ActiveRoomState.MyScrollSet [index];
     }
+
+
+    public void SetScroll (int x, int y)
+    {
+      if (ActiveRoom == null || ActiveRoomState == null)
+        return;
+      if (ActiveRoomState.MyScrollSet != null)
+      {
+        int index = ActiveRoom.RoomW * y + x;
+        ActiveScrollData [index] = ActiveScrollColor;
+      }
+    }
+
+
+//========================================================================================
+// Room State Data
+
 
   } // class Project
 

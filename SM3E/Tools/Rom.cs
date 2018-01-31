@@ -193,36 +193,27 @@ namespace SM3E
     }
 
 
-    public byte [] Input; // input data, set before compressing.
+    // Input data, set before compressing.
+    public byte [] Input;
 
+    // For every Input address, these arrays save the max number of bytes that can be
+    // compressed with a single chunk, starting at that address.
     private int [] ByteFillLengths;
     private int [] WordFillLengths;
     private int [] ByteIncrementLengths;
     private Interval [] CopyLengths;
     private Interval [] XorCopyLengths;
 
-    private List <int> [] Addresses; // list of candidate start addresses for copy
+    // Lists of candidate start addresses for copy, sorted by byte value at that address.
+    private List <int> [] Addresses;
 
 
+    // Constructor.
     public Compressor ()
     {
-      ByteFillLengths      = new int [Input.Length];
-      WordFillLengths      = new int [Input.Length];
-      ByteIncrementLengths = new int [Input.Length];
-      CopyLengths          = new Interval [Input.Length];
-      XorCopyLengths       = new Interval [Input.Length];
-
       Addresses = new List <int> [256];
       for (int i = 0; i < 256; i++)
         Addresses [i] = new List <int> ();
-    }
-
-
-    // Reset for new compression job.
-    private void Reset ()
-    {
-      for (int i = 0; i < 256; i++)
-        Addresses [i].Clear ();
     }
 
 
@@ -232,12 +223,10 @@ namespace SM3E
       if (Input == null)
         return null;
       var output = new List <byte> ();
-      Reset ();
       CalculateByteFill ();
       CalculateWordFill ();
       CalculateByteIncrement ();
       CalculateCopy ();
-      CalculateXorCopy ();
 
       int i = 0;
       while (i < Input.Length)
@@ -295,6 +284,7 @@ namespace SM3E
         }
         i += length;
       }
+      output.Add (0xFF);
       return output;
     }
 
@@ -389,12 +379,15 @@ namespace SM3E
       output.Add ((byte) negOffset);
     }
 
-//----------------------------------------------------------------------------------------
-// Calculating max lengths of commands at all positions in the input stream.
 
-    // Calculate lengths of maximal byte fill commands.
+//========================================================================================
+// Calculating max lengths of output chunks at all positions in the input stream.
+
+
+    // Calculate lengths of maximal byte fill chunks.
     private void CalculateByteFill ()
     {
+      ByteFillLengths = new int [Input.Length];
       int carry = 0;
       for (int i = 0; i < Input.Length; i++)
       {
@@ -410,9 +403,10 @@ namespace SM3E
     }
 
 
-    // Calculate lengths of maximal word fill commands.
+    // Calculate lengths of maximal word fill chunks.
     private void CalculateWordFill ()
     {
+      WordFillLengths = new int [Input.Length];
       int carry = 1;
       for (int i = 0; i < Input.Length - 1; i++)
       {
@@ -429,9 +423,10 @@ namespace SM3E
     }
 
 
-    // Calculate lengths of maximal byte fill commands.
+    // Calculate lengths of maximal byte increment chunks.
     private void CalculateByteIncrement ()
     {
+      ByteIncrementLengths = new int [Input.Length];
       int carry = 0;
       for (int i = 0; i < Input.Length; i++)
       {
@@ -450,12 +445,18 @@ namespace SM3E
     }
 
 
-    // Calculate lengths of maximal byte fill commands.
+    // Calculate lengths of maximal copy and xor-copy chunks.
     private void CalculateCopy ()
     {
+      CopyLengths = new Interval [Input.Length];
+      XorCopyLengths = new Interval [Input.Length];
       Interval maxInterval = new Interval ();
+      for (int i = 0; i < 256; i++)
+        Addresses [i].Clear ();
+
       for (int i = 0; i < Input.Length; i++)
       {
+        // Regular copy.
         maxInterval.Reset ();
         foreach (int address in Addresses [Input [i]])
         {
@@ -467,17 +468,8 @@ namespace SM3E
           }
         }
         CopyLengths [i] = maxInterval;
-        Addresses [Input [i]].Add (i);
-      }
-    }
 
-
-    // Calculate lengths of maximal byte fill commands.
-    private void CalculateXorCopy ()
-    {
-      Interval maxInterval = new Interval ();
-      for (int i = 0; i < Input.Length; i++)
-      {
+        // Xor copy.
         maxInterval.Reset ();
         foreach (int address in Addresses [Input [~i]])
         {
@@ -488,7 +480,10 @@ namespace SM3E
             maxInterval.Length = length;
           }
         }
-        CopyLengths [i] = maxInterval;
+        XorCopyLengths [i] = maxInterval;
+
+        // Add address i to the relevant list.
+        Addresses [Input [i]].Add (i);
       }
     }
 
@@ -499,7 +494,7 @@ namespace SM3E
     {
       int bStart = b;
 
-      // Check if max byte fill and word fill lengths match.
+      // Check if max byte fill and word fill lengths at addresses a and b match.
       if (b >= Input.Length || Input [a] != Input [b])
         return 0;
       if (ByteFillLengths [a] != ByteFillLengths [b])
@@ -528,7 +523,7 @@ namespace SM3E
     {
       int bStart = b;
 
-      // Check if max byte fill and word fill lengths match.
+      // Check if max byte fill and word fill lengths at addresses a and b match.
       if (b >= Input.Length || Input [a] != ~Input [b])
         return 0;
       if (ByteFillLengths [a] != ByteFillLengths [b])

@@ -49,11 +49,11 @@ namespace SM3E
     // Level data of the current room state is changed.
     public event LevelDataEventHandler LevelDataModified;
 
-    // RoomState data changed
-    public event EventHandler RoomStateModified;
-
     // Room data changed
-    public event EventHandler RoomModified;
+    public event EventHandler RoomDataModified;
+
+    // RoomState data changed
+    public event EventHandler RoomStateDataModified;
 
   }
 

@@ -20,6 +20,7 @@ namespace SM3E
     const string hexDigits = "0123456789ABCDEF";
 
 
+    // Convert LoRom address to PC address.
     public static int LRtoPC (int B)
     {
       int B_1 = B >> 16;
@@ -32,6 +33,7 @@ namespace SM3E
     }
 
 
+    // Convert PC address to LoRom address.
     public static int PCtoLR (int A)
     {
       if (A > 0x3FFFFF)
@@ -44,18 +46,21 @@ namespace SM3E
     }
 
 
+    // Concatenate two bytes (little endian order) into an integer.
     public static int ConcatBytes (byte b0, byte b1)
     {
       return b0 + (b1 << 8);
     }
 
 
+    // Concatenate three bytes (little endian order) into an integer.
     public static int ConcatBytes (byte b0, byte b1, byte b2)
     {
       return b0 + (b1 << 8) + (b2 << 16);
     }
 
 
+    // Convert an integer to a hex string (always even number of digits in output).
     public static String IntToHex (int n)
     {
       StringBuilder hexString = new StringBuilder (string.Empty);
@@ -77,6 +82,7 @@ namespace SM3E
     }
 
 
+    // Convert an integer to a hex string, specify the number of digits of output.
     public static String IntToHex (int n, int digitCount)
     {
       StringBuilder hexString = new StringBuilder (string.Empty);
@@ -93,6 +99,7 @@ namespace SM3E
     }
 
 
+    // Convert a hex string to an integer.
     public static int HexToInt (string s)
     {
       int n = 0;
@@ -237,6 +244,7 @@ namespace SM3E
 
 //----------------------------------------------------------------------------------------
 
+    // Extract a filename from a full path.
     public static string FilenameFromPath (string path)
     {
       int i = path.Length - 1;
@@ -248,6 +256,7 @@ namespace SM3E
     }
 
 
+    // Trim the extension from a filename, extension is returned as out variable.
     public static void TrimFileExtension (ref string filename, out string extension)
     {
       int i = filename.Length - 1;
