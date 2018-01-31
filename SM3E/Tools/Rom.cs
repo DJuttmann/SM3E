@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Reflection;
 //using MBuild.Properties;
 using System.Text;
+using System.Collections;
 using System.Collections.Generic;
 
 
@@ -19,7 +20,8 @@ namespace SM3E
   {
     public byte [] Data;
     private int Position = 0;
-    private Compressor Comp = new Compressor ();
+    private List <RomSection> Sections;
+    private Compressor Comp = new Compressor (null);
 
 
     // Constructor, read bytes from file.
@@ -43,6 +45,16 @@ namespace SM3E
         return false;
       for (int i = 0; i < count; i++)
         dest [offset + i] = Data [Position + i];
+      Position += count;
+      return true;
+    }
+
+
+    // Read <count> bytes from ROM and append to list.
+    public bool Read (IList <byte> dest, int count)
+    {
+      for (int i = 0; i < count; i++)
+        dest.Add (Data [Position + i]);
       Position += count;
       return true;
     }
@@ -169,7 +181,84 @@ namespace SM3E
       return Comp.Compress ();
     }
 
+
+    public void Reallocate (int sectionIndex, ArrayList objects)
+    {
+      sectionIndex -= 0x80;
+      Sections [sectionIndex].Allocate (objects);
+      // [wip]
+    }
+
   } // class Rom
+
+
+//========================================================================================
+// CLASS SECTION
+//========================================================================================
+
+
+  class RomSection
+  {
+    // A contigious block of data within a rom.
+    private struct DataBlock
+    {
+      public bool IsFree;
+      public String Description;
+      public int Address;
+      public int Length;
+    }
+
+
+    // Fields
+    List <DataBlock> Data;
+
+
+    // Constructor
+    public RomSection (int bankIndex)
+    {
+      Data = new List <DataBlock> ();
+    }
+
+
+    // IComparer for sorting Data objects by start address.
+    private class DataCompare: IComparer
+    {
+      public int Compare (object x, object y)
+      {
+        return ((Data) x).StartAddressPC - ((Data) y).StartAddressPC;
+      }
+    }
+
+
+    // Try to place data objects in the available free space of the bank.
+    public bool Allocate (ArrayList objects)
+    {
+      List <int> newAddresses = new List <int> ();
+      objects.Sort (new DataCompare ());
+      int i = 0;
+      foreach (DataBlock block in Data)
+      {
+        if (block.IsFree)
+        {
+          int address = block.Address;
+          while (i < objects.Count &&
+                 address + ((Data) objects [i]).Size < block.Address + block.Length)
+          {
+            newAddresses.Add (address);
+            address += ((Data) objects [i]).Size;
+            i++;
+          }
+        }
+      }
+      if (i < objects.Count)
+        return false;
+
+      for (int n = 0; n < objects.Count; n++)
+        ((Data) objects [i]).Reallocate (newAddresses [i]);
+      return true;
+    }
+
+  } // class Bank
 
 
 //========================================================================================
@@ -179,6 +268,7 @@ namespace SM3E
 
   class Compressor
   {
+
     // An interval of a byte stream, defined by its address and length.
     private struct Interval
     {
@@ -209,7 +299,7 @@ namespace SM3E
 
 
     // Constructor.
-    public Compressor ()
+    public Compressor (byte [] input)
     {
       Addresses = new List <int> [256];
       for (int i = 0; i < 256; i++)
@@ -471,7 +561,7 @@ namespace SM3E
 
         // Xor copy.
         maxInterval.Reset ();
-        foreach (int address in Addresses [Input [~i]])
+        foreach (int address in Addresses [Input [i] ^ 0xFF])
         {
           int length = XorMatchSubSequences (address, i);
           if (length > maxInterval.Length)
@@ -524,11 +614,11 @@ namespace SM3E
       int bStart = b;
 
       // Check if max byte fill and word fill lengths at addresses a and b match.
-      if (b >= Input.Length || Input [a] != ~Input [b])
+      if (b >= Input.Length || Input [a] != (Input [b] ^ 0xFF))
         return 0;
       if (ByteFillLengths [a] != ByteFillLengths [b])
         return (Math.Min (ByteFillLengths [a], ByteFillLengths [b]));
-      if (b + 1 >= Input.Length || Input [a + 1] != ~Input [b + 1])
+      if (b + 1 >= Input.Length || Input [a + 1] != (Input [b + 1] ^ 0xFF))
         return 1;
       if (WordFillLengths [a] != WordFillLengths [b])
         return (Math.Min (WordFillLengths [a], WordFillLengths [b]));
@@ -537,7 +627,7 @@ namespace SM3E
       int step = Math.Max (ByteFillLengths [a], WordFillLengths [a]);
       a += step;
       b += step;
-      while (b < Input.Length && Input [a] == ~Input [b])
+      while (b < Input.Length && Input [a] == (Input [b] ^ 0xFF))
       {
         a++;
         b++;

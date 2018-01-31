@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,9 @@ namespace SM3E
   {
     private const string PlmFolder = "\\Data\\PLMs";
     private const string EnemyFolder = "\\Data\\Enemies";
+
+    // The rom that is being edited.
+    private Rom CurrentRom;
 
 
 //========================================================================================
@@ -31,30 +35,27 @@ namespace SM3E
                        out roomAddresses, out roomDoorCounts, out roomNames);
 
       // Read uncompressed data from ROM.
-      // Stream rom = new FileStream (romFile, FileMode.Open, FileAccess.Read);
-      Rom rom = new Rom (romFile);
+      CurrentRom = new Rom (romFile);
 
-      // System.Windows.MessageBox.Show ("Test 0");
-      ReadRooms (rom, roomAddresses, roomNames, roomDoorCounts);
-      ReadDoors (rom);
-      ReadScrollSets (rom);
-      ReadPlmSets (rom);
-      ReadScrollPlmDatas (rom);
-      ReadBackgrounds (rom);
-      ReadFxs (rom);
-      ReadSaveRooms (rom);
-      ReadEnemySets (rom);
-      ReadEnemyGfxs (rom);
-      ReadScrollAsms (rom);
-      ReadTileSets (rom);
-      ReadAreaMaps (rom, AreaMap.Addresses);
+      ReadRooms (CurrentRom, roomAddresses, roomNames, roomDoorCounts);
+      ReadDoors (CurrentRom);
+      ReadScrollSets (CurrentRom);
+      ReadPlmSets (CurrentRom);
+      ReadScrollPlmDatas (CurrentRom);
+      ReadBackgrounds (CurrentRom);
+      ReadFxs (CurrentRom);
+      ReadSaveRooms (CurrentRom);
+      ReadEnemySets (CurrentRom);
+      ReadEnemyGfxs (CurrentRom);
+      ReadScrollAsms (CurrentRom);
+      ReadTileSets (CurrentRom);
+      ReadAreaMaps (CurrentRom, AreaMap.Addresses);
 
-      // Read compressed data from ROM.
-      ReadLevelData (rom);
-      ReadTileTables (rom);
-      ReadTileSheets (rom);
-      ReadPalettes (rom);
-      LoadMapTiles (rom);
+      ReadLevelData (CurrentRom);
+      ReadTileTables (CurrentRom);
+      ReadTileSheets (CurrentRom);
+      ReadPalettes (CurrentRom);
+      LoadMapTiles (CurrentRom);
 
       ReadPlmTypes ();
       ReadEnemyTypes ();
@@ -550,6 +551,60 @@ namespace SM3E
 
 //========================================================================================
 // Writing ROM data.
+
+    
+    private void Repoint (ArrayList objects)
+    {
+      foreach (IRepointable d in objects)
+        d.Repoint ();
+    }
+
+    
+    private void RallocateBank83 ()
+    {
+      var objects = new ArrayList ();
+      objects.AddRange (Doors);
+      objects.AddRange (Fxs);
+      CurrentRom.Reallocate (0x83, objects);
+    }
+
+    
+    private void RallocateBank8F ()
+    {
+      var objects = new ArrayList ();
+      objects.AddRange (Rooms);
+      objects.AddRange (DoorSets);
+      objects.AddRange (ScrollSets);
+      objects.AddRange (PlmSets);
+      objects.AddRange (ScrollPlmDatas);
+      objects.AddRange (Backgrounds);
+      objects.AddRange (ScrollAsms);
+      CurrentRom.Reallocate (0x8F, objects);
+    }
+
+
+    private void RallocateBankA1 ()
+    {
+      var objects = new ArrayList ();
+      objects.AddRange (EnemySets);
+      CurrentRom.Reallocate (0xA1, objects);
+    }
+
+
+    private void RallocateBankB4 ()
+    {
+      var objects = new ArrayList ();
+      objects.AddRange (EnemyGfxs);
+      CurrentRom.Reallocate (0xA1, objects);
+    }
+
+
+    private void RallocateBankCX ()
+    {
+      var objects = new ArrayList ();
+      objects.AddRange (EnemyGfxs);
+      // [wip] CurrentRom.Reallocate (0xC2, objects);
+    }
 
   } // partial class project
 

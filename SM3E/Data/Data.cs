@@ -62,10 +62,18 @@ namespace SM3E
 //    public const int ScrollSetAllGreen = 0x8F0001;
 //  }
 
-
+   
+  // Interface for data classes that contains pointers to reallocatable objects.
   interface IRepointable
   {
     void Repoint ();
+  }
+
+
+  // Interface fro data classes that are stored in compressed format on the rom.
+  interface ICompressed
+  {
+    bool Compress ();
   }
 
 

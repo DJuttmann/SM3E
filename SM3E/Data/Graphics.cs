@@ -145,11 +145,28 @@ namespace SM3E
 //========================================================================================
 
 
-  class CompressedTileSheet: TileSheet
+  class CompressedTileSheet: TileSheet, ICompressed
   {
+    protected List <byte> CompressedData;
+    protected bool CompressionUpToDate = false;
+
+
+    public override int Size
+    {
+      get
+      {
+        if (!CompressionUpToDate)
+          Compress ();
+        return CompressedData.Count;
+      }
+    }
+
 
     // Constructor.
-    public CompressedTileSheet (): base () {}
+    public CompressedTileSheet (): base ()
+    {
+      CompressedData = new List <byte> ();
+    }
 
 
     // Read data from ROM at given PC address.
@@ -163,12 +180,15 @@ namespace SM3E
 
       //decompressedSize = Compression.ReadCompressedData (out b, addressPC);
       rom.Seek (addressPC, null);
-      rom.Decompress (out List <byte> buffer);
+      int compressedSize = rom.Decompress (out List <byte> buffer);
+      CompressedData.Clear ();
+      rom.Seek (addressPC, null);
+      rom.Read (CompressedData, compressedSize);
       int decompressedSize = buffer.Count;
-      if (decompressedSize > 100000)
-        decompressedSize = 100000;  // Dunno how important these lines are (some safety mechanism?)
+      // if (decompressedSize > 100000)
+      //   decompressedSize = 100000;  // Dunno how important these lines are (some safety mechanism?)
 
-      pixelCount = decompressedSize << 1; // double the decompressed size (pixel takes 4 bits)
+      pixelCount = decompressedSize << 1; // 2x decompressed size (1 pixel uses 4 bits)
       TileCount = pixelCount >> 6;        // this resizes the Bytes list
 
       for (int t = 0; t < TileCount; t++) {
@@ -213,6 +233,13 @@ namespace SM3E
 
     // Write data to ROM at current position (addressPC), which is updated.
     public override bool WriteToROM (Stream rom, ref int addressPC)
+    {
+      // [wip]
+      return false;
+    }
+
+
+    public bool Compress ()
     {
       // [wip]
       return false;

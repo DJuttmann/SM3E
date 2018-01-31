@@ -14,7 +14,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class LevelData: Data
+  class LevelData: Data, ICompressed
   {
     int ScreenCount;
 
@@ -24,11 +24,17 @@ namespace SM3E
 
     public List <RoomState> MyRoomStates;
 
-    protected byte [] CompressedData;
+    protected List <byte> CompressedData;
+    protected bool CompressionUpToDate = false;
 
     public override int Size
     {
-      get {return CompressedData != null ? CompressedData.Length : 0;}
+      get
+      {
+        if (!CompressionUpToDate)
+          Compress ();
+        return CompressedData.Count;
+      }
     }
 
     public bool HasLayer2
@@ -47,7 +53,7 @@ namespace SM3E
       BTS = new List <byte> ();
 
       MyRoomStates = new List <RoomState> ();
-      CompressedData = null;
+      CompressedData = new List <byte> ();
 
       startAddressPC = 0;
     }
@@ -58,9 +64,9 @@ namespace SM3E
     {
       rom.Seek (addressPC, null);
       int compressedSize = rom.Decompress (out List <byte> buffer);
-      CompressedData = new byte [compressedSize];
+      CompressedData.Clear ();
       rom.Seek (addressPC, null);
-      rom.Read (CompressedData, 0, compressedSize);
+      rom.Read (CompressedData, compressedSize);
       int decompressedSize = buffer.Count;
 
       int Layer1Size = Tools.ConcatBytes (buffer [0], buffer [1]);
@@ -87,7 +93,6 @@ namespace SM3E
         Layer2Counter += 2;
       }
 
-//      CompressedDataSize = 0; // [wip] is this is a thing?
       startAddressPC = addressPC;
       return decompressedSize > 0;
     }
@@ -115,7 +120,8 @@ namespace SM3E
         index += 2;
       }  
 
-      // CompressedData = Compression.CompressData (buffer);
+      Compressor c = new Compressor (buffer);
+      CompressedData = c.Compress ();
       return CompressedData != null;
     }
 
@@ -125,7 +131,9 @@ namespace SM3E
     {
       if (CompressedData == null)
         return false;
-      rom.Write (CompressedData, 0, Size);
+      if (!CompressionUpToDate)
+        Compress ();
+      rom.Write (CompressedData.ToArray (), 0, Size);
       addressPC += Size;
       return true;
     }
