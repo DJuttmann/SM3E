@@ -34,29 +34,29 @@ namespace SM3E
 
 
     // Fields
-    private string []            Areas = new string [AreaCount];
-    private List <Room      > [] Rooms = new List <Room> [AreaCount];
-    private List <DoorSet      > DoorSets;
-    private List <Door         > Doors;
-    private List <RoomState    > RoomStates;
-    private List <ScrollSet    > ScrollSets;
-    private List <PlmSet       > PlmSets;
-    private List <ScrollPlmData> ScrollPlmDatas;
-    private List <Background   > Backgrounds;
-    private List <Fx           > Fxs;
-    private List <SaveRoom     > SaveRooms;
-    private List <LevelData    > LevelDatas;
-    private List <EnemySet     > EnemySets;
-    private List <EnemyGfx     > EnemyGfxs;
-    private List <ScrollAsm    > ScrollAsms;
+    private string [] Areas = new string [AreaCount];
+    private List <Data> [] Rooms = new List <Data> [AreaCount];
+    private List <Data> DoorSets;
+    private List <Data> Doors;
+    private List <Data> RoomStates;
+    private List <Data> ScrollSets;
+    private List <Data> PlmSets;
+    private List <Data> ScrollPlmDatas;
+    private List <Data> Backgrounds;
+    private List <Data> Fxs;
+    private List <Data> SaveRooms;
+    private List <Data> LevelDatas;
+    private List <Data> EnemySets;
+    private List <Data> EnemyGfxs;
+    private List <Data> ScrollAsms;
 
-    private List <TileSet      > TileSets;
-    private List <TileTable    > TileTables;
-    private List <TileSheet    > TileSheets;
-    private List <Palette      > Palettes;
-    private List <AreaMap      > AreaMaps;
-    private List <PlmType      > PlmTypes;
-    private List <EnemyType    > EnemyTypes;
+    private List <Data> TileSets;
+    private List <Data> TileTables;
+    private List <Data> TileSheets;
+    private List <Data> Palettes;
+    private List <Data> AreaMaps;
+    private List <PlmType> PlmTypes;
+    private List <EnemyType> EnemyTypes;
 
 
 //========================================================================================
@@ -428,7 +428,8 @@ namespace SM3E
       {
         var names = new List <string> ();
         if (AreaIndex != IndexNone && RoomIndex != IndexNone)
-          foreach (RoomStateHeader r in Rooms [AreaIndex] [RoomIndex].RoomStateHeaders)
+          foreach (RoomStateHeader r 
+                   in ((Room) Rooms [AreaIndex] [RoomIndex]).RoomStateHeaders)
             names.Add (r.HeaderType.ToString ());
         return names;
       }
@@ -614,28 +615,28 @@ namespace SM3E
     public Project ()
     {
       for (int i = 0; i < AreaCount; i++)
-        Rooms [i]    = new List <Room         > ();
-      DoorSets       = new List <DoorSet      > ();
-      Doors          = new List <Door         > ();
-      RoomStates     = new List <RoomState    > ();
-      ScrollSets     = new List <ScrollSet    > ();
-      PlmSets        = new List <PlmSet       > ();
-      ScrollPlmDatas = new List <ScrollPlmData> ();
-      Backgrounds    = new List <Background   > ();
-      Fxs            = new List <Fx           > ();
-      SaveRooms      = new List <SaveRoom     > ();
-      LevelDatas     = new List <LevelData    > ();
-      EnemySets      = new List <EnemySet     > ();
-      EnemyGfxs      = new List <EnemyGfx     > ();
-      ScrollAsms     = new List <ScrollAsm    > ();
+        Rooms [i]    = new List <Data> ();
+      DoorSets       = new List <Data> ();
+      Doors          = new List <Data> ();
+      RoomStates     = new List <Data> ();
+      ScrollSets     = new List <Data> ();
+      PlmSets        = new List <Data> ();
+      ScrollPlmDatas = new List <Data> ();
+      Backgrounds    = new List <Data> ();
+      Fxs            = new List <Data> ();
+      SaveRooms      = new List <Data> ();
+      LevelDatas     = new List <Data> ();
+      EnemySets      = new List <Data> ();
+      EnemyGfxs      = new List <Data> ();
+      ScrollAsms     = new List <Data> ();
 
-      TileSets       = new List <TileSet      > ();
-      TileTables     = new List <TileTable    > ();
-      TileSheets     = new List <TileSheet    > ();
-      Palettes       = new List <Palette      > ();
-      AreaMaps       = new List <AreaMap      > ();
-      PlmTypes       = new List <PlmType      > ();
-      EnemyTypes     = new List <EnemyType    > ();
+      TileSets       = new List <Data> ();
+      TileTables     = new List <Data> ();
+      TileSheets     = new List <Data> ();
+      Palettes       = new List <Data> ();
+      AreaMaps       = new List <Data> ();
+      PlmTypes       = new List <PlmType> ();
+      EnemyTypes     = new List <EnemyType> ();
 
       // Load Resources.
       LoadBtsTiles ();

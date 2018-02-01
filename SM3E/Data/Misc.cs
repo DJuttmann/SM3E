@@ -245,10 +245,10 @@ namespace SM3E
     }
 
 
-    public bool Connect (List <Door> Doors)
+    public bool Connect (List <Data> Doors)
     {
       if (NotNull && DoorPtr >= 0x8F8000) {     // != 0x8F0000) {
-        MyDoor = Doors.Find (x => x.StartAddressLR == DoorPtr);
+        MyDoor = (Door) Doors.Find (x => x.StartAddressLR == DoorPtr);
         return (MyDoor != null);
       }
       MyDoor = null;

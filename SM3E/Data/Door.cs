@@ -132,12 +132,12 @@ namespace SM3E
     }
 
 
-    public bool Connect (List <Room> Rooms, List <ScrollAsm> ScrollAsms)
+    public bool Connect (List <Data> Rooms, List <Data> ScrollAsms)
     {
-      MyTargetRoom = Rooms.Find (x => x.StartAddressLR == RoomPtr);
+      MyTargetRoom = (Room) Rooms.Find (x => x.StartAddressLR == RoomPtr);
       if (MyTargetRoom != null)
         MyTargetRoom.MyIncomingDoors.Add (this);
-      MyScrollAsm = ScrollAsms.Find (x => x.StartAddressLR == DoorAsmPtr);
+      MyScrollAsm = (ScrollAsm) ScrollAsms.Find (x => x.StartAddressLR == DoorAsmPtr);
       if (MyScrollAsm != null)
         MyScrollAsm.MyDoors.Add (this);
       else
@@ -282,11 +282,11 @@ namespace SM3E
     }
 
 
-    public bool Connect (List <Door> Doors)
+    public bool Connect (List <Data> Doors)
     {
       bool success = true;
       for (int n = 0; n < DoorPtrs.Count; n++) {
-        MyDoors.Add (Doors.Find (x => x.StartAddressLR == DoorPtrs [n]));
+        MyDoors.Add ((Door) Doors.Find (x => x.StartAddressLR == DoorPtrs [n]));
         if (MyDoors [n] != null)
           MyDoors [n].MyDoorSets.Add (this);
         else

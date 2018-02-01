@@ -104,19 +104,19 @@ namespace SM3E
     }
 
 
-    public bool Connect (List <Room> Rooms, List <Door> Doors)
+    public bool Connect (List <Data> Rooms, List <Data> Doors)
     {
       bool success = true;
       MyRoom = null;
       if (RoomPtr != 0x8F0000)
       {
-        MyRoom = Rooms.Find (x => x.StartAddressLR == RoomPtr);
+        MyRoom = (Room) Rooms.Find (x => x.StartAddressLR == RoomPtr);
         success &= (MyRoom != null);
       }
       MyDoor = null;
       if (DoorPtr != 0x830000)
       {
-        MyDoor = Doors.Find (x => x.StartAddressLR == DoorPtr);
+        MyDoor = (Door) Doors.Find (x => x.StartAddressLR == DoorPtr);
         success &= (MyDoor != null);
       }
       return success;

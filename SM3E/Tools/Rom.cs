@@ -182,7 +182,7 @@ namespace SM3E
     }
 
 
-    public void Reallocate (int sectionIndex, ArrayList objects)
+    public void Reallocate (int sectionIndex, List <Data> objects)
     {
       sectionIndex -= 0x80;
       Sections [sectionIndex].Allocate (objects);
@@ -220,21 +220,11 @@ namespace SM3E
     }
 
 
-    // IComparer for sorting Data objects by start address.
-    private class DataCompare: IComparer
-    {
-      public int Compare (object x, object y)
-      {
-        return ((Data) x).StartAddressPC - ((Data) y).StartAddressPC;
-      }
-    }
-
-
     // Try to place data objects in the available free space of the bank.
-    public bool Allocate (ArrayList objects)
+    public bool Allocate (List <Data> objects)
     {
       List <int> newAddresses = new List <int> ();
-      objects.Sort (new DataCompare ());
+      objects.Sort ((x, y) => x.StartAddressPC - y.StartAddressPC);
       int i = 0;
       foreach (DataBlock block in Data)
       {

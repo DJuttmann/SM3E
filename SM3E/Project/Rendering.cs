@@ -52,8 +52,8 @@ namespace SM3E
     public BlitImage Tile8ToImage (int tilesheetIndex, int paletteIndex,
                                       int tileIndex)
     {
-      TileSheet t = TileSheets [tilesheetIndex];
-      Palette p = Palettes [paletteIndex];
+      TileSheet t = (TileSheet) TileSheets [tilesheetIndex];
+      Palette p = (Palette) Palettes [paletteIndex];
       int index = 256;
       byte [] data = t.RenderTile (index, p, 0);
       return new BlitImage (data, 8);
@@ -63,8 +63,8 @@ namespace SM3E
     // Loads full tilesheet into an image.
     public BlitImage TilesheetToImage (int tilesheetIndex, int paletteIndex)
     {
-      TileSheet t = TileSheets [tilesheetIndex];
-      Palette p = Palettes [paletteIndex];
+      TileSheet t = (TileSheet) TileSheets [tilesheetIndex];
+      Palette p = (Palette) Palettes [paletteIndex];
 
       byte [] data = new byte [16 * 64 * 64 * 4];
       for (int row = 0; row < 64; row++)
@@ -82,7 +82,7 @@ namespace SM3E
     // Loads a 16x16 tile from a tileset into a bitmap image.
     private BlitImage Tile16ToImage (int tilesetIndex, int index)
     {
-      TileSet t = TileSets [tilesetIndex];
+      TileSet t = (TileSet) TileSets [tilesetIndex];
       byte [] data = t.RenderTile (index);
       return new BlitImage (data, 16);
     }
@@ -155,7 +155,7 @@ namespace SM3E
       
       for (int n = 0; n < 256; n++)
       {
-        byte [] b = t.RenderTile (n, Palettes [0], 0);
+        byte [] b = t.RenderTile (n, (Palette) Palettes [0], 0);
         MapTiles.Add (new BlitImage (b, 8));
       }
 
@@ -180,7 +180,7 @@ namespace SM3E
 
       if (AreaIndex != IndexNone)
       {
-        map = AreaMaps [AreaIndex];
+        map = (AreaMap) AreaMaps [AreaIndex];
         for (int y = 0; y < 32; y++)
         {
           for (int x = 0; x < 64; x++)

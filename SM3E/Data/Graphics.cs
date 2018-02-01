@@ -618,21 +618,21 @@ namespace SM3E
     }
 
 
-    public bool Connect (List <TileTable> TileTables, List <TileSheet> TileSheets,
-                         List <Palette> Palettes)
+    public bool Connect (List <Data> TileTables, List <Data> TileSheets,
+                         List <Data> Palettes)
     {
       bool success = true;
       if (TileTables.Count == 0 || TileSheets.Count == 0)
         return false;
-      MyCreTable = TileTables [0];
-      MyCreSheet = TileSheets [0];
-      MySceTable = TileTables.Find (x => x.StartAddressLR == SceTablePtr);
+      MyCreTable = (TileTable) TileTables [0];
+      MyCreSheet = (TileSheet) TileSheets [0];
+      MySceTable = (TileTable) TileTables.Find (x => x.StartAddressLR == SceTablePtr);
       if (MySceTable == null)
         success = false;
-      MySceSheet = TileSheets.Find (x => x.StartAddressLR == SceSheetPtr);
+      MySceSheet = (TileSheet) TileSheets.Find (x => x.StartAddressLR == SceSheetPtr);
       if (MySceSheet == null)
         success = false;
-      MyPalette = Palettes.Find (x => x.StartAddressLR == PalettePtr);
+      MyPalette = (Palette) Palettes.Find (x => x.StartAddressLR == PalettePtr);
       if (MyPalette == null)
         success = false;
       return success;

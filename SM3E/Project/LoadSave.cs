@@ -145,31 +145,31 @@ namespace SM3E
     // Connect all loaded data objects.
     private bool Connect ()
     {
-      List <Room> AllRooms = new List <Room> ();
+      var AllRooms = new List <Data> ();
       foreach (var areaRooms in Rooms)
         AllRooms.AddRange (areaRooms);
 
       for (int n = 0; n < AllRooms.Count; n++)
-        AllRooms [n].Connect (DoorSets);
+        ((Room) AllRooms [n]).Connect (DoorSets);
       for (int n = 0; n < DoorSets.Count; n++)
-        DoorSets [n].Connect (Doors);
+        ((DoorSet) DoorSets [n]).Connect (Doors);
       for (int n = 0; n < Doors.Count; n++)
-        Doors [n].Connect (AllRooms, ScrollAsms);
+        ((Door) Doors [n]).Connect (AllRooms, ScrollAsms);
       for (int n = 0; n < RoomStates.Count; n++)
-        RoomStates [n].Connect (PlmSets, ScrollSets, Backgrounds, Fxs, 
+        ((RoomState) RoomStates [n]).Connect (PlmSets, ScrollSets, Backgrounds, Fxs, 
                                 LevelDatas, EnemySets, EnemyGfxs);
       for (int n = 0; n < PlmSets.Count; n++)
-        PlmSets [n].Connect (ScrollPlmDatas, PlmTypes);
+        ((PlmSet) PlmSets [n]).Connect (ScrollPlmDatas, PlmTypes);
       for (int n = 0; n < Fxs.Count; n++)
-        Fxs [n].Connect (Doors);
+        ((Fx) Fxs [n]).Connect (Doors);
       for (int n = 0; n < SaveRooms.Count; n++)
-        SaveRooms [n].Connect (AllRooms, Doors);
+        ((SaveRoom) SaveRooms [n]).Connect (AllRooms, Doors);
       for (int n = 0; n < EnemySets.Count; n++)
-        EnemySets [n].Connect (EnemyTypes);
+        ((EnemySet) EnemySets [n]).Connect (EnemyTypes);
       for (int n = 0; n < EnemyGfxs.Count; n++)
-        EnemyGfxs [n].Connect (EnemyTypes);
+        ((EnemyGfx) EnemyGfxs [n]).Connect (EnemyTypes);
       for (int n = 0; n < TileSets.Count; n++)
-        TileSets [n].Connect (TileTables, TileSheets, Palettes);
+        ((TileSet) TileSets [n]).Connect (TileTables, TileSheets, Palettes);
 
       return true;
     }
@@ -188,9 +188,9 @@ namespace SM3E
         newRoom.ReadFromROM (rom, Addresses [n]);
         newRoom.Name = Names [n];
         Rooms [newRoom.Area].Add (newRoom);
-        DoorSets.Add (new DoorSet ());
-        DoorSets [n].DoorCount = DoorCounts [n];
-        DoorSets [n].ReadFromROM (rom, newRoom.DoorsPtrPC);
+        var newDoorSet = new DoorSet () {DoorCount = DoorCounts [n]};
+        newDoorSet.ReadFromROM (rom, newRoom.DoorsPtrPC);
+        DoorSets.Add (newDoorSet);
         for (int i = 0; i < newRoom.RoomStates.Count; i++)
           RoomStates.Add (newRoom.RoomStates [i]);
       }
@@ -201,9 +201,9 @@ namespace SM3E
     private void ReadDoors (Rom rom)
     {
       List <int> addressesPC = new List <int> ();
-      for (int n = 0; n < DoorSets.Count; n++) {
-        for (int i = 0; i < DoorSets [n].DoorCount; i++) {
-          int ad_PC = Tools.LRtoPC (DoorSets [n].DoorPtrs [i]);
+      foreach (DoorSet d in DoorSets) {
+        for (int i = 0; i < d.DoorCount; i++) {
+          int ad_PC = Tools.LRtoPC (d.DoorPtrs [i]);
           addressesPC.Add (ad_PC);
         }
       }
@@ -223,14 +223,14 @@ namespace SM3E
       ScrollSets.Clear ();
       List <int> addressesPC = new List <int> ();
       for (int k = 0; k < AreaCount; k++)
-        for (int n = 0; n < Rooms [k].Count; n++)
+        foreach (Room r in Rooms [k])
         {
-          int roomArea = Rooms [k] [n].RoomW * Rooms [k] [n].RoomH;
-          int stateCount = Rooms [k] [n].RoomStates.Count;
+          int roomArea = r.RoomW * r.RoomH;
+          int stateCount = r.RoomStates.Count;
           addressesPC.Clear ();
           for (int i = 0; i < stateCount; i++)
           {
-            int address = Tools.LRtoPC (Rooms [k] [n].RoomStates [i].RoomScrollsPtr);
+            int address = Tools.LRtoPC (r.RoomStates [i].RoomScrollsPtr);
             if (address != ScrollSet.AllBlue && address != ScrollSet.AllGreen)
             addressesPC.Add (address);
           }
@@ -250,9 +250,9 @@ namespace SM3E
     private void ReadPlmSets (Rom rom)
     {
       List <int> addressesPC = new List <int> ();
-      for (int n = 0; n < RoomStates.Count; n++)
+      foreach (RoomState r in RoomStates)
       {
-        int address = Tools.LRtoPC (RoomStates [n].PlmSetPtr);
+        int address = Tools.LRtoPC (r.PlmSetPtr);
         if (address != 0)
           addressesPC.Add (address);
       }
@@ -270,10 +270,10 @@ namespace SM3E
     private void ReadScrollPlmDatas (Rom rom)
     {
       List <int> addressesPC = new List <int> ();
-      for (int n = 0; n < PlmSets.Count; n++) {
-        int plmCount = PlmSets [n].PlmCount;
+      foreach (PlmSet p in PlmSets) {
+        int plmCount = p.PlmCount;
         for (int i = 0; i < plmCount; i++) {
-          int address = Tools.LRtoPC (PlmSets [n].Plms [i].ScrollDataPtr);
+          int address = Tools.LRtoPC (p.Plms [i].ScrollDataPtr);
           if (address != 0)     // Skip non-scroll PLMs
             addressesPC.Add (address);
         }
@@ -292,8 +292,8 @@ namespace SM3E
     private void ReadBackgrounds (Rom rom)
     {
       List <int> addressesPC = new List <int> ();
-      for (int n = 0; n < RoomStates.Count; n++) {
-        int address = Tools.LRtoPC (RoomStates [n].BackgroundPtr);
+      foreach (RoomState r in RoomStates) {
+        int address = Tools.LRtoPC (r.BackgroundPtr);
         if (address != 0)     // Skip invalid addresses
           addressesPC.Add (address);
       }
@@ -311,8 +311,8 @@ namespace SM3E
     private void ReadFxs (Rom rom)
     {
       List <int> addressesPC = new List <int> ();
-      for (int n = 0; n < RoomStates.Count; n++) {
-        int address = Tools.LRtoPC (RoomStates [n].FxPtr);
+      foreach (RoomState r in RoomStates) {
+        int address = Tools.LRtoPC (r.FxPtr);
         if (address != 0)     // Skip invalid addresses
           addressesPC.Add (address);
       }
@@ -343,8 +343,8 @@ namespace SM3E
     private void ReadLevelData (Rom rom)
     {
       List <int> addressesPC = new List <int> ();
-      for (int n = 0; n < RoomStates.Count; n++) {
-        int address = Tools.LRtoPC (RoomStates [n].LevelDataPtr);
+      foreach (RoomState r in RoomStates) {
+        int address = Tools.LRtoPC (r.LevelDataPtr);
         if (address != 0)     // Skip invalid addresses
           addressesPC.Add (address);
       }
@@ -362,8 +362,8 @@ namespace SM3E
     private void ReadEnemySets (Rom rom)
     {
       List <int> addressesPC = new List <int> ();
-      for (int n = 0; n < RoomStates.Count; n++) {
-        int address = Tools.LRtoPC (RoomStates [n].EnemySetPtr);
+      foreach (RoomState r in RoomStates) {
+        int address = Tools.LRtoPC (r.EnemySetPtr);
         if (address != 0)     // Skip invalid addresses
           addressesPC.Add (address);
       }
@@ -381,8 +381,8 @@ namespace SM3E
     private void ReadEnemyGfxs (Rom rom)
     {
       List <int> addressesPC = new List <int> ();
-      for (int n = 0; n < RoomStates.Count; n++) {
-        int address = Tools.LRtoPC (RoomStates [n].EnemyGfxPtr);
+      foreach (RoomState r in RoomStates) {
+        int address = Tools.LRtoPC (r.EnemyGfxPtr);
         if (address != 0)     // Skip invalid addresses
           addressesPC.Add (address);
       }
@@ -400,8 +400,8 @@ namespace SM3E
     private void ReadScrollAsms (Rom rom)
     {
       List <int> addressesPC = new List <int> ();
-      for (int n = 0; n < Doors.Count; n++) {
-        int address = Tools.LRtoPC (Doors [n].DoorAsmPtr);
+      foreach (Door d in Doors) {
+        int address = Tools.LRtoPC (d.DoorAsmPtr);
         if (address != 0)     // Skip invalid addresses
           addressesPC.Add (address);
       }
@@ -434,8 +434,8 @@ namespace SM3E
     private void ReadTileTables (Rom rom)
     {
       List <int> addressesPC = new List <int> ();
-      for (int n = 0; n < TileSets.Count; n++) {
-        int address = Tools.LRtoPC (TileSets [n].SceTablePtr);
+      foreach (TileSet t in TileSets) {
+        int address = Tools.LRtoPC (t.SceTablePtr);
         if (address != 0)     // Skip invalid addresses
           addressesPC.Add (address);
       }
@@ -454,8 +454,8 @@ namespace SM3E
     private void ReadTileSheets (Rom rom)
     {
       List <int> addressesPC = new List <int> ();
-      for (int n = 0; n < TileSets.Count; n++) {
-        int address = Tools.LRtoPC (TileSets [n].SceSheetPtr);
+      foreach (TileSet t in TileSets) {
+        int address = Tools.LRtoPC (t.SceSheetPtr);
         if (address != 0)     // Skip invalid addresses
           addressesPC.Add (address);
       }
@@ -474,8 +474,8 @@ namespace SM3E
     private void ReadPalettes (Rom rom)
     {
       List <int> addressesPC = new List <int> ();
-      for (int n = 0; n < TileSets.Count; n++) {
-        int address = Tools.LRtoPC (TileSets [n].PalettePtr);
+      foreach (TileSet t in TileSets) {
+        int address = Tools.LRtoPC (t.PalettePtr);
         if (address != 0)     // Skip invalid addresses
           addressesPC.Add (address);
       }
@@ -562,7 +562,7 @@ namespace SM3E
     
     private void RallocateBank83 ()
     {
-      var objects = new ArrayList ();
+      var objects = new List <Data> ();
       objects.AddRange (Doors);
       objects.AddRange (Fxs);
       CurrentRom.Reallocate (0x83, objects);
@@ -571,8 +571,9 @@ namespace SM3E
     
     private void RallocateBank8F ()
     {
-      var objects = new ArrayList ();
-      objects.AddRange (Rooms);
+      var objects = new List <Data> ();
+      foreach (List <Data> roomList in Rooms)
+        objects.AddRange (roomList);
       objects.AddRange (DoorSets);
       objects.AddRange (ScrollSets);
       objects.AddRange (PlmSets);
@@ -585,7 +586,7 @@ namespace SM3E
 
     private void RallocateBankA1 ()
     {
-      var objects = new ArrayList ();
+      var objects = new List <Data> ();
       objects.AddRange (EnemySets);
       CurrentRom.Reallocate (0xA1, objects);
     }
@@ -593,7 +594,7 @@ namespace SM3E
 
     private void RallocateBankB4 ()
     {
-      var objects = new ArrayList ();
+      var objects = new List <Data> ();
       objects.AddRange (EnemyGfxs);
       CurrentRom.Reallocate (0xA1, objects);
     }
@@ -601,7 +602,7 @@ namespace SM3E
 
     private void RallocateBankCX ()
     {
-      var objects = new ArrayList ();
+      var objects = new List <Data> ();
       objects.AddRange (EnemyGfxs);
       // [wip] CurrentRom.Reallocate (0xC2, objects);
     }

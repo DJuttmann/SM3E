@@ -27,7 +27,8 @@ namespace SM3E
 
     private TileSet ActiveTileSet
     {
-      get {return TileSetIndex != IndexNone ? TileSets [TileSetIndex] : TileSets [0];}
+      get {return TileSetIndex != IndexNone ? (TileSet) TileSets [TileSetIndex]
+                                            : (TileSet) TileSets [0];}
     }
 
     private LevelData ActiveLevelData
@@ -348,7 +349,7 @@ namespace SM3E
       if (AreaIndex != IndexNone && index >= 0 && index < Rooms [AreaIndex].Count)
       {
         RoomIndex = index;
-        ActiveRoom = Rooms [AreaIndex] [RoomIndex];
+        ActiveRoom = (Room) Rooms [AreaIndex] [RoomIndex];
         ForceSelectRoomState (0);
         ForceSelectDoor (0);
       }
@@ -551,7 +552,7 @@ namespace SM3E
       do
       {
         i = (i + 1) % Rooms [AreaIndex].Count;
-        Room r = Rooms [AreaIndex] [i];
+        Room r = (Room) Rooms [AreaIndex] [i];
         if (x >= r.MapX && x < r.MapX + r.RoomW &&
             y >= r.MapY && y < r.MapY + r.RoomH)
         {

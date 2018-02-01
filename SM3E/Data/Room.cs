@@ -324,54 +324,54 @@ namespace SM3E
     }
 
 
-    public bool Connect (List <PlmSet> PlmSets,
-                         List <ScrollSet> ScrollSets,
-                         List <Background> Backgrounds,
-                         List <Fx> Fxs,
-                         List <LevelData> LevelDatas,
-                         List <EnemySet> EnemySets,
-                         List <EnemyGfx> EnemyGfxs)
+    public bool Connect (List <Data> PlmSets,
+                         List <Data> ScrollSets,
+                         List <Data> Backgrounds,
+                         List <Data> Fxs,
+                         List <Data> LevelDatas,
+                         List <Data> EnemySets,
+                         List <Data> EnemyGfxs)
     {
       bool success = true;
       if (PlmSetPtr >= 0x8F8000) {
-        MyPlmSet = PlmSets.Find (x => x.StartAddressLR == PlmSetPtr);
+        MyPlmSet = (PlmSet) PlmSets.Find (x => x.StartAddressLR == PlmSetPtr);
         if (MyPlmSet != null)
           MyPlmSet.MyRoomStates.Add (this);
         else
           success = false;
       }
       if (RoomScrollsPtr >= 0x8F8000) {
-        MyScrollSet = ScrollSets.Find (x => x.StartAddressLR == RoomScrollsPtr);
+        MyScrollSet = (ScrollSet) ScrollSets.Find (x => x.StartAddressLR == RoomScrollsPtr);
         if (MyScrollSet != null)
           MyScrollSet.MyRoomStates.Add (this);
         else
           success = false;
       }
       if (BackgroundPtr >= 0x8F8000) {
-        MyBackground = Backgrounds.Find (x => x.StartAddressLR == BackgroundPtr);
+        MyBackground = (Background) Backgrounds.Find (x => x.StartAddressLR == BackgroundPtr);
         if (MyBackground != null)
           MyBackground.MyRoomStates.Add (this);
         else
           success = false;
       }
       if (FxPtr >= 0x838000) {
-        MyFx = Fxs.Find (x => x.StartAddressLR == FxPtr);
+        MyFx = (Fx) Fxs.Find (x => x.StartAddressLR == FxPtr);
         if (MyFx != null)
           MyFx.MyRoomStates.Add (this);
         else
           success = false;
       }
-      MyLevelData = LevelDatas.Find (x => x.StartAddressLR == LevelDataPtr);
+      MyLevelData = (LevelData) LevelDatas.Find (x => x.StartAddressLR == LevelDataPtr);
       if (MyLevelData != null)
         MyLevelData.MyRoomStates.Add (this);
       else
         success = false;
-      MyEnemySet = EnemySets.Find (x => x.StartAddressLR == EnemySetPtr);
+      MyEnemySet = (EnemySet) EnemySets.Find (x => x.StartAddressLR == EnemySetPtr);
       if (MyEnemySet != null)
         MyEnemySet.MyRoomStates.Add (this);
       else
         success = false;
-      MyEnemyGfx = EnemyGfxs.Find (x => x.StartAddressLR == EnemyGfxPtr);
+      MyEnemyGfx = (EnemyGfx) EnemyGfxs.Find (x => x.StartAddressLR == EnemyGfxPtr);
       if (MyEnemyGfx != null)
         MyEnemyGfx.MyRoomStates.Add (this);
       else
@@ -607,9 +607,9 @@ namespace SM3E
     }
 
 
-    public bool Connect (List <DoorSet> DoorSets)
+    public bool Connect (List <Data> DoorSets)
     {
-      MyDoorSet = DoorSets.Find (x => x.StartAddressLR == DoorsPtr);
+      MyDoorSet = (DoorSet) DoorSets.Find (x => x.StartAddressLR == DoorsPtr);
       if (MyDoorSet != null)
         MyDoorSet.MyRoom = this;
       for (int n = 0; n < RoomStates.Count; n++)

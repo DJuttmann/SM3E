@@ -101,12 +101,13 @@ namespace SM3E
     }
 
 
-    public bool Connect (List <ScrollPlmData> ScrollPlmDatas, List <PlmType> PlmTypes)
+    public bool Connect (List <Data> ScrollPlmDatas, List <PlmType> PlmTypes)
     {
       MyPlmType = PlmTypes.Find (x => x.PlmID == PlmID);
 
       if (PlmID == ScrollID) {
-        MyScrollPlmData = ScrollPlmDatas.Find (x => x.StartAddressLR == MainVariable);
+        MyScrollPlmData =
+          (ScrollPlmData) ScrollPlmDatas.Find (x => x.StartAddressLR == MainVariable);
         if (MyScrollPlmData != null)
           MyScrollPlmData.MyPlms.Add (this);
         return MyScrollPlmData != null;
@@ -226,7 +227,7 @@ namespace SM3E
     }
 
 
-    public bool Connect (List <ScrollPlmData> ScrollPlmDatas, List <PlmType> PlmTypes)
+    public bool Connect (List <Data> ScrollPlmDatas, List <PlmType> PlmTypes)
     {
       bool success = true;
       for (int n = 0; n < Plms.Count; n++) {
