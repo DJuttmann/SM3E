@@ -35,8 +35,6 @@ namespace SM3E
                        out roomAddresses, out roomDoorCounts, out roomNames);
 
       // Read uncompressed data from ROM.
-      CurrentRom = new Rom (romFile);
-
       ReadRooms (CurrentRom, roomAddresses, roomNames, roomDoorCounts);
       ReadDoors (CurrentRom);
       ReadScrollSets (CurrentRom);
@@ -51,12 +49,14 @@ namespace SM3E
       ReadTileSets (CurrentRom);
       ReadAreaMaps (CurrentRom, AreaMap.Addresses);
 
+      // Read Compressed data from ROM.
       ReadLevelData (CurrentRom);
       ReadTileTables (CurrentRom);
       ReadTileSheets (CurrentRom);
       ReadPalettes (CurrentRom);
       LoadMapTiles (CurrentRom);
 
+      // Read data from Data folder.
       ReadPlmTypes ();
       ReadEnemyTypes ();
 
@@ -100,9 +100,16 @@ namespace SM3E
         List <string> segments = Tools.SplitString (lines [n]);
         if (segments.Count == 0)
           continue;
+
+        // Load rom file.
         if (segments [0] == "rom" && segments.Count > 1)
+        {
           romFile = segments [1];
-        if (segments [0] == "areas") {
+          CurrentRom = new Rom (romFile);
+        }
+
+        // Load area names.
+        else if (segments [0] == "areas") {
           for (int i = 0; i < AreaCount; i++) {
             if (i + 1 < segments.Count)
               Areas [i] = segments [i + 1];
@@ -111,20 +118,29 @@ namespace SM3E
           }
         }
 
-        /* [wip] add this back in.
-        if (segments [0] == "bank83")
-          strings_to_bank (segments, bank83);
-        if (segments [0] == "bank8F") 
-          strings_to_bank (segments, bank8F);
-        if (segments [0] == "bankA1")
-          strings_to_bank (segments, bankA1);
-        if (segments [0] == "bankB4")
-          strings_to_bank (segments, bankB4);
-        if (segments [0] == "bankCX")
-          strings_to_bank (segments, bankCX);
-        */
+        // Load a ROM section.
+        else if (segments [0] == "section" && segments.Count > 2)
+        {
+          CurrentRom.AddSection (segments [1], RomSection.StringToType (segments [2]));
+          for (int i = 3; i < segments.Count; i++)
+          {
+            if (segments [i] == "rooms")
+              foreach (List <Data> roomList in Rooms)
+                CurrentRom.AddDataList (segments [1], roomList);
+            else
+              CurrentRom.AddDataList (segments [1], StringToDataList (segments [1]));
+          }
+        }
 
-        if (segments [0] == "room") {
+        // Load a data block in a section
+        else if (segments [0] == "block" && segments.Count > 3)
+        {
+          CurrentRom.AddBlock (segments [1], Tools.HexToInt (segments [2]),
+                                             Tools.HexToInt (segments [3]));
+        }
+
+        // Load room data
+        else if (segments [0] == "room") {
           if (segments.Count > 1) {
             roomAddresses.Add (Tools.HexToInt (segments [1]));
             if (segments.Count > 2)
@@ -140,6 +156,52 @@ namespace SM3E
       }
       return true;
     }
+
+
+    // Convert string to data collection reference.
+    private List <Data> StringToDataList (string s)
+    {
+      switch (s.ToLower ())
+      {
+      case "doorsets":
+        return DoorSets;
+      case "doors":
+        return Doors;
+      case "scrollsets":
+        return ScrollSets;
+      case "plmsets":
+        return PlmSets;
+      case "scrollplmdatas":
+        return ScrollPlmDatas;
+      case "backgrounds":
+        return Backgrounds;
+      case "fxs":
+        return Fxs;
+      case "saverooms":
+        return SaveRooms;
+      case "leveldatas":
+        return LevelDatas;
+      case "enemysets":
+        return EnemySets;
+      case "enemygfxs":
+        return EnemyGfxs;
+      case "scrollasms":
+        return ScrollAsms;
+      case "tilesets":
+        return TileSets;
+      case "tiletables":
+        return TileTables;
+      case "tilesheets":
+        return TileSheets;
+      case "palettes":
+        return Palettes;
+      case "areamaps":
+        return AreaMaps;
+      default:
+        return null;
+      }
+    }
+
 
 
     // Connect all loaded data objects.
@@ -553,13 +615,15 @@ namespace SM3E
 // Writing ROM data.
 
     
-    private void Repoint (ArrayList objects)
+    private void Repoint (List <Data> objects)
     {
-      foreach (IRepointable d in objects)
-        d.Repoint ();
+      foreach (Data d in objects)
+        if (d is IRepointable r)
+          r.Repoint ();
     }
 
     
+    /*
     private void RallocateBank83 ()
     {
       var objects = new List <Data> ();
@@ -605,7 +669,7 @@ namespace SM3E
       var objects = new List <Data> ();
       objects.AddRange (EnemyGfxs);
       // [wip] CurrentRom.Reallocate (0xC2, objects);
-    }
+    }*/
 
   } // partial class project
 

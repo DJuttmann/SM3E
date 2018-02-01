@@ -28,6 +28,33 @@ namespace SM3E
     public Rom (string fileName)
     {
       Data = File.ReadAllBytes (fileName);
+      Sections = new List <RomSection> ();
+    }
+
+
+    // Add a section to the ROM.
+    public void AddSection (string name, RomSection.Type type)
+    {
+      Sections.Add (new RomSection (type, name));
+    }
+
+
+    // Add a block to one of the sections in the rom
+    public bool AddBlock (string sectionName, int address, int length)
+    {
+      RomSection section = Sections.Find (x => x.Name == sectionName);
+      if (section != null)
+        return section.AddBlock (address, length);
+      return false;
+    }
+
+      
+    // Add a data list to a section of the ROM.
+    public void AddDataList (string sectionName, List <Data> dataList)
+    {
+      RomSection section = Sections.Find (x => x.Name == sectionName);
+      if (section != null)
+        section.AddData (dataList);
     }
 
 
@@ -182,11 +209,11 @@ namespace SM3E
     }
 
 
-    public void Reallocate (int sectionIndex, List <Data> objects)
+    public void Reallocate (string sectionName)
     {
-      sectionIndex -= 0x80;
-      Sections [sectionIndex].Allocate (objects);
-      // [wip]
+      RomSection section = Sections.Find (x => x.Name == sectionName);
+      if (section != null)
+        section.Reallocate ();
     }
 
   } // class Rom
@@ -199,45 +226,102 @@ namespace SM3E
 
   class RomSection
   {
+    public enum Type
+    {
+      Fixed,
+      Bank,
+      Free,
+      Unknown
+    }
+
     // A contigious block of data within a rom.
     private struct DataBlock
     {
-      public bool IsFree;
-      public String Description;
       public int Address;
       public int Length;
     }
 
 
     // Fields
-    List <DataBlock> Data;
+    Type SectionType;
+    List <DataBlock> Blocks;
+    HashSet <List <Data>> Data;
+    public String Name;
 
 
     // Constructor
-    public RomSection (int bankIndex)
+    public RomSection (Type sectionType, string name)
     {
-      Data = new List <DataBlock> ();
+      SectionType = sectionType;
+      Name = name;
+      Blocks = new List <DataBlock> ();
+      Data =  new HashSet <List <Data>> ();
     }
 
 
-    // Try to place data objects in the available free space of the bank.
+    // Convert string to section type.
+    public static Type StringToType (string s)
+    {
+      switch (s.ToLower ())
+      {
+      case "fixed":
+        return Type.Free;
+      case "bank":
+        return Type.Free;
+      case "free":
+        return Type.Free;
+      default:
+        return Type.Unknown;
+      }
+    }
+
+
+    // Add a new block to the section -- Checks if it does not overlap.
+    public bool AddBlock (int address, int length)
+    {
+      if (length <= 0 || address < 0)
+        return false;
+      foreach (DataBlock b in Blocks)
+        if (address + length >= b.Address && address <= b.Address + b.Length)
+          return false;
+      Blocks.Add (new DataBlock () {Address = address, Length = length});
+      return true;
+    }
+
+
+    // Add a data list to the section.
+    public void AddData (List <Data> dataList)
+    {
+      if (dataList != null)
+        Data.Add (dataList);
+    }
+
+
+    // Reallocate the data from the section in its data blocks.
+    public bool Reallocate ()
+    {
+      var objects = new List <Data> ();
+      foreach (List <Data> d in Data)
+        objects.AddRange (d);
+      return Allocate (objects);
+    }
+
+
+    // Allocate a list of data in the data blocks
     public bool Allocate (List <Data> objects)
     {
       List <int> newAddresses = new List <int> ();
       objects.Sort ((x, y) => x.StartAddressPC - y.StartAddressPC);
       int i = 0;
-      foreach (DataBlock block in Data)
+      foreach (DataBlock block in Blocks)
       {
-        if (block.IsFree)
+        int address = block.Address;
+        while (i < objects.Count &&
+                address + ((Data) objects [i]).Size < block.Address + block.Length)
         {
-          int address = block.Address;
-          while (i < objects.Count &&
-                 address + ((Data) objects [i]).Size < block.Address + block.Length)
-          {
-            newAddresses.Add (address);
-            address += ((Data) objects [i]).Size;
-            i++;
-          }
+          newAddresses.Add (address);
+          address += ((Data) objects [i]).Size;
+          i++;
         }
       }
       if (i < objects.Count)
