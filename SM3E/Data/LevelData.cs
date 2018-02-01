@@ -62,10 +62,10 @@ namespace SM3E
     // Read data from ROM at given PC address.
     public override bool ReadFromROM (Rom rom, int addressPC)
     {
-      rom.Seek (addressPC, null);
+      rom.Seek (addressPC);
       int compressedSize = rom.Decompress (out List <byte> buffer);
       CompressedData.Clear ();
-      rom.Seek (addressPC, null);
+      rom.Seek (addressPC);
       rom.Read (CompressedData, compressedSize);
       int decompressedSize = buffer.Count;
 

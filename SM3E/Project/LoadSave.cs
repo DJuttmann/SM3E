@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-
+using System.Text.RegularExpressions;
 
 namespace SM3E
 {
@@ -17,6 +17,8 @@ namespace SM3E
 
     // The rom that is being edited.
     private Rom CurrentRom;
+    private string RomFileName;
+    private string ProjectFileName;
 
 
 //========================================================================================
@@ -26,13 +28,11 @@ namespace SM3E
     // Read all data from the ROM, guided by data from the projectfile.
     public void Load (string projectFile)
     {
-      string romFile;
       List <int> roomAddresses;
       List <int> roomDoorCounts;
       List <string> roomNames;
 
-      ReadProjectFile (projectFile, out romFile,
-                       out roomAddresses, out roomDoorCounts, out roomNames);
+      ReadProjectFile (projectFile, out roomAddresses, out roomDoorCounts, out roomNames);
 
       // Read uncompressed data from ROM.
       ReadRooms (CurrentRom, roomAddresses, roomNames, roomDoorCounts);
@@ -81,12 +81,11 @@ namespace SM3E
     // - A list of room names, addresses and number of doors per room.
     // - Information about available spaces in different banks.
     private bool ReadProjectFile (string filename,
-                                  out string romFile,
                                   out List <int> roomAddresses,
                                   out List <int> roomDoorCounts,
                                   out List <string> roomNames)
     {
-      romFile = "Test";
+      RomFileName = null;
       roomAddresses = new List <int> ();
       roomDoorCounts = new List <int> ();
       roomNames = new List <string> ();
@@ -104,8 +103,8 @@ namespace SM3E
         // Load rom file.
         if (segments [0] == "rom" && segments.Count > 1)
         {
-          romFile = segments [1];
-          CurrentRom = new Rom (romFile);
+          RomFileName = segments [1];
+          CurrentRom = new Rom (RomFileName);
         }
 
         // Load area names.
@@ -124,19 +123,18 @@ namespace SM3E
           CurrentRom.AddSection (segments [1], RomSection.StringToType (segments [2]));
           for (int i = 3; i < segments.Count; i++)
           {
-            if (segments [i] == "rooms")
-              foreach (List <Data> roomList in Rooms)
-                CurrentRom.AddDataList (segments [1], roomList);
-            else
-              CurrentRom.AddDataList (segments [1], StringToDataList (segments [1]));
+            string dataName = segments [i].ToLower ();
+              CurrentRom.AddDataList (segments [1], dataName,
+                                      StringToDataList (segments [1]));
           }
         }
 
         // Load a data block in a section
         else if (segments [0] == "block" && segments.Count > 3)
         {
-          CurrentRom.AddBlock (segments [1], Tools.HexToInt (segments [2]),
-                                             Tools.HexToInt (segments [3]));
+          int start = Tools.HexToInt (segments [2]);
+          int end = Tools.HexToInt (segments [3]);
+          CurrentRom.AddBlock (segments [1], start, end - start);
         }
 
         // Load room data
@@ -161,7 +159,15 @@ namespace SM3E
     // Convert string to data collection reference.
     private List <Data> StringToDataList (string s)
     {
-      switch (s.ToLower ())
+      s = s.ToLower ();
+      if (s.Length == 5 && s.Substring (0, 4) == "room")
+      {
+        int index = s [4] - '0';
+        if (index >= 0 && index < 8)
+          return Rooms [index];
+        return null;
+      }
+      switch (s)
       {
       case "doorsets":
         return DoorSets;
@@ -615,61 +621,97 @@ namespace SM3E
 // Writing ROM data.
 
     
-    private void Repoint (List <Data> objects)
+    // Reallocate all data objects.
+    private void ReallocateAll ()
     {
+      foreach (RomSection s in CurrentRom.Sections)
+        s.Reallocate ();
+    }
+    
+    
+    // Repoint all data objects.
+    private void RepointAll ()
+    {
+      List <Data> objects = CurrentRom.AllData;
       foreach (Data d in objects)
         if (d is IRepointable r)
           r.Repoint ();
     }
 
     
-    /*
-    private void RallocateBank83 ()
+    // Write information about the ROM to the project file
+    private void WriteProjectFile ()
     {
-      var objects = new List <Data> ();
-      objects.AddRange (Doors);
-      objects.AddRange (Fxs);
-      CurrentRom.Reallocate (0x83, objects);
+      StreamWriter output = new StreamWriter (ProjectFileName);
+
+      // Write ROM filename.
+      output.Write ("rom " + RomFileName);
+      output.Write (Environment.NewLine);
+
+      // Write area names.
+      output.Write ("Areas");
+      for (int i = 0; i < AreaCount; i++)
+        output.Write (" " + Areas [i]);
+      output.Write (Environment.NewLine);
+
+      // Write section data.
+      foreach (RomSection s in CurrentRom.Sections)
+      {
+        output.Write ("section \"" + s.Name + "\" " + s.SectionType.ToString ());
+        foreach (KeyValuePair <string, List <Data>> kv in s.Data)
+          output.Write (" \"" + kv.Key + "\"");
+        output.Write (Environment.NewLine);
+
+        // Write blocks
+        foreach (var block in s.Blocks)
+        {
+          output.Write ("block \"" + s.Name + "\" " +
+                        Tools.IntToHex (block.Item1) + " " + 
+                        Tools.IntToHex (block.Item2));
+          output.Write (Environment.NewLine);
+        }
+      }
+
+      // Write room data.
+      for (int i = 0; i < AreaCount; i++)
+      {
+        foreach (Room r in Rooms [i])
+        {
+          output.Write ("room\t" +  Tools.IntToHex (r.StartAddressPC) + "\t" +
+                        r.RoomStates.Count.ToString () + "\t\"" +
+                        r.Name + "\"");
+          output.Write (Environment.NewLine);
+        }
+      }
     }
 
-    
-    private void RallocateBank8F ()
+
+    // Write all data to the Rom.
+    public void Save ()
     {
-      var objects = new List <Data> ();
-      foreach (List <Data> roomList in Rooms)
-        objects.AddRange (roomList);
-      objects.AddRange (DoorSets);
-      objects.AddRange (ScrollSets);
-      objects.AddRange (PlmSets);
-      objects.AddRange (ScrollPlmDatas);
-      objects.AddRange (Backgrounds);
-      objects.AddRange (ScrollAsms);
-      CurrentRom.Reallocate (0x8F, objects);
+      List <Data> objects = CurrentRom.AllData;
+      objects.Sort ((x, y) => x.StartAddressPC - y.StartAddressPC);
+      
+      Stream output = new FileStream (RomFileName, FileMode.Create);
+      int address = 0;
+      for (int n = 0; n < objects.Count; n++)
+      {
+        if (address < objects [n].StartAddressPC)
+        {
+          CurrentRom.Seek (address);
+          CurrentRom.WriteToFile (output, objects [n].StartAddressPC - address);
+        }
+        objects [n].WriteToROM (output, ref address);
+      }
+
+      // Round address up to multiple of bank size and write remaining data up to there.
+      int roundedSize = (address + 0x7FFF) ^ 0x7FFF;
+      if (address < roundedSize)
+      {
+        CurrentRom.Seek (address);
+        CurrentRom.WriteToFile (output, roundedSize - address);
+      }
     }
-
-
-    private void RallocateBankA1 ()
-    {
-      var objects = new List <Data> ();
-      objects.AddRange (EnemySets);
-      CurrentRom.Reallocate (0xA1, objects);
-    }
-
-
-    private void RallocateBankB4 ()
-    {
-      var objects = new List <Data> ();
-      objects.AddRange (EnemyGfxs);
-      CurrentRom.Reallocate (0xA1, objects);
-    }
-
-
-    private void RallocateBankCX ()
-    {
-      var objects = new List <Data> ();
-      objects.AddRange (EnemyGfxs);
-      // [wip] CurrentRom.Reallocate (0xC2, objects);
-    }*/
 
   } // partial class project
 

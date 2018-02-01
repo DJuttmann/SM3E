@@ -20,8 +20,20 @@ namespace SM3E
   {
     public byte [] Data;
     private int Position = 0;
-    private List <RomSection> Sections;
+    public List <RomSection> Sections;
     private Compressor Comp = new Compressor (null);
+
+    public List <Data> AllData
+    {
+      get
+      {
+        List <Data> objects = new List <Data> ();
+        foreach (RomSection s in Sections)
+          foreach (KeyValuePair <string, List <Data>> kv in s.Data)
+            objects.AddRange (kv.Value);
+        return objects;
+      }
+    }
 
 
     // Constructor, read bytes from file.
@@ -50,16 +62,16 @@ namespace SM3E
 
       
     // Add a data list to a section of the ROM.
-    public void AddDataList (string sectionName, List <Data> dataList)
+    public void AddDataList (string sectionName, string dataName, List <Data> dataList)
     {
       RomSection section = Sections.Find (x => x.Name == sectionName);
       if (section != null)
-        section.AddData (dataList);
+        section.AddData (dataName, dataList);
     }
 
 
     // Set the reading Position in the ROM.
-    public void Seek (int position, object o) // [wip] remove arg 2!
+    public void Seek (int position)
     {
       Position = position;
     }
@@ -209,6 +221,7 @@ namespace SM3E
     }
 
 
+    // Reallocate the objects in one of the ROMs sections.
     public void Reallocate (string sectionName)
     {
       RomSection section = Sections.Find (x => x.Name == sectionName);
@@ -216,6 +229,19 @@ namespace SM3E
         section.Reallocate ();
     }
 
+
+    // Write part of the ROM to a file stream.
+    public void WriteToFile (Stream output, int length)
+    {
+      int remaining = Data.Length - Position;
+      if (length <= remaining)
+        output.Write (Data, Position, length);
+      else
+      {
+        output.Write (Data, Position, remaining);
+        output.Write (new byte [length - remaining], 0, length - remaining);
+      }
+    }
   } // class Rom
 
 
@@ -243,10 +269,23 @@ namespace SM3E
 
 
     // Fields
-    Type SectionType;
-    List <DataBlock> Blocks;
-    HashSet <List <Data>> Data;
+    public Type SectionType {get; private set;}
+    private List <DataBlock> blocks;
+    public Dictionary <string, List <Data>> Data {get; private set;}
     public String Name;
+
+    // Properties
+    public List <Tuple <int, int>> Blocks
+    {
+      get
+      {
+        var list = new List <Tuple <int, int>> ();
+        for (int i = 0; i < blocks.Count; i++)
+          list.Add (new Tuple <int, int> (blocks [i].Address,
+                                          blocks [i].Address + blocks [i].Length));
+        return list;
+      }
+    }
 
 
     // Constructor
@@ -254,8 +293,8 @@ namespace SM3E
     {
       SectionType = sectionType;
       Name = name;
-      Blocks = new List <DataBlock> ();
-      Data =  new HashSet <List <Data>> ();
+      blocks = new List <DataBlock> ();
+      Data = new Dictionary <string, List <Data>> ();
     }
 
 
@@ -281,19 +320,19 @@ namespace SM3E
     {
       if (length <= 0 || address < 0)
         return false;
-      foreach (DataBlock b in Blocks)
+      foreach (DataBlock b in blocks)
         if (address + length >= b.Address && address <= b.Address + b.Length)
           return false;
-      Blocks.Add (new DataBlock () {Address = address, Length = length});
+      blocks.Add (new DataBlock () {Address = address, Length = length});
       return true;
     }
 
 
     // Add a data list to the section.
-    public void AddData (List <Data> dataList)
+    public void AddData (string name, List <Data> dataList)
     {
       if (dataList != null)
-        Data.Add (dataList);
+        Data.Add (name, dataList);
     }
 
 
@@ -301,8 +340,8 @@ namespace SM3E
     public bool Reallocate ()
     {
       var objects = new List <Data> ();
-      foreach (List <Data> d in Data)
-        objects.AddRange (d);
+      foreach (KeyValuePair <string, List <Data>> kv in Data)
+        objects.AddRange (kv.Value);
       return Allocate (objects);
     }
 
@@ -313,7 +352,7 @@ namespace SM3E
       List <int> newAddresses = new List <int> ();
       objects.Sort ((x, y) => x.StartAddressPC - y.StartAddressPC);
       int i = 0;
-      foreach (DataBlock block in Blocks)
+      foreach (DataBlock block in blocks)
       {
         int address = block.Address;
         while (i < objects.Count &&
@@ -357,7 +396,7 @@ namespace SM3E
     }
 
 
-    // Input data, set before compressing.
+    // Input data.
     public byte [] Input;
 
     // For every Input address, these arrays save the max number of bytes that can be

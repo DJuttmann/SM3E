@@ -153,7 +153,7 @@ namespace SM3E
     public override bool ReadFromROM (Rom rom, int addressPC)
     {
       byte [] b = new byte [2];
-      rom.Seek (addressPC, SeekOrigin.Begin);
+      rom.Seek (addressPC);
       if (!rom.Read (b, 0, 1))
         return false;
 
@@ -248,7 +248,7 @@ namespace SM3E
       byte ScrollColour = 0x00;
 
       byte [] b = new byte [3];
-      rom.Seek (addressPC, SeekOrigin.Begin);
+      rom.Seek (addressPC);
       if (!rom.Read (b, 0, 3) || 
           b [0] != 0x08 || b [1] != 0xE2 || b [2] != 0x20)
         return false;

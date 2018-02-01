@@ -55,7 +55,7 @@ namespace SM3E
     public override bool ReadFromROM (Rom rom, int addressPC)
     {
       byte [] b = new byte [DefaultSize];
-      rom.Seek (addressPC, SeekOrigin.Begin);
+      rom.Seek (addressPC);
       if (!rom.Read (b, 0, DefaultSize))
         return false;
       EnemyID  = Tools.ConcatBytes (b [ 0], b [ 1]);
@@ -160,7 +160,7 @@ namespace SM3E
     {
       int sAddress = addressPC;
       byte [] b = new byte [2];
-      rom.Seek (addressPC, SeekOrigin.Begin);
+      rom.Seek (addressPC);
       if (!rom.Read (b, 0, 2))
         return false;
 
@@ -172,11 +172,11 @@ namespace SM3E
           return false;
         addressPC += newEnemy.Size;
         Enemies.Add (newEnemy);
-        rom.Seek (addressPC, SeekOrigin.Begin);
+        rom.Seek (addressPC);
         if (!rom.Read (b, 0, 2))
           return false;
       }
-      rom.Seek (addressPC + 2, SeekOrigin.Begin);
+      rom.Seek (addressPC + 2);
       if (!rom.Read (b, 0, 1))
         return false;
       RequiredToKill = b [0];
@@ -283,7 +283,7 @@ namespace SM3E
     {
       int sAddress = addressPC;
       byte [] b = new byte [BlockSize];
-      rom.Seek (addressPC, SeekOrigin.Begin);
+      rom.Seek (addressPC);
       if (!rom.Read (b, 2, 2))
         return false;
 

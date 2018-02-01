@@ -179,10 +179,10 @@ namespace SM3E
       byte bit;
 
       //decompressedSize = Compression.ReadCompressedData (out b, addressPC);
-      rom.Seek (addressPC, null);
+      rom.Seek (addressPC);
       int compressedSize = rom.Decompress (out List <byte> buffer);
       CompressedData.Clear ();
-      rom.Seek (addressPC, null);
+      rom.Seek (addressPC);
       rom.Read (CompressedData, compressedSize);
       int decompressedSize = buffer.Count;
       // if (decompressedSize > 100000)
@@ -265,7 +265,7 @@ namespace SM3E
       byte bit;
       int size = TileCount * 32;
       byte [] b = new byte [size];
-      rom.Seek (addressPC, null);
+      rom.Seek (addressPC);
       if (!rom.Read (b, 0, size))
         return false;
 
@@ -334,7 +334,7 @@ namespace SM3E
     {
       int size = TileCount * 16;
       byte [] b = new byte [size];
-      rom.Seek (addressPC, null);
+      rom.Seek (addressPC);
       if (!rom.Read (b, 0, size))
         return false;
 
@@ -399,7 +399,7 @@ namespace SM3E
     {
       //byte [] buffer;
       //int DecompressedSize = Compression.ReadCompressedData (out buffer, addressPC);
-      rom.Seek (addressPC, null);
+      rom.Seek (addressPC);
       rom.Decompress (out List <byte> buffer);
       int decompressedSize = buffer.Count;
       int colour_count = decompressedSize / 2;
@@ -467,7 +467,7 @@ namespace SM3E
     {
       //byte [] buffer;
       //int DecompressedSize = Compression.ReadCompressedData (out buffer, addressPC);
-      rom.Seek (addressPC, null);
+      rom.Seek (addressPC);
       rom.Decompress (out List <byte> buffer);
       int decompressedSize = buffer.Count;
 
@@ -591,7 +591,7 @@ namespace SM3E
     public override bool ReadFromROM (Rom rom, int addressPC)
     {
       byte [] data = new byte [DefaultSize];  
-      rom.Seek (addressPC, SeekOrigin.Begin);
+      rom.Seek (addressPC);
       if (!rom.Read (data, 0, DefaultSize))
         return false;
       SceTablePtr = Tools.ConcatBytes (data [0], data [1], data [2]);

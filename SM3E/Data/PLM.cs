@@ -61,7 +61,7 @@ namespace SM3E
     public override bool ReadFromROM (Rom rom, int addressPC)
     {
       byte [] b = new byte [DefaultSize];
-      rom.Seek (addressPC, SeekOrigin.Begin);
+      rom.Seek (addressPC);
       if (!rom.Read (b, 0, DefaultSize))
         return false;
       
@@ -172,7 +172,7 @@ namespace SM3E
     {
       int sAddressPC = addressPC;
       byte [] b = new byte [2];
-      rom.Seek (addressPC, SeekOrigin.Begin);
+      rom.Seek (addressPC);
       if (!rom.Read (b, 0, 2))
         return false;
 
@@ -183,7 +183,7 @@ namespace SM3E
         if (!Plms [n].ReadFromROM (rom, addressPC))
           return false;
         addressPC += Plms [n].Size;
-        rom.Seek (addressPC, SeekOrigin.Begin);
+        rom.Seek (addressPC);
         if (!rom.Read (b, 0, 2))
           return false;
         n++;

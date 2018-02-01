@@ -40,7 +40,7 @@ namespace SM3E
     public override bool ReadFromROM (Rom rom, int addressPC)
     {
       byte [] b = new byte [11];
-      rom.Seek (addressPC, SeekOrigin.Begin);
+      rom.Seek (addressPC);
       if (!rom.Read (b, 0, 2))
         return false;
 
@@ -164,7 +164,7 @@ namespace SM3E
     public override bool ReadFromROM (Rom rom, int addressPC)
     {
       byte [] b = new byte [DefaultSize];
-      rom.Seek (addressPC, SeekOrigin.Begin);
+      rom.Seek (addressPC);
       if (!rom.Read (b, 0, 2))
         return false;
       if (b [0] == TerminatorByte && b [1] == TerminatorByte)

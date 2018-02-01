@@ -57,7 +57,7 @@ namespace SM3E
     public override bool ReadFromROM (Rom rom, int addressPC)
     {
       byte [] b = new byte [DefaultSize];
-      rom.Seek (addressPC, SeekOrigin.Begin);
+      rom.Seek (addressPC);
       if (!rom.Read (b, 0, DefaultSize))
         return false;
       RoomPtr = Tools.ConcatBytes (b [ 0], b [ 1], 0x8F);
@@ -176,7 +176,7 @@ namespace SM3E
     public override bool ReadFromROM (Rom rom, int addressPC)
     {
       byte [] b = new byte [DefaultSize];
-      rom.Seek (addressPC, SeekOrigin.Begin);
+      rom.Seek (addressPC);
       if (!rom.Read (b, 0, DefaultSize))
         return false;
 
