@@ -6,7 +6,7 @@
     xmlns:local="clr-namespace:SM3E"
     mc:Ignorable="d"
     WindowStartupLocation="CenterScreen"
-    Title="SM&#x00B3;E" Height="750" Width="1000">
+    Title="SM&#x00B3;E" Height="750" Width="1000" Closed="MainWindow_Close">
 
 
   <!-- MAIN GRID -->

@@ -67,7 +67,12 @@ namespace SM3E
       CompressedData.Clear ();
       rom.Seek (addressPC);
       rom.Read (CompressedData, compressedSize);
+      CompressionUpToDate = true;
       int decompressedSize = buffer.Count;
+
+      if (addressPC == 0x2142BB)
+        Compressor.Test (buffer.ToArray ());
+
 
       int Layer1Size = Tools.ConcatBytes (buffer [0], buffer [1]);
       int BtsSize = Layer1Size / 2;         // half the amount of data of layer one
@@ -262,6 +267,7 @@ namespace SM3E
       if (h_flip)
         Layer1 [index] |= 0x400;
       Layer1 [index] |= (ushort) tile;
+      CompressionUpToDate = false;
     }
 
 
@@ -274,6 +280,7 @@ namespace SM3E
       if (h_flip)
         Layer2 [index] |= 0x400;
       Layer2 [index] |= (ushort) tile;
+      CompressionUpToDate = false;
     }
 
 
@@ -283,6 +290,7 @@ namespace SM3E
       Layer1 [index] &= 0xFFF;
       Layer1 [index] |= (ushort) (type << 12);
       BTS [index] = (byte) value;
+      CompressionUpToDate = false;
     }
 
   } // class LevelData

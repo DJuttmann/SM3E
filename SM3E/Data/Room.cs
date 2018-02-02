@@ -249,7 +249,7 @@ namespace SM3E
       MainAsmPtr          = Tools.ConcatBytes (b [18], b [19], 0x8F);
       PlmSetPtr           = Tools.ConcatBytes (b [20], b [21], 0x8F);
       BackgroundPtr       = Tools.ConcatBytes (b [22], b [23], 0x8F);
-      SetupAsmPtr         = Tools.ConcatBytes (b [23], b [25], 0x8F);
+      SetupAsmPtr         = Tools.ConcatBytes (b [24], b [25], 0x8F);
 
       startAddressPC = addressPC;
       return true;
@@ -479,7 +479,7 @@ namespace SM3E
         return false;
 
       RoomIndex         = b [0];
-      Area          = b [1];
+      Area              = b [1];
       MapX              = b [2];
       MapY              = b [3];
       RoomW             = b [4];
@@ -536,14 +536,13 @@ namespace SM3E
       b [7] = DownScroller;
       b [8] = SpecialGfxBitflag;
       Tools.CopyBytes (DoorsPtr, b, 9, 2);
+      rom.Write (b, 0, HeaderSize);
 
       addressPC += HeaderSize;
       for (int n = 0; n < RoomStateHeaders.Count; n++)
         if (!RoomStateHeaders [n].WriteToROM (rom, ref addressPC))
           return false;
-      if (!RoomStates [RoomStates.Count - 1].WriteToROM (rom, ref addressPC))
-        return false;
-      for (int n = 0; n + 1 < RoomStateHeaders.Count; n++)
+      for (int n = RoomStateHeaders.Count - 1; n >= 0; n--)
         if (!RoomStates [n].WriteToROM (rom, ref addressPC))
           return false;
       return true;
@@ -574,6 +573,12 @@ namespace SM3E
         "ROOM at $" + Tools.IntToHex (startAddressPC) +
         " of size " + Size + " byte");
       Logging.WriteLine ("  RoomIndex        : " + Tools.IntToHex (RoomIndex, 2));
+      Logging.WriteLine ("  Name             : " + Name);
+      Logging.Write     ("  States           :");
+      foreach (RoomState r in RoomStates)
+        Logging.Write (" " + Tools.IntToHex (r.StartAddressLR, 6));
+      Logging.Write (Environment.NewLine);
+      Logging.WriteLine ("  RoomIndex        : " + Tools.IntToHex (RoomIndex, 2));
       Logging.WriteLine ("  RoomArea         : " + Tools.IntToHex (Area, 2));
       Logging.WriteLine ("  MapX             : " + Tools.IntToHex (MapX, 2));
       Logging.WriteLine ("  MapY             : " + Tools.IntToHex (MapY, 2));
@@ -597,9 +602,7 @@ namespace SM3E
         RoomStateHeaders [n].Reallocate (addressPC);
         addressPC += RoomStateHeaders [n].Size;
       }
-      RoomStates [RoomStates.Count - 1].Reallocate (addressPC);
-      addressPC += RoomStates [RoomStates.Count - 1].Size;
-      for (int n = 0; n + 1 < RoomStateHeaders.Count; n++)
+      for (int n = RoomStateHeaders.Count - 1; n >= 0; n--)
       {
         RoomStates [n].Reallocate (addressPC);
         addressPC += RoomStates [n].Size;

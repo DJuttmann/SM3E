@@ -32,7 +32,8 @@ namespace SM3E
       List <int> roomDoorCounts;
       List <string> roomNames;
 
-      ReadProjectFile (projectFile, out roomAddresses, out roomDoorCounts, out roomNames);
+      ProjectFileName = projectFile;
+      ReadProjectFile (out roomAddresses, out roomDoorCounts, out roomNames);
 
       // Read uncompressed data from ROM.
       ReadRooms (CurrentRom, roomAddresses, roomNames, roomDoorCounts);
@@ -50,7 +51,7 @@ namespace SM3E
       ReadAreaMaps (CurrentRom, AreaMap.Addresses);
 
       // Read Compressed data from ROM.
-      ReadLevelData (CurrentRom);
+      ReadLevelDatas (CurrentRom);
       ReadTileTables (CurrentRom);
       ReadTileSheets (CurrentRom);
       ReadPalettes (CurrentRom);
@@ -80,8 +81,7 @@ namespace SM3E
     // - A list of area names.
     // - A list of room names, addresses and number of doors per room.
     // - Information about available spaces in different banks.
-    private bool ReadProjectFile (string filename,
-                                  out List <int> roomAddresses,
+    private bool ReadProjectFile (out List <int> roomAddresses,
                                   out List <int> roomDoorCounts,
                                   out List <string> roomNames)
     {
@@ -91,7 +91,7 @@ namespace SM3E
       roomNames = new List <string> ();
 
       string [] lines;
-      try {lines = System.IO.File.ReadAllLines (filename);}
+      try {lines = System.IO.File.ReadAllLines (ProjectFileName);}
       catch {return false;}
 
       for (int n = 0; n < lines.Length; n++)
@@ -124,8 +124,7 @@ namespace SM3E
           for (int i = 3; i < segments.Count; i++)
           {
             string dataName = segments [i].ToLower ();
-              CurrentRom.AddDataList (segments [1], dataName,
-                                      StringToDataList (segments [1]));
+            CurrentRom.AddDataList (segments [1], dataName, DataLists [dataName]);
           }
         }
 
@@ -154,60 +153,6 @@ namespace SM3E
       }
       return true;
     }
-
-
-    // Convert string to data collection reference.
-    private List <Data> StringToDataList (string s)
-    {
-      s = s.ToLower ();
-      if (s.Length == 5 && s.Substring (0, 4) == "room")
-      {
-        int index = s [4] - '0';
-        if (index >= 0 && index < 8)
-          return Rooms [index];
-        return null;
-      }
-      switch (s)
-      {
-      case "doorsets":
-        return DoorSets;
-      case "doors":
-        return Doors;
-      case "scrollsets":
-        return ScrollSets;
-      case "plmsets":
-        return PlmSets;
-      case "scrollplmdatas":
-        return ScrollPlmDatas;
-      case "backgrounds":
-        return Backgrounds;
-      case "fxs":
-        return Fxs;
-      case "saverooms":
-        return SaveRooms;
-      case "leveldatas":
-        return LevelDatas;
-      case "enemysets":
-        return EnemySets;
-      case "enemygfxs":
-        return EnemyGfxs;
-      case "scrollasms":
-        return ScrollAsms;
-      case "tilesets":
-        return TileSets;
-      case "tiletables":
-        return TileTables;
-      case "tilesheets":
-        return TileSheets;
-      case "palettes":
-        return Palettes;
-      case "areamaps":
-        return AreaMaps;
-      default:
-        return null;
-      }
-    }
-
 
 
     // Connect all loaded data objects.
@@ -299,8 +244,8 @@ namespace SM3E
           for (int i = 0; i < stateCount; i++)
           {
             int address = Tools.LRtoPC (r.RoomStates [i].RoomScrollsPtr);
-            if (address != ScrollSet.AllBlue && address != ScrollSet.AllGreen)
-            addressesPC.Add (address);
+            if (address != 0)
+              addressesPC.Add (address);
           }
           Tools.RemoveDuplicates (addressesPC);
           for (int i = 0; i < addressesPC.Count; i++)
@@ -408,7 +353,7 @@ namespace SM3E
 
 
     // Read all level datas from ROM.
-    private void ReadLevelData (Rom rom)
+    private void ReadLevelDatas (Rom rom)
     {
       List <int> addressesPC = new List <int> ();
       foreach (RoomState r in RoomStates) {
@@ -683,12 +628,22 @@ namespace SM3E
           output.Write (Environment.NewLine);
         }
       }
+
+      output.Close ();
     }
 
 
     // Write all data to the Rom.
     public void Save ()
     {
+      // [wip] TESTING ONLY - don't overwrite source files.
+      Tools.TrimFileExtension (ref RomFileName, out string extension);
+      RomFileName += "_out.sfc";
+      Tools.TrimFileExtension (ref ProjectFileName, out extension);
+      ProjectFileName += "_out.txt";
+      // [wip] END OF TEST
+      
+      ReallocateAll ();
       List <Data> objects = CurrentRom.AllData;
       objects.Sort ((x, y) => x.StartAddressPC - y.StartAddressPC);
       
@@ -700,17 +655,39 @@ namespace SM3E
         {
           CurrentRom.Seek (address);
           CurrentRom.WriteToFile (output, objects [n].StartAddressPC - address);
+          address = objects [n].StartAddressPC;
         }
-        objects [n].WriteToROM (output, ref address);
+        if (address == objects [n].StartAddressPC)
+        {
+          int oldAddress = address;
+          long oldPosition = output.Position;
+          objects [n].WriteToROM (output, ref address);
+          if (address - oldAddress != output.Position - oldPosition)
+            Logging.WriteLine ("Write error: incorrect # bytes written for " +
+                               objects [n].GetType ().ToString () + " at " +
+                               Tools.IntToHex (objects [n].StartAddressPC) +
+                               " - should be " + (address - oldAddress) + 
+                               " instead of " + (output.Position - oldPosition));
+          if (address != output.Position)
+            Logging.WriteLine ("Desync: " + address + " ~ " + output.Position);
+        }
+        else
+          Logging.WriteLine ("Write error: Invalid address for " +
+                             objects [n].GetType ().ToString () + " at " +
+                             Tools.IntToHex (objects [n].StartAddressPC) +
+                             " - output stream already at " + Tools.IntToHex (address));
       }
 
       // Round address up to multiple of bank size and write remaining data up to there.
-      int roundedSize = (address + 0x7FFF) ^ 0x7FFF;
+      int roundedSize = Math.Max (CurrentRom.Data.Length, (address + 0x7FFF) & ~0x7FFF);
       if (address < roundedSize)
       {
         CurrentRom.Seek (address);
         CurrentRom.WriteToFile (output, roundedSize - address);
       }
+      output.Close ();
+
+      WriteProjectFile ();
     }
 
   } // partial class project

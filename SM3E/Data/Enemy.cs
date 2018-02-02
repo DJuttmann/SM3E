@@ -84,6 +84,7 @@ namespace SM3E
       Tools.CopyBytes (Speed   , b, 12, 2);
       Tools.CopyBytes (Speed2  , b, 14, 2);
       rom.Write (b, 0, DefaultSize);
+      addressPC += Size;
       return true;
     }
 

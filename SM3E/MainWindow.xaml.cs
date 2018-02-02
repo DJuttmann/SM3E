@@ -90,5 +90,11 @@ namespace SM3E
       MainProject.RoomStateDataModified += LoadRoomStateData;
     }
 
+
+    private void MainWindow_Close (object sender, EventArgs e)
+    {
+      MainProject.Save ();
+      Logging.Close ();
+    }
   }
 }

@@ -266,7 +266,6 @@ namespace SM3E
     public override bool WriteToROM (Stream rom, ref int addressPC)
     {
       byte [] b = new byte [Size];
-      rom.Seek (addressPC, SeekOrigin.Begin);
       for (int n = 0; n < DoorCount; n++)
         Tools.CopyBytes (DoorPtrs [n], b, 2 * n, 2);
       rom.Write (b, 0, Size);

@@ -58,6 +58,8 @@ namespace SM3E
     private List <PlmType> PlmTypes;
     private List <EnemyType> EnemyTypes;
 
+    private Dictionary <string, List <Data>> DataLists;
+
 
 //========================================================================================
 // Properties
@@ -614,6 +616,7 @@ namespace SM3E
     // Constructor.
     public Project ()
     {
+      // Initialize data lists.
       for (int i = 0; i < AreaCount; i++)
         Rooms [i]    = new List <Data> ();
       DoorSets       = new List <Data> ();
@@ -629,7 +632,6 @@ namespace SM3E
       EnemySets      = new List <Data> ();
       EnemyGfxs      = new List <Data> ();
       ScrollAsms     = new List <Data> ();
-
       TileSets       = new List <Data> ();
       TileTables     = new List <Data> ();
       TileSheets     = new List <Data> ();
@@ -637,6 +639,28 @@ namespace SM3E
       AreaMaps       = new List <Data> ();
       PlmTypes       = new List <PlmType> ();
       EnemyTypes     = new List <EnemyType> ();
+
+      // Add data lists to the DataLists dictionary.
+      DataLists = new Dictionary <string, List <Data>> ();
+      for (int i = 0; i < AreaCount; i++)
+        DataLists.Add ("rooms" + i.ToString (), Rooms [i]);
+      DataLists.Add ("doorsets"      , DoorSets      );
+      DataLists.Add ("doors"         , Doors         );
+      DataLists.Add ("scrollsets"    , ScrollSets    );
+      DataLists.Add ("plmsets"       , PlmSets       );
+      DataLists.Add ("scrollplmdatas", ScrollPlmDatas);
+      DataLists.Add ("backgrounds"   , Backgrounds   );
+      DataLists.Add ("fxs"           , Fxs           );
+      DataLists.Add ("saverooms"     , SaveRooms     );
+      DataLists.Add ("leveldatas"    , LevelDatas    );
+      DataLists.Add ("enemysets"     , EnemySets     );
+      DataLists.Add ("enemygfxs"     , EnemyGfxs     );
+      DataLists.Add ("scrollasms"    , ScrollAsms    );
+      DataLists.Add ("tilesets"      , TileSets      );
+      DataLists.Add ("tiletables"    , TileTables    );
+      DataLists.Add ("tilesheets"    , TileSheets    );
+      DataLists.Add ("palettes"      , Palettes      );
+      DataLists.Add ("areamaps"      , AreaMaps      );
 
       // Load Resources.
       LoadBtsTiles ();

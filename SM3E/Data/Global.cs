@@ -85,6 +85,7 @@ namespace SM3E
       Tools.CopyBytes (SamusX , b, 10, 2);
       Tools.CopyBytes (SamusY , b, 12, 2);
       rom.Write (b, 0, DefaultSize);
+      addressPC += Size;
       return true;
     }
 
@@ -201,6 +202,7 @@ namespace SM3E
         b [2 * n + 1] = Properties [index];
       }
       rom.Write (b, 0, DefaultSize);
+      addressPC += Size;
       return true;
     }
 

@@ -49,8 +49,8 @@ namespace SM3E
       while (b [0] != 0 || b [1] != 0)
       {
         int type = Tools.ConcatBytes (b [0], b [1]);
-        Bytes.Add (b [0]);
-        Bytes.Add (b [1]);
+        // Bytes.Add (b [0]);
+        // Bytes.Add (b [1]);
         switch (type)
         {
         default:
@@ -73,6 +73,8 @@ namespace SM3E
         }
         if (!rom.Read (b, 2, blockSize - 2))
           return false;
+        for (int i = 0; i < blockSize; i++)
+          Bytes.Add (b [i]);
         totalSize += blockSize;
         if (!rom.Read (b, 0, 2))
           return false;
@@ -86,6 +88,7 @@ namespace SM3E
     public override bool WriteToROM (Stream rom, ref int addressPC)
     {
       rom.Write (Bytes.ToArray (), 0, Bytes.Count);
+      rom.Write (new byte [] {0, 0}, 0, TerminatorSize);
       addressPC += Size;
       return true;
     }
@@ -174,7 +177,7 @@ namespace SM3E
         return true;
       }
 
-      if (!rom.Read (b, 0, DefaultSize - 2))
+      if (!rom.Read (b, 2, DefaultSize - 2))
         return false;
       NotNull = true;
       DoorPtr               = Tools.ConcatBytes (b [0], b [1]); // [wip] no bank arg?

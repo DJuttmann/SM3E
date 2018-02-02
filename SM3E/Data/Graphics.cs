@@ -184,6 +184,7 @@ namespace SM3E
       CompressedData.Clear ();
       rom.Seek (addressPC);
       rom.Read (CompressedData, compressedSize);
+      CompressionUpToDate = true;
       int decompressedSize = buffer.Count;
       // if (decompressedSize > 100000)
       //   decompressedSize = 100000;  // Dunno how important these lines are (some safety mechanism?)
