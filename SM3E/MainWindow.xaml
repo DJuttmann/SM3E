@@ -259,7 +259,7 @@
               <Button Grid.Row="0" Grid.Column="2" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,25,0" VerticalAlignment="Top" Width="20"/>
               <Button Grid.Row="0" Grid.Column="2" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,0,0" VerticalAlignment="Top" Width="20"/>
               <Label Grid.Row="1" Margin="0,-3,0,-3" Content="Area" HorizontalAlignment="Left"/>
-              <ComboBox x:Name="RoomAreaSelect" Grid.Row="1" Grid.ColumnSpan="3" Margin="75,1,0,1" HorizontalAlignment="Stretch">
+              <ComboBox x:Name="RoomAreaSelect" Grid.Row="1" Grid.ColumnSpan="3" Margin="75,1,0,1" HorizontalAlignment="Stretch" SelectionChanged="RoomAreaSelect_Update">
                 <ComboBoxItem>00</ComboBoxItem>
                 <ComboBoxItem>01</ComboBoxItem>
                 <ComboBoxItem>02</ComboBoxItem>

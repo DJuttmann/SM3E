@@ -741,6 +741,10 @@ namespace SM3E
         case 2: // Layer 2
           MainProject.SetLayer2 (e.PosTileY, e.PosTileX, e.ClickTileY, e.ClickTileX);
           break;
+        case 5: // Scrolls
+          MainProject.SetScroll (e.PosTileX / 16, e.PosTileY / 16,
+                                 e.ClickTileX / 16, e.ClickTileY / 16);
+          break;
         default:
           break;
         }
@@ -816,6 +820,11 @@ namespace SM3E
 
 //========================================================================================
 // Room state data edit events
+
+    private void RoomAreaSelect_Update (object sender, SelectionChangedEventArgs e)
+    {
+      MainProject.RoomArea = RoomAreaSelect.SelectedIndex;
+    }
 
 
     private void RoomNameInput_Update (object sender, RoutedEventArgs e)

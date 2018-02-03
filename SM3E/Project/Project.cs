@@ -73,19 +73,20 @@ namespace SM3E
         var data = new List <IScrollData> ();
         if (ActiveRoomState == null)
           return data;
-        data.Add (ActiveRoomState.MyScrollSet);
+        if (ActiveRoomState.MyScrollSet != null)
+          data.Add (ActiveRoomState.MyScrollSet);
         
         if (ActivePlmSet != null)
         {
           foreach (Plm p in ActivePlmSet.Plms)
-            if (p.MyScrollPlmData != null)
+            if (p.MyScrollPlmData != null && !data.Contains (p.MyScrollPlmData))
               data.Add (p.MyScrollPlmData);
         }
 
         if (ActiveRoom != null)
         {
           foreach (Door d in ActiveRoom.MyIncomingDoors)
-            if (d.MyScrollAsm != null)
+            if (d.MyScrollAsm != null && !data.Contains (d.MyScrollAsm))
               data.Add (d.MyScrollAsm);
         }
         return data;
@@ -169,12 +170,28 @@ namespace SM3E
       {
         return ActiveRoom?.Area ?? -1;
       }
-      set
+      set // [wip] perhaps make this a method ChangeRoomArea instead?
       {
         if (ActiveRoom != null && (byte) value != ActiveRoom.Area)
         {
-          ActiveRoom.Area = (byte) value;
-          // [wip] select correct area & invoke events.
+          HandlingSelection = true;
+          var a = new ActiveItems (this);
+
+          Room CurrentRoom = ActiveRoom;
+          int CurrentRoomStateIndex = RoomStateIndex;
+          byte newAreaIndex = (byte) value;
+          CurrentRoom.Area = newAreaIndex;
+          Rooms [AreaIndex].Remove (CurrentRoom);
+          Rooms [newAreaIndex].Add (CurrentRoom);
+          Rooms [newAreaIndex].Sort ((x, y) => ((Room) x).RoomIndex - 
+                                               ((Room) y).RoomIndex);
+          // [wip] Give room a new ID! Moving should fail if area is full.
+          ForceSelectArea (newAreaIndex);
+          ForceSelectRoom (Rooms [newAreaIndex].FindIndex (x => x == CurrentRoom));
+          ForceSelectRoomState (CurrentRoomStateIndex);
+
+          RaiseChangeEvents (a);
+          HandlingSelection = false;
         }
       }
     }
@@ -543,8 +560,26 @@ namespace SM3E
       get
       {
         var names = new List <string> ();
-        names.Add ("Room Scrolls");
+        List <IScrollData> data = ScrollDatas;
         
+        for (int n = 0; n < data.Count; n++)
+        {
+          switch (data [n])
+          {
+          case ScrollSet s:
+            names.Add ("Room Scrolls");
+            break;
+          case ScrollPlmData s:
+            names.Add ("PLM ($" + s.StartAddressPC + ")");
+            break;
+          case ScrollAsm s:
+            names.Add ("ASM ($" + s.StartAddressPC + ")");
+            break;
+          default:
+            break;
+          }
+        }
+        /*
         if (ActivePlmSet != null)
         {
           foreach (Plm p in ActivePlmSet.Plms)
@@ -557,7 +592,7 @@ namespace SM3E
           foreach (Door d in ActiveRoom.MyIncomingDoors)
             if (d.MyScrollAsm != null)
               names.Add ("ASM (" + d.ScreenX + "," + d.ScreenY + ")");
-        }
+        }*/
         return names;
       }
     }
@@ -914,15 +949,37 @@ namespace SM3E
     }
 
 
-    public void SetScroll (int x, int y)
+    public void SetScroll (int xMin, int yMin, int xMax, int yMax)
     {
-      if (ActiveRoom == null || ActiveRoomState == null)
+      if (ActiveRoom == null || ActiveRoomState == null || ActiveScrollData == null)
         return;
-      if (ActiveRoomState.MyScrollSet != null)
+      Tools.Order (ref xMin, ref xMax);
+      Tools.Order (ref yMin, ref yMax);
+      if (yMin < 0)
+        yMin = 0;
+      if (xMin < 0)
+        xMin = 0;
+      if (yMax >= RoomHeightInScreens)
+        yMax = RoomHeightInScreens - 1;
+      if (xMax >= RoomWidthInScreens)
+        xMax = RoomWidthInScreens - 1;
+
+      for (int x = xMin; x <= xMax; x++)
       {
-        int index = ActiveRoom.RoomW * y + x;
-        ActiveScrollData [index] = ActiveScrollColor;
+        for (int y = yMin; y <= yMax; y++)
+        {
+          int index = ActiveRoom.RoomW * y + x;
+          ActiveScrollData [index] = ActiveScrollColor;
+        }
       }
+      LevelDataEventArgs e = new LevelDataEventArgs ()
+      {
+        ScreenXmin = xMin,
+        ScreenXmax = xMax,
+        ScreenYmin = yMin,
+        ScreenYmax = yMax
+      };
+      LevelDataModified?.Invoke (this, e);
     }
 
 

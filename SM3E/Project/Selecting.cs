@@ -253,7 +253,7 @@ namespace SM3E
     {
       if (HandlingSelection)
         return;
-      if (index == ScrollDataIndex || index < -1 || index >= 4)
+      if (index == ScrollColorIndex || index < -1 || index >= 4)
         return;
       HandlingSelection = true;
       var a = new ActiveItems (this);

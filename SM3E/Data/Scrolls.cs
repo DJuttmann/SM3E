@@ -49,7 +49,11 @@ namespace SM3E
       set
       {
         if (scrollIndex >= 0 && scrollIndex < Bytes.Count)
-          Bytes [scrollIndex] = (byte) value;
+        {
+          byte color = (byte) value;
+          if (color >= 0 && color < 3)
+            Bytes [scrollIndex] = color;
+        }
       }
     }
 
