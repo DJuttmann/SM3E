@@ -18,6 +18,11 @@ namespace SM3E
 
   class Compressor
   {
+    // Exception messages for decompressing.
+    private const string ExceptionInputEnded =
+      "End of input array reached before compressed stream ended.";
+    private const string ExceptionBadAddress =
+      "Bad address encountered in chunk header.";
 
     // An interval of a byte stream, defined by its address and length.
     private struct Interval
@@ -29,6 +34,13 @@ namespace SM3E
       {
         Address = 0;
         Length = 0;
+      }
+
+
+      public Interval (int address, int lenght)
+      {
+        Address = address;
+        Length = lenght;
       }
     }
 
@@ -45,16 +57,14 @@ namespace SM3E
     private Interval [] XorCopyLengths;
 
     // Lists of candidate start addresses for copy, sorted by byte value at that address.
-    private List <int> [] Addresses;
+    private int [,] Addresses;
 
 
     // Constructor.
     public Compressor (byte [] input)
     {
       Input = input;
-      Addresses = new List <int> [256];
-      for (int i = 0; i < 256; i++)
-        Addresses [i] = new List <int> ();
+      Addresses = new int [256, 256];
     }
 
 
@@ -75,8 +85,7 @@ namespace SM3E
         int length = Max (ByteFillLengths [i],
                           WordFillLengths [i],
                           ByteIncrementLengths [i],
-                          CopyLengths [i].Length,
-                          XorCopyLengths [i].Length);
+                          CopyLengths [i].Length);
         if (length < 3)
         {
           int j = i;
@@ -85,8 +94,7 @@ namespace SM3E
             length = Max (ByteFillLengths [j],
                           WordFillLengths [j],
                           ByteIncrementLengths [j],
-                          CopyLengths [j].Length,
-                          XorCopyLengths [j].Length);
+                          CopyLengths [j].Length);
             j++;
           }
           length = (j == Input.Length ? j - i : j - i - 1);
@@ -115,14 +123,14 @@ namespace SM3E
           else
             WriteCopy (output, CopyLengths [i].Address, length);
         }
-        else if (length == XorCopyLengths [i].Length)
-        {
-          length = Math.Min (length, 512);
-          if (i - XorCopyLengths [i].Address < 32)
-            WriteNegativeXorCopy (output, i - XorCopyLengths [i].Address, length);
-          else
-            WriteXorCopy (output, XorCopyLengths [i].Address, length);
-        }
+        // else if (length == XorCopyLengths [i].Length)
+        // {
+        //   length = Math.Min (length, 512);
+        //   if (i - XorCopyLengths [i].Address < 32)
+        //     WriteNegativeXorCopy (output, i - XorCopyLengths [i].Address, length);
+        //   else
+        //     WriteXorCopy (output, XorCopyLengths [i].Address, length);
+        // }
         i += length;
       }
       output.Add (0xFF);
@@ -131,9 +139,9 @@ namespace SM3E
 
 
     // Maximum of five integers.
-    private int Max (int a, int b, int c, int d, int e)
+    private int Max (int a, int b, int c, int d)
     {
-      return Math.Max (Math.Max (Math.Max (a, b), Math.Max (c, d)), e);
+      return Math.Max (Math.Max (a, b), Math.Max (c, d));
     }
 
 
@@ -208,8 +216,7 @@ namespace SM3E
     private void WriteNegativeCopy (List <byte> output, int address, int length)
     {
       WriteChunkHeader (output, 0b110, length);
-      output.Add ((byte) (address & 0xFF));
-      output.Add ((byte) (address >> 8));
+      output.Add ((byte) (address));
     }
 
 
@@ -286,48 +293,86 @@ namespace SM3E
     }
 
 
-    // Calculate lengths of maximal copy and xor-copy chunks.
+    // Calculate lengths of maximal copy chunks.
     private void CalculateCopy ()
     {
+      // Setup arrays.
       CopyLengths = new Interval [Input.Length];
-      XorCopyLengths = new Interval [Input.Length];
-      return; // [wip] this method is too slow, skip for now.
-
-      Interval maxInterval = new Interval ();
       for (int i = 0; i < 256; i++)
-        Addresses [i].Clear ();
+        for (int j = 0; j < 256; j++)
+          Addresses [i, j] = -1;
 
-      for (int i = 0; i < Input.Length; i++)
+      // For each word fill, store address of prev. word fill ending in same two bytes:
+      int [] backReferences = new int [Input.Length];
+      // For any word fill, store lengths of matching sequences after similar word fills:
+      List <Interval> MatchLengths = new List <Interval> ();
+      // Identify word fill with last two bytes:
+      int byte1, byte2;
+
+      // i iterates through start addresses of maximal word fills in the input.
+      for (int i = 0; i < Input.Length - 1;)
       {
-        // Regular copy.
-        maxInterval.Reset ();
-        foreach (int address in Addresses [Input [i]])
+        // Register current fill, look for previous word fills ending in same two bytes.
+        int fillLength = WordFillLengths [i]; // length of current word fill.
+        if (fillLength % 2 == 0)
         {
-          int length = MatchSubSequences (address, i);
-          if (length > maxInterval.Length)
-          {
-            maxInterval.Address = address;
-            maxInterval.Length = length;
-          }
+          byte1 = Input [i];
+          byte2 = Input [i + 1];
         }
-        CopyLengths [i] = maxInterval;
-
-        // Xor copy.
-        maxInterval.Reset ();
-        foreach (int address in Addresses [Input [i] ^ 0xFF])
+        else // swap bytes if fill length is odd.
         {
-          int length = XorMatchSubSequences (address, i);
-          if (length > maxInterval.Length)
-          {
-            maxInterval.Address = address;
-            maxInterval.Length = length;
-          }
+          byte1 = Input [i + 1];
+          byte2 = Input [i];
         }
-        XorCopyLengths [i] = maxInterval;
+        backReferences [i] = Addresses [byte1, byte2];
+        Addresses [byte1, byte2] = i;
 
-        // Add address i to the relevant list.
-        Addresses [Input [i]].Add (i);
+        // Calculate for each previous occurrence the max matching length after the fill.
+        MatchLengths.Clear ();
+        int previousAddress = backReferences [i];
+        while (previousAddress >= 0)
+        {
+          int previousFill = WordFillLengths [previousAddress];
+          int l = MatchSubSequences (previousAddress + previousFill, i + fillLength);
+          MatchLengths.Add (new Interval (previousAddress, l));
+          previousAddress = backReferences [previousAddress];
+        }
+
+        // For each index i+j in current maximal word fill, find which previous fill+match 
+        // produces the longest total match.
+        for (int j = 0; j < fillLength - 1; j++)
+        {
+          Interval bestMatch = new Interval (0, 0);
+          for (int n = 0; n < MatchLengths.Count; n++)
+          {
+            Interval match;
+            int matchFill = WordFillLengths [MatchLengths [n].Address];
+            if (matchFill < fillLength - j)
+            {
+              match = new Interval (0, 0); // ignore cases where prev fill is too short.
+            }
+            else
+            {
+              match = new Interval (MatchLengths [n].Address + matchFill - fillLength + j,
+                                    MatchLengths [n].Length + fillLength - j);
+            }
+            if (match.Length > bestMatch.Length)
+              bestMatch = match;
+          }
+          CopyLengths [i + j] = bestMatch;
+          if (bestMatch.Address == 0x2782)
+            Logging.WriteLine (bestMatch.Address + " " +
+                               bestMatch.Length + " " +
+                               i + " " +
+                               j + " " +
+                               i + j);
+        }
+
+        Addresses [byte1, byte2] = i; // store address i as last occurrence of word fill.
+        i += fillLength - 1;
       }
+      // Logging.Write (Environment.NewLine);
+      // Logging.Write (Environment.NewLine);
     }
 
 
@@ -420,7 +465,7 @@ namespace SM3E
           {
           case 0b000: // Copy source bytes.
             if (position + length > input.Length)
-              return -1;
+              throw new ArgumentException (ExceptionInputEnded, "input");
             for (int i = 0; i < length; i++)
               output.Add (input [position + i]);
             position += length;
@@ -428,7 +473,7 @@ namespace SM3E
 
           case 0b001: // Repeat one byte <length> times.
             if (position + 1 > input.Length)
-              return -1;
+              throw new ArgumentException (ExceptionInputEnded, "input");
             CopyByte1 = input [position];
             position++;
             for (int i = 0; i < length; i++)
@@ -437,7 +482,7 @@ namespace SM3E
 
           case 0b010: // Alternate between two bytes <length> times.
             if (position + 2 > input.Length)
-              return -1;
+              throw new ArgumentException (ExceptionInputEnded, "input");
             CopyByte1 = input [position];
             CopyByte2 = input [position + 1];
             position += 2;
@@ -447,7 +492,7 @@ namespace SM3E
 
           case 0b011: // Sequence of increasing bytes.
             if (position + 1 > input.Length)
-              return -1;
+              throw new ArgumentException (ExceptionInputEnded, "input");
             CopyByte1 = input [position];
             position++;
             for (int i = 0; i < length; i++)
@@ -456,8 +501,10 @@ namespace SM3E
 
           case 0b100: // Copy from output stream.
             if (position + 2 > input.Length)
-              return -1;
+              throw new ArgumentException (ExceptionInputEnded, "input");
             address = Tools.ConcatBytes (input [position], input [position + 1]);
+            if (address >= output.Count)
+              throw new ArgumentException (ExceptionBadAddress, "input");
             position += 2;
             for (int i = 0; i < length; i++)
               output.Add (output [address + i]);
@@ -465,8 +512,10 @@ namespace SM3E
 
           case 0b101: // Copy from output stream, flip bits.
             if (position + 2 > input.Length)
-              return -1;
+              throw new ArgumentException (ExceptionInputEnded, "input");
             address = Tools.ConcatBytes (input [position], input [position + 1]);
+            if (address >= output.Count)
+              throw new ArgumentException (ExceptionBadAddress, "input");
             position += 2;
             for (int i = 0; i < length; i++)
               output.Add ((byte) (output [address + i] ^ 0xFF));
@@ -474,8 +523,10 @@ namespace SM3E
 
           case 0b110: // Copy from output stream, relative to current index.
             if (position + 1 > input.Length)
-              return -1;
+              throw new ArgumentException (ExceptionInputEnded, "input");
             address = output.Count - input [position];
+            if (address < 0)
+              throw new ArgumentException (ExceptionBadAddress, "input");
             position++;
             for (int i = 0; i < length; i++)
               output.Add (output [address + i]);
@@ -483,7 +534,7 @@ namespace SM3E
 
           case 0b111: // Long length (10 bits) command.
             if (position + 1 > input.Length)
-              return -1;
+              throw new ArgumentException (ExceptionInputEnded, "input");
             command = (currentByte >> 2) & 0b111;
             length = ((currentByte & 0b11) << 8) + input [position] + 1;
             position++;
@@ -491,8 +542,10 @@ namespace SM3E
             if (command == 0b111) // Copy output relative to current index, flip bits.
             {
               if (position + 1 > input.Length)
-                return -1;
+                throw new ArgumentException (ExceptionInputEnded, "input");
               address = output.Count - input [position];
+              if (address < 0)
+                throw new ArgumentException (ExceptionBadAddress, "input");
               position++;
               for (int i = 0; i < length; i++)
                 output.Add ((byte) (output [address + i] ^ 0xFF));
@@ -503,11 +556,11 @@ namespace SM3E
           }
         } while (longLenth);
       }
-      return -1; // fail because ROM data ended before decompression was finished.
+      throw new ArgumentException (ExceptionInputEnded, "input");
     }
 
 
-    // Testing function.
+    // [wip] Testing function.
     public static void Test (byte [] input)
     {
       Compressor c = new Compressor (input);
@@ -519,12 +572,17 @@ namespace SM3E
       for (int n = 0; n < size; n++)
       {
         if (input [n] != decompressed [n])
-          Logging.Write (n.ToString () + " ");
+          Logging.Write (Tools.IntToHex (n) + " ");
       }
 
       Logging.Write ("Done. " + Environment.NewLine);
-      Logging.Write ("Original  : " + input.Length);
-      Logging.Write ("\nCompressed: " + compressed.Count);
+      Logging.Write ("Original    : " + input.Length);
+      Logging.Write ("\nCompressed  : " + compressed.Count);
+      Logging.Write ("\nDecompressed: " + decompressed.Count);
+
+      File.WriteAllBytes ("test_0_orig.bin", input);
+      File.WriteAllBytes ("test_1_comp.bin", compressed.ToArray ());
+      File.WriteAllBytes ("test_2_decomp.bin", decompressed.ToArray ());
   }
 
 

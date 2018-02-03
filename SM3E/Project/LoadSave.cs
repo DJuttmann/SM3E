@@ -644,6 +644,7 @@ namespace SM3E
       // [wip] END OF TEST
       
       ReallocateAll ();
+      RepointAll ();
       List <Data> objects = CurrentRom.AllData;
       objects.Sort ((x, y) => x.StartAddressPC - y.StartAddressPC);
       

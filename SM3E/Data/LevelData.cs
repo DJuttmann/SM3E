@@ -70,10 +70,6 @@ namespace SM3E
       CompressionUpToDate = true;
       int decompressedSize = buffer.Count;
 
-      if (addressPC == 0x2142BB)
-        Compressor.Test (buffer.ToArray ());
-
-
       int Layer1Size = Tools.ConcatBytes (buffer [0], buffer [1]);
       int BtsSize = Layer1Size / 2;         // half the amount of data of layer one
       int Layer2Size;

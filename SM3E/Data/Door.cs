@@ -300,7 +300,7 @@ namespace SM3E
       DoorPtrs.Clear ();
       for (int n = 0; n < MyDoors.Count; n++)
         if (MyDoors [n] != null)
-          DoorPtrs [n] = MyDoors [n].StartAddressLR;
+          DoorPtrs. Add (MyDoors [n].StartAddressLR);
     }
 
 //----------------------------------------------------------------------------------------
