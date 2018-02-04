@@ -255,6 +255,8 @@ namespace SM3E
     // Reallocate the data from the section in its data blocks.
     public bool Reallocate ()
     {
+      if (SectionType == Type.Fixed)
+        return true;
       var objects = new List <Data> ();
       foreach (KeyValuePair <string, List <Data>> kv in Data)
         objects.AddRange (kv.Value);

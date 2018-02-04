@@ -96,6 +96,5 @@ namespace SM3E
       MainProject.Save ();
       Logging.Close ();
     }
-
   }
 }

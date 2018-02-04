@@ -671,6 +671,10 @@ namespace SM3E
         if (LayerSelect.SelectedIndex == 3) // Plm layer
           MainProject.SelectPlmAt (e.ClickTileY, e.ClickTileX);
         // LevelViewerEdit_MouseDown (e)
+        if (LayerSelect.SelectedIndex == 4) // Enemy layer
+          MainProject.SelectEnemyAt ((int) Math.Floor (e.ClickX), 
+                                     (int) Math.Floor (e.ClickY));
+
         break;
 
       case 2: // Properties
@@ -687,7 +691,9 @@ namespace SM3E
       switch (e.Button)
       {
       case MouseButton.Left: // Check if door and navigate through there.
-        MainProject.NavigateThroughDoor (e.ClickTileY, e.ClickTileX);
+        if (MainProject.NavigateThroughDoor (e.ClickTileY, e.ClickTileX,
+                                             out int screenX, out int screenY))
+          LevelData.ScrollToScreen (screenX, screenY); 
         break;
 
       case MouseButton.Right: // Check if door and select it in the editor.
@@ -809,7 +815,9 @@ namespace SM3E
 
     private void MapEditor_MouseDown (object sender, TileViewerMouseEventArgs e)
     {
-      MainProject.NavigateToMapPosition (e.ClickTileX, e.ClickTileY - 1);
+      if (MainProject.NavigateToMapPosition (e.ClickTileX, e.ClickTileY - 1,
+                                             out int screenX, out int screenY))
+        LevelData.ScrollToScreen (screenX, screenY);
     }
 
 

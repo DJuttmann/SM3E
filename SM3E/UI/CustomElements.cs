@@ -202,6 +202,16 @@ namespace SM3E
     }
 
 
+    // Scroll a screen into view.
+    public void ScrollToScreen (int x, int y)
+    {
+      double w = ScreenWidth * TileSize;
+      double h = ScreenHeight * TileSize;
+      Parent.ScrollToHorizontalOffset ((x + 0.5) * w - Parent.ViewportWidth / 2);
+      Parent.ScrollToVerticalOffset ((y + 0.5) * h - Parent.ViewportHeight / 2);
+    }
+
+
 //========================================================================================
 // Event handlers
 

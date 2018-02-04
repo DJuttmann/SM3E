@@ -41,6 +41,11 @@ namespace SM3E
       get {return ActiveRoomState?.MyPlmSet;}
     }
 
+    private EnemySet ActiveEnemySet
+    {
+      get {return ActiveRoomState?.MyEnemySet;}
+    }
+
 
     // Indices of selected items.
     public int AreaIndex {get; private set;} = IndexNone;
@@ -516,20 +521,24 @@ namespace SM3E
 //----------------------------------------------------------------------------------------
 
     // Check if tile in room is door tile; if it is, select the destination room.
-    public void NavigateThroughDoor (int row, int col)
+    public bool NavigateThroughDoor (int row, int col, out int screenX, out int screenY)
     {
+      screenX = 0;
+      screenY = 0;
       if (ActiveRoom?.MyDoorSet == null || ActiveLevelData == null)
-        return;
+        return false;
       List <Door> doors = ActiveRoom.MyDoorSet.MyDoors;
       if (GetBtsType (row, col) != 0x9) // return if not door
-        return;
+        return false;
       int index = GetBtsValue (row, col);
       if (index >= doors.Count)
-        return;
+        return false;
       Room targetRoom = doors [index].MyTargetRoom;
       if (targetRoom == null)
-        return;
+        return false;
       int targetArea = targetRoom.Area;
+      screenX = doors [index].ScreenX;
+      screenY = doors [index].ScreenY;
 
       HandlingSelection = true;
       var a = new ActiveItems (this);
@@ -537,14 +546,17 @@ namespace SM3E
       ForceSelectRoom (Rooms [targetArea].FindIndex (x => x == targetRoom));
       RaiseChangeEvents (a);
       HandlingSelection = false;
+      return true;
     }
 
 
     // Try to move to a room at position on the map.
-    public void NavigateToMapPosition (int x, int y)
+    public bool NavigateToMapPosition (int x, int y, out int screenX, out int screenY)
     {
+      screenX = 0;
+      screenY = 0;
       if (AreaIndex == IndexNone)
-        return;
+        return false;
       int startIndex = RoomIndex;
       if (startIndex == IndexNone)
         startIndex = Rooms [AreaIndex].Count - 1;
@@ -561,9 +573,12 @@ namespace SM3E
           ForceSelectRoom (i);
           RaiseChangeEvents (a);
           HandlingSelection = false;
-          return;
+          screenX = x - ActiveRoom.MapX;
+          screenY = y - ActiveRoom.MapY;
+          return true;
         }
       } while (i != startIndex);
+      return false;
     }
 
 
@@ -588,10 +603,10 @@ namespace SM3E
 
 
     // Select plm at given square
-    public void SelectPlmAt (int row, int col)
+    public bool SelectPlmAt (int row, int col)
     {
       if (ActivePlmSet == null)
-        return;
+        return false;
       for (int index = 0; index < ActivePlmSet.PlmCount; index++)
       {
         Plm p = ActivePlmSet.Plms [index];
@@ -605,9 +620,36 @@ namespace SM3E
           ForceSelectPlm (index);
           RaiseChangeEvents (a);
           HandlingSelection = false;
-          return;
+          return true;
         }
       }
+      return false;
+    }
+
+
+    public bool SelectEnemyAt (int x, int y)
+    {
+      if (ActiveEnemySet == null)
+        return false;
+      for (int index = 0; index < ActiveEnemySet.EnemyCount; index++)
+      {
+        Enemy e = ActiveEnemySet.Enemies [index];
+        int width = e.MyEnemyType?.Graphics.Width ?? 0;
+        int height = e.MyEnemyType?.Graphics.Height ?? 0;
+        width /= 2;
+        height /= 2;
+        if (x >= e.PosX - width  && x < e.PosX + width &&
+            y >= e.PosY - height && y < e.PosY + height)
+        {
+          HandlingSelection = true;
+          var a = new ActiveItems (this);
+          ForceSelectEnemy (index);
+          RaiseChangeEvents (a);
+          HandlingSelection = false;
+          return true;
+        }
+      }
+      return false;
     }
 
   } // partial class Project

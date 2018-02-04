@@ -59,18 +59,28 @@
       <Grid x:Name="RoomSelectorGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
           <RowDefinition Height="120"/>
+          <RowDefinition Height="25"/>
           <RowDefinition Height="8*"/>
-          <RowDefinition Height="5*"/>
+          <RowDefinition Height="25"/>
+          <RowDefinition Height="100"/>
         </Grid.RowDefinitions>
-        <ListBox x:Name="AreaListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,10,10,5" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="AreaListBox_SelectionChanged" />
-        <ListBox x:Name="RoomListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,5,10,5" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="RoomListBox_SelectionChanged"/>
-        <ListBox x:Name="RoomStateListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,5,10,10" Grid.Row="2" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="RoomStateListBox_SelectionChanged"/>
+        <ListBox Grid.Row="0" x:Name="AreaListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,8,8,4" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="AreaListBox_SelectionChanged" />
+        <Label   Grid.Row="1" Content="Room" HorizontalAlignment="Left" Width="100" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
+        <Button  Grid.Row="1" Grid.Column="2" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,33,0" VerticalAlignment="Bottom" Width="20"/>
+        <Button  Grid.Row="1" Grid.Column="2" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8,0" VerticalAlignment="Bottom" Width="20"/>
+        <ListBox Grid.Row="2" x:Name="RoomListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,4" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="RoomListBox_SelectionChanged"/>
+        <Label   Grid.Row="3" Content="State" HorizontalAlignment="Left" Width="100" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
+        <Button  Grid.Row="3" Grid.Column="2" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,83,0" VerticalAlignment="Bottom" Width="20"/>
+        <Button  Grid.Row="3" Grid.Column="2" Content="&#x2BC5;" HorizontalAlignment="Right" Height="20" Margin="0,0,58,0" VerticalAlignment="Bottom" Width="20"/>
+        <Button  Grid.Row="3" Grid.Column="2" Content="&#x2BC6;" HorizontalAlignment="Right" Height="20" Margin="0,0,33,0" VerticalAlignment="Bottom" Width="20"/>
+        <Button  Grid.Row="3" Grid.Column="2" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8,0" VerticalAlignment="Bottom" Width="20"/>
+        <ListBox Grid.Row="4" x:Name="RoomStateListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,8" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="RoomStateListBox_SelectionChanged"/>
       </Grid>
 
 
       <!-- LEVEL VIEWER -->
       <Grid x:Name="LevelViewerGrid" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-        <ScrollViewer x:Name="LevelDataViewer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Visible" Margin="10,10,10,10"/>
+        <ScrollViewer x:Name="LevelDataViewer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Visible" Margin="8,8,8,8"/>
       </Grid>
 
 
@@ -85,42 +95,18 @@
               <ColumnDefinition Width="Auto"/>
               <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" Grid.Column="0" Margin="8,0,8,8">
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" Grid.Column="0" Margin="0,0,0,0">
               <Grid.RowDefinitions>
                 <RowDefinition Height="25"/>
                 <RowDefinition Height="1*"/>
-                <RowDefinition Height="22"/>
-                <RowDefinition Height="22"/>
-                <RowDefinition Height="22"/>
-                <RowDefinition Height="22"/>
-                <RowDefinition Height="22"/>
-                <RowDefinition Height="22"/>
               </Grid.RowDefinitions>
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="85"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-              </Grid.ColumnDefinitions>
-              <Label Grid.Row="0" Content="Doors" HorizontalAlignment="Stretch" Margin="0,-3,0,-3" FontSize="16" FontWeight="Bold"/>
-              <Button Grid.Row="0" Grid.Column="0" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,25,0" VerticalAlignment="Top" Width="20" Grid.ColumnSpan="3"/>
-              <Button Grid.Row="0" Grid.Column="0" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,0,0" VerticalAlignment="Top" Width="20" Grid.ColumnSpan="3"/>
-              <ListBox x:Name="DoorListBox" Grid.Row="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Margin="2,2,2,2" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="DoorListBox_SelectionChanged" />
-              <Label Grid.Row="2" Margin="0,-3,0,-3" Content="Dest" HorizontalAlignment="Left"/>
-              <TextBox Grid.Row="2" Grid.Column="1" Margin="0,2,0,2" HorizontalAlignment="Stretch"/>
-              <Label Grid.Row="3" Margin="0,-3,0,-3" Content="Dir" HorizontalAlignment="Left"/>
-              <TextBox Grid.Row="3" Grid.Column="1" Margin="0,2,0,2" HorizontalAlignment="Stretch"/>
-              <Label Grid.Row="4" Margin="0,-3,0,-3" Content="Door cap pos." HorizontalAlignment="Left"/>
-              <TextBox Grid.Row="4" Grid.Column="1" Margin="0,2,2,2" HorizontalAlignment="Stretch"/>
-              <TextBox Grid.Row="4" Grid.Column="2" Margin="2,2,0,2" HorizontalAlignment="Stretch"/>
-              <Label Grid.Row="5" Margin="0,-3,0,-3" Content="Door screen" HorizontalAlignment="Left"/>
-              <TextBox Grid.Row="5" Grid.Column="1" Margin="0,2,2,2" HorizontalAlignment="Stretch"/>
-              <TextBox Grid.Row="5" Grid.Column="2" Margin="2,2,0,2" HorizontalAlignment="Stretch"/>
-              <Label Grid.Row="6" Margin="0,-3,0,-3" Content="Spawn dist." HorizontalAlignment="Left"/>
-              <TextBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,2,0,2" HorizontalAlignment="Stretch"/>
-              <Label Grid.Row="7" Margin="0,-3,0,-3" Content="Door ASM" HorizontalAlignment="Left"/>
-              <TextBox Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,2,0,2" HorizontalAlignment="Stretch"/>
+              <Label Grid.Row="0" Content="Doors" HorizontalAlignment="Stretch" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
+              <Button Grid.Row="0" Grid.Column="0" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,33,0" VerticalAlignment="Bottom" Width="20" Grid.ColumnSpan="3"/>
+              <Button Grid.Row="0" Grid.Column="0" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8,0" VerticalAlignment="Bottom" Width="20" Grid.ColumnSpan="3"/>
+              <!-- DOORS OUT -->
+              <ListBox x:Name="DoorListBox" Grid.Row="1" HorizontalAlignment="Stretch" Margin="8,4,8,4" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="DoorListBox_SelectionChanged" />
             </Grid>
-            <Grid x:Name="MapTileViewer" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="4,8,4,8"/>
+            <Grid x:Name="MapTileViewer" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="4,8,4,8"/>
             <Grid x:Name="MapViewer" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="4,8,8,8"/>
           </Grid>
         </TabItem>
@@ -155,7 +141,7 @@
               <Grid x:Name="Clipboard" Visibility="Hidden">
               </Grid>
             </Grid>
-            
+
             <!-- PLM LAYER -->
             <Grid x:Name="PlmLayerEditor" Visibility="Hidden">
               <Grid.ColumnDefinitions>
@@ -164,15 +150,38 @@
                 <ColumnDefinition Width="1*" MaxWidth="200"/>
                 <ColumnDefinition Width="Auto"/>
               </Grid.ColumnDefinitions>
-              <Label Grid.Row="0" Content="PLMs" HorizontalAlignment="Stretch" Margin="0,-3,0,-3" FontSize="16" FontWeight="Bold"/>
-              <Button Grid.Row="0" Grid.Column="0" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,33.2,0" VerticalAlignment="Top" Width="20"/>
-              <Button Grid.Row="0" Grid.Column="0" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8.2,0" VerticalAlignment="Top" Width="20"/>
-              <ListBox x:Name="PlmListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,28,8,8" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="PlmListBox_SelectionChanged"/>
-              <Label x:Name="PlmName" Grid.Row="0" Grid.Column="1" Content="[selected plm]" HorizontalAlignment="Stretch" Margin="0,-3,0,-3"/>
-              <Image x:Name="PlmImage" Grid.Column="1" HorizontalAlignment="Left" Width="Auto" Height="Auto" Margin="8,28,8,8" VerticalAlignment="Top" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
-              <ListBox x:Name="PlmTypeListBox" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,8" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="PlmTypeListBox_SelectionChanged"/>
+              <Grid>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="25"/>
+                  <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <Label   Grid.Row="0" Content="PLMs" HorizontalAlignment="Stretch" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
+                <Button  Grid.Row="0" Grid.Column="0" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,33,0" VerticalAlignment="Bottom" Width="20"/>
+                <Button  Grid.Row="0" Grid.Column="0" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8,0" VerticalAlignment="Bottom" Width="20"/>
+                <ListBox Grid.Row="1" x:Name="PlmListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,8" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="PlmListBox_SelectionChanged"/>
+              </Grid>
+              <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="25"/>
+                  <RowDefinition Height="1*"/>
+                  <RowDefinition Height="22"/>
+                  <RowDefinition Height="8"/>
+                </Grid.RowDefinitions>
+                <Label   Grid.Row="0" x:Name="PlmName" Grid.Column="1" Content="[selected plm]" HorizontalAlignment="Stretch" Margin="0,2,0,-3"/>
+                <Image   Grid.Row="1" x:Name="PlmImage" Grid.Column="1" HorizontalAlignment="Stretch" Margin="8,8,8,8" VerticalAlignment="Stretch" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                <Label   Grid.Row="2" Margin="5,-3,0,-3" Content="Value" HorizontalAlignment="Left"/>
+                <TextBox Grid.Row="2" x:Name="PlmValueInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$00" LostFocus="SpecialGfxInput_Update"/>
+              </Grid>
+              <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="25"/>
+                  <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <Label   Grid.Row="0" Content="Select PLM Type" HorizontalAlignment="Stretch" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
+                <ListBox Grid.Row="1" x:Name="PlmTypeListBox" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,8" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="PlmTypeListBox_SelectionChanged"/>
+              </Grid>
             </Grid>
-            
+
             <!-- ENEMY LAYER -->
             <Grid x:Name="EnemyLayerEditor" Visibility="Visible">
               <Grid.ColumnDefinitions>
@@ -182,21 +191,45 @@
                 <ColumnDefinition Width="1*" MaxWidth="200"/>
                 <ColumnDefinition Width="Auto"/>
               </Grid.ColumnDefinitions>
-              <Label Content="Enemies" HorizontalAlignment="Stretch" Margin="0,-3,0,-3" FontSize="16" FontWeight="Bold"/>
-              <Button Grid.Column="0" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,33,0" VerticalAlignment="Top" Width="20"/>
-              <Button Grid.Column="0" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8,0" VerticalAlignment="Top" Width="20"/>
-              <ListBox x:Name="EnemyListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,28,8,8" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="EnemyListBox_SelectionChanged"/>
-              <Label Grid.Column="1" Content="Enemy Gfx" HorizontalAlignment="Stretch" Margin="0,-3,0,-3" FontSize="16" FontWeight="Bold"/>
-              <Button Grid.Column="1" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,83,0" VerticalAlignment="Top" Width="20"/>
-              <Button Grid.Column="1" Content="&#x2BC5;" HorizontalAlignment="Right" Height="20" Margin="0,0,58,0" VerticalAlignment="Top" Width="20"/>
-              <Button Grid.Column="1" Content="&#x2BC6;" HorizontalAlignment="Right" Height="20" Margin="0,0,33,0" VerticalAlignment="Top" Width="20"/>
-              <Button Grid.Column="1" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8,0" VerticalAlignment="Top" Width="20"/>
-              <ListBox Grid.Column="1" x:Name="EnemyGfxListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,28,8,8" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="EnemyGfxListBox_SelectionChanged"/>
+              <Grid>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="25"/>
+                  <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <Label Content="Enemies" HorizontalAlignment="Stretch" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
+                <Button  Grid.Row="0" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,83,0" VerticalAlignment="Bottom" Width="20"/>
+                <Button  Grid.Row="0" Content="&#x2BC5;" HorizontalAlignment="Right" Height="20" Margin="0,0,58,0" VerticalAlignment="Bottom" Width="20"/>
+                <Button  Grid.Row="0" Content="&#x2BC6;" HorizontalAlignment="Right" Height="20" Margin="0,0,33,0" VerticalAlignment="Bottom" Width="20"/>
+                <Button  Grid.Row="0" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8,0" VerticalAlignment="Bottom" Width="20"/>
+                <ListBox Grid.Row="1" x:Name="EnemyListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,8" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="EnemyListBox_SelectionChanged"/>
+              </Grid>
+              <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="25"/>
+                  <RowDefinition Height="1*" MaxHeight="100"/>
+                  <RowDefinition Height="22"/>
+                </Grid.RowDefinitions>
+                <Label   Grid.Row="0" Content="Enemy Gfx" HorizontalAlignment="Stretch" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
+                <Button  Grid.Row="0" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,83,0" VerticalAlignment="Bottom" Width="20"/>
+                <Button  Grid.Row="0" Content="&#x2BC5;" HorizontalAlignment="Right" Height="20" Margin="0,0,58,0" VerticalAlignment="Bottom" Width="20"/>
+                <Button  Grid.Row="0" Content="&#x2BC6;" HorizontalAlignment="Right" Height="20" Margin="0,0,33,0" VerticalAlignment="Bottom" Width="20"/>
+                <Button  Grid.Row="0" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8,0" VerticalAlignment="Bottom" Width="20"/>
+                <ListBox Grid.Row="1" x:Name="EnemyGfxListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,4" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="EnemyGfxListBox_SelectionChanged"/>
+                <Label   Grid.Row="2" Margin="5,-3,0,-3" Content="Gfx Palette" HorizontalAlignment="Left"/>
+                <TextBox Grid.Row="2" x:Name="GfxPaletteInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$00" LostFocus="SpecialGfxInput_Update"/>
+              </Grid>
               <Label x:Name="EnemyName" Grid.Row="0" Grid.Column="2" Content="[selected enemy]" HorizontalAlignment="Stretch" Margin="0,-3,0,-3"/>
               <Image x:Name="EnemyImage" Grid.Column="2" HorizontalAlignment="Left" Width="Auto" Height="Auto" Margin="8,28,8,8" VerticalAlignment="Top" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
-              <ListBox x:Name="EnemyTypeListBox" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,8" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="EnemyTypeListBox_SelectionChanged"/>
+              <Grid Grid.Column="3">
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="25"/>
+                  <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <Label   Grid.Row="0" Content="Select Enemy Type" HorizontalAlignment="Stretch" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
+                <ListBox Grid.Row="1" x:Name="EnemyTypeListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,8" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="EnemyTypeListBox_SelectionChanged"/>
+              </Grid>
             </Grid>
-            
+
             <!-- SCROLL LAYER -->
             <Grid x:Name="ScrollLayerEditor" Visibility="Hidden">
               <Grid.ColumnDefinitions>
@@ -204,14 +237,24 @@
                 <ColumnDefinition Width="1*" MaxWidth="200"/>
                 <ColumnDefinition Width="Auto"/>
               </Grid.ColumnDefinitions>
-              <Label Grid.Row="0" Content="Scroll Data" HorizontalAlignment="Stretch" Margin="0,-3,0,-3" FontSize="16" FontWeight="Bold"/>
-              <Button Grid.Row="0" Grid.Column="0" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,33.2,0" VerticalAlignment="Top" Width="20"/>
-              <Button Grid.Row="0" Grid.Column="0" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8.2,0" VerticalAlignment="Top" Width="20"/>
-              <ListBox x:Name="ScrollDataListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,28,8,8" IsTextSearchCaseSensitive="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="ScrollDataListBox_SelectionChanged"/>
-              <Label x:Name="ScrollColorName" Grid.Row="0" Grid.Column="1" Content="Color selector" HorizontalAlignment="Stretch" Margin="0,-3,0,-3"/>
-              <ListBox x:Name="ScrollColorListBox" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="Auto" Margin="8,28,8,8" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="ScrollColorListBox_SelectionChanged"/>
+              <Grid>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="25"/>
+                  <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <Label   Grid.Row="0" Content="Scroll Data" HorizontalAlignment="Stretch" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
+                <ListBox Grid.Row="1" x:Name="ScrollDataListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,8" IsTextSearchCaseSensitive="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="ScrollDataListBox_SelectionChanged"/>
+              </Grid>
+              <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="25"/>
+                  <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <Label   Grid.Row="0" Content="Select Color" HorizontalAlignment="Stretch" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
+                <ListBox Grid.Row="1" x:Name="ScrollColorListBox" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="100" Margin="8,4,8,8" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="ScrollColorListBox_SelectionChanged"/>
+              </Grid>
             </Grid>
-            
+
             <!-- EFFECTS LAYER -->
             <Grid x:Name="GfxLayerEditor" Visibility="Hidden">
               <Grid.ColumnDefinitions>
@@ -256,8 +299,6 @@
                 <ColumnDefinition Width="1*"/>
               </Grid.ColumnDefinitions>
               <Label Grid.Row="0" Content="Room" HorizontalAlignment="Left" Width="100" Margin="0,-3,0,-3" FontSize="16" FontWeight="Bold" Grid.ColumnSpan="3" Grid.RowSpan="2"/>
-              <Button Grid.Row="0" Grid.Column="2" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,25,0" VerticalAlignment="Top" Width="20"/>
-              <Button Grid.Row="0" Grid.Column="2" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,0,0" VerticalAlignment="Top" Width="20"/>
               <Label Grid.Row="1" Margin="0,-3,0,-3" Content="Area" HorizontalAlignment="Left"/>
               <ComboBox x:Name="RoomAreaSelect" Grid.Row="1" Grid.ColumnSpan="3" Margin="75,1,0,1" HorizontalAlignment="Stretch" SelectionChanged="RoomAreaSelect_Update">
                 <ComboBoxItem>00</ComboBoxItem>
@@ -279,10 +320,6 @@
               <TextBox x:Name="SpecialGfxInput" Grid.Row="4" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$00" LostFocus="SpecialGfxInput_Update"/>
 
               <Label Grid.Row="6" Content="State" HorizontalAlignment="Left" Width="100" Margin="0,-3,0,-3" FontSize="16" FontWeight="Bold" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
-              <Button Grid.Row="6" Grid.Column="2" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,75,0" VerticalAlignment="Top" Width="20"/>
-              <Button Grid.Row="6" Grid.Column="2" Content="&#x2BC5;" HorizontalAlignment="Right" Height="20" Margin="0,0,50,0" VerticalAlignment="Top" Width="20"/>
-              <Button Grid.Row="6" Grid.Column="2" Content="&#x2BC6;" HorizontalAlignment="Right" Height="20" Margin="0,0,25,0" VerticalAlignment="Top" Width="20"/>
-              <Button Grid.Row="6" Grid.Column="2" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,0,0" VerticalAlignment="Top" Width="20"/>
               <Label Grid.Row="7" Margin="0,-3,0,-3" Content="Type" HorizontalAlignment="Left"/>
               <ComboBox x:Name="StateTypeSelect" Grid.Row="7" Margin="75,1,-50,1" HorizontalAlignment="Stretch">
                 <ComboBoxItem>Event</ComboBoxItem>

@@ -92,6 +92,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Data\Scrolls.cs" />
+    <Compile Include="Project\ObjectManagement.cs" />
     <Compile Include="Project\ProjectEvents.cs" />
     <Compile Include="Project\Selecting.cs" />
     <Compile Include="Tools\Compression.cs" />

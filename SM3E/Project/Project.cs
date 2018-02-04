@@ -170,28 +170,30 @@ namespace SM3E
       {
         return ActiveRoom?.Area ?? -1;
       }
-      set // [wip] perhaps make this a method ChangeRoomArea instead?
+      set
       {
         if (ActiveRoom != null && (byte) value != ActiveRoom.Area)
         {
-          HandlingSelection = true;
-          var a = new ActiveItems (this);
+          int newRoomIndex = NewRoomIndex (value);
+          if (newRoomIndex != -1)
+          {
+            HandlingSelection = true;
+            var a = new ActiveItems (this);
 
-          Room CurrentRoom = ActiveRoom;
-          int CurrentRoomStateIndex = RoomStateIndex;
-          byte newAreaIndex = (byte) value;
-          CurrentRoom.Area = newAreaIndex;
-          Rooms [AreaIndex].Remove (CurrentRoom);
-          Rooms [newAreaIndex].Add (CurrentRoom);
-          Rooms [newAreaIndex].Sort ((x, y) => ((Room) x).RoomIndex - 
-                                               ((Room) y).RoomIndex);
-          // [wip] Give room a new ID! Moving should fail if area is full.
-          ForceSelectArea (newAreaIndex);
-          ForceSelectRoom (Rooms [newAreaIndex].FindIndex (x => x == CurrentRoom));
-          ForceSelectRoomState (CurrentRoomStateIndex);
+            Room CurrentRoom = ActiveRoom;
+            int CurrentRoomStateIndex = RoomStateIndex;
+            CurrentRoom.Area = (byte) value;
+            CurrentRoom.RoomIndex = (byte) newRoomIndex;
+            Rooms [AreaIndex].Remove (CurrentRoom);
+            Rooms [value].Add (CurrentRoom);
+            Rooms [value].Sort ((x, y) => ((Room) x).RoomIndex - ((Room) y).RoomIndex);
+            ForceSelectArea (value);
+            ForceSelectRoom (Rooms [value].FindIndex (x => x == CurrentRoom));
+            ForceSelectRoomState (CurrentRoomStateIndex);
 
-          RaiseChangeEvents (a);
-          HandlingSelection = false;
+            RaiseChangeEvents (a);
+            HandlingSelection = false;
+          }
         }
       }
     }
@@ -454,7 +456,7 @@ namespace SM3E
       }
     }
 
-    // List of room state names for active room.
+    // List of outgoing door names for active room.
     public List <string> DoorNames
     {
       get
@@ -478,12 +480,20 @@ namespace SM3E
       get
       {
         var names = new List <string> ();
-        if (ActiveRoomState != null && ActiveRoomState.MyPlmSet != null)
+        if (ActivePlmSet != null)
         {
-          for (int n = 0; n < ActiveRoomState.MyPlmSet.PlmCount; n++)
+          for (int n = 0; n < ActivePlmSet.PlmCount; n++)
           {
-            names.Add (ActiveRoomState.MyPlmSet.Plms [n].MyPlmType?.Name ??
-                          Tools.IntToHex (ActiveRoomState.MyPlmSet.Plms [n].PlmID));
+            string newName = ActivePlmSet.Plms [n].MyPlmType?.Name ??
+                             Tools.IntToHex (ActivePlmSet.Plms [n].PlmID);
+            if (names.Contains (newName))
+            {
+              int i = 1;
+              while (names.Contains (newName + " [" + i.ToString () + "]"))
+                i++;
+              newName += " [" + i.ToString () + "]";
+            }
+            names.Add (newName);
           }
         }
         return names;
@@ -510,12 +520,20 @@ namespace SM3E
       get
       {
         var names = new List <string> ();
-        if (ActiveRoomState != null && ActiveRoomState.MyEnemySet != null)
+        if (ActiveEnemySet != null)
         {
-          for (int n = 0; n < ActiveRoomState.MyEnemySet.EnemyCount; n++)
+          for (int n = 0; n < ActiveEnemySet.EnemyCount; n++)
           {
-            names.Add (ActiveRoomState.MyEnemySet.Enemies [n].MyEnemyType?.Name ??
-                       Tools.IntToHex (ActiveRoomState.MyEnemySet.Enemies [n].EnemyID));
+            string newName = ActiveEnemySet.Enemies [n].MyEnemyType?.Name ??
+                             Tools.IntToHex (ActiveEnemySet.Enemies [n].EnemyID);
+            if (names.Contains (newName))
+            {
+              int i = 1;
+              while (names.Contains (newName + " [" + i.ToString () + "]"))
+                i++;
+              newName += " [" + i.ToString () + "]";
+            }
+            names.Add (newName);
           }
         }
         return names;
