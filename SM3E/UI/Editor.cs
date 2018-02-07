@@ -81,6 +81,7 @@ namespace SM3E
       LevelData.ViewportChanged += LevelDataViewportChanged;
       LevelData.MouseDown += LevelViewer_MouseDown;
       LevelData.MouseUp += LevelViewer_MouseUp;
+      LevelData.MouseDrag += LevelViewer_MouseDrag;
       LevelData.BackgroundColor = Color.FromRgb (0x00, 0x00, 0x00);
       LevelDataViewer.Content = LevelData.Element;
       NewLevelData (null, null);
@@ -523,6 +524,13 @@ namespace SM3E
     }
 
 
+    private void DoorListBox_DoubleClick (object sender, MouseButtonEventArgs e)
+    {
+      var window = new UI.EditDoorWindow (MainProject, false);
+      window.ShowDialog ();
+    }
+
+
     private void PlmListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
     {
       PlmListBox.ScrollIntoView (PlmListBox.SelectedItem);
@@ -669,11 +677,34 @@ namespace SM3E
 
       case 1: // Edit
         if (LayerSelect.SelectedIndex == 3) // Plm layer
-          MainProject.SelectPlmAt (e.ClickTileY, e.ClickTileX);
-        // LevelViewerEdit_MouseDown (e)
-        if (LayerSelect.SelectedIndex == 4) // Enemy layer
-          MainProject.SelectEnemyAt ((int) Math.Floor (e.ClickX), 
-                                     (int) Math.Floor (e.ClickY));
+        {
+          if (MainProject.SelectPlmAt (e.TileClickX, e.TileClickY))
+          {
+            MainProject.GetPlmPosition (out int x, out int y,
+                                        out int width, out int height);
+            LevelData.MarkerVisible = true;
+            LevelData.SetMarker (x, y, width, height);
+          }
+          else
+          {
+            LevelData.MarkerVisible = false;
+          }
+        }
+        
+        else if (LayerSelect.SelectedIndex == 4) // Enemy layer
+        {
+          if (MainProject.SelectEnemyAt (e.ClickX * 16, e.ClickY * 16))
+          {
+            MainProject.GetEnemyPosition (out double x, out double y,
+                                          out double width, out double height);
+            LevelData.MarkerVisible = true;
+            LevelData.SetMarker (x, y, width, height);
+          }
+          else
+          {
+            LevelData.MarkerVisible = false;
+          }
+        }
 
         break;
 
@@ -691,13 +722,13 @@ namespace SM3E
       switch (e.Button)
       {
       case MouseButton.Left: // Check if door and navigate through there.
-        if (MainProject.NavigateThroughDoor (e.ClickTileY, e.ClickTileX,
+        if (MainProject.NavigateThroughDoor (e.TileClickY, e.TileClickX,
                                              out int screenX, out int screenY))
           LevelData.ScrollToScreen (screenX, screenY); 
         break;
 
       case MouseButton.Right: // Check if door and select it in the editor.
-        MainProject.SelectDoorAt (e.ClickTileY, e.ClickTileX);
+        MainProject.SelectDoorAt (e.TileClickY, e.TileClickX);
         break;
 
       default:
@@ -706,6 +737,30 @@ namespace SM3E
     }
 
 
+    // Mouse drag.
+    private void LevelViewer_MouseDrag (object sender, TileViewerMouseEventArgs e)
+    {
+      switch (EditorTabs.SelectedIndex)
+      {
+      case 0: // Navigate
+        // LevelViewerNavigate_MouseDown (e);
+        break;
+
+      case 1: // Edit
+        if (LayerSelect.SelectedIndex == 3) // Plm layer
+        {
+          if (LevelData.MarkerVisible == true)
+          {
+            MainProject.GetPlmPosition (out int x, out int y,
+                                        out int width, out int height);
+            LevelData.SetMarker (x + e.PosTileX - e.TileClickX,
+                                 y + e.PosTileY - e.TileClickY,
+                                 width, height);
+          }
+        }
+        break;
+      }
+    }
 
 
     // Mouse Up.
@@ -739,17 +794,17 @@ namespace SM3E
         switch (LayerSelect.SelectedIndex)
         {
         case 0: // Layer 1
-          MainProject.SetLayer1 (e.PosTileY, e.PosTileX, e.ClickTileY, e.ClickTileX);
+          MainProject.SetLayer1 (e.PosTileY, e.PosTileX, e.TileClickY, e.TileClickX);
           break;
         case 1: // Bts
-          MainProject.SetBts (e.PosTileY, e.PosTileX, e.ClickTileY, e.ClickTileX);
+          MainProject.SetBts (e.PosTileY, e.PosTileX, e.TileClickY, e.TileClickX);
           break;
         case 2: // Layer 2
-          MainProject.SetLayer2 (e.PosTileY, e.PosTileX, e.ClickTileY, e.ClickTileX);
+          MainProject.SetLayer2 (e.PosTileY, e.PosTileX, e.TileClickY, e.TileClickX);
           break;
         case 5: // Scrolls
           MainProject.SetScroll (e.PosTileX / 16, e.PosTileY / 16,
-                                 e.ClickTileX / 16, e.ClickTileY / 16);
+                                 e.TileClickX / 16, e.TileClickY / 16);
           break;
         default:
           break;
@@ -773,7 +828,7 @@ namespace SM3E
     {
       if (e.Button != MouseButton.Left && e.Button != MouseButton.Left)
         return;
-      MainProject.TileIndex = e.ClickTileY * 32 + e.ClickTileX;
+      MainProject.TileIndex = e.TileClickY * 32 + e.TileClickX;
     }
 
 
@@ -782,7 +837,7 @@ namespace SM3E
     {
       if (e.Button != MouseButton.Left && e.Button != MouseButton.Left)
         return;
-      BtsConvert.TextureIndexToBts (e.ClickTileX, e.ClickTileY,
+      BtsConvert.TextureIndexToBts (e.TileClickX, e.TileClickY,
                                     out int btsType, out int btsValue);
       MainProject.BtsValue = btsValue;
       MainProject.BtsType = btsType;
@@ -815,7 +870,7 @@ namespace SM3E
 
     private void MapEditor_MouseDown (object sender, TileViewerMouseEventArgs e)
     {
-      if (MainProject.NavigateToMapPosition (e.ClickTileX, e.ClickTileY - 1,
+      if (MainProject.NavigateToMapPosition (e.TileClickX, e.TileClickY - 1,
                                              out int screenX, out int screenY))
         LevelData.ScrollToScreen (screenX, screenY);
     }

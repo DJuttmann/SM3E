@@ -45,6 +45,10 @@ namespace SM3E
     public int TileClickY {get; private set;}
     public int TileOverX {get; private set;}
     public int TileOverY {get; private set;}
+    public double ClickX {get; private set;}
+    public double ClickY {get; private set;}
+    public double OverX {get; private set;}
+    public double OverY {get; private set;}
 
     public event ViewportEventHandler ViewportChanged;
     public event TileViewerMouseEventHandler MouseDown;
@@ -253,6 +257,19 @@ namespace SM3E
         Selection.SetValue (Grid.ColumnProperty, Math.Min (TileOverX, TileClickX));
         Selection.SetValue (Grid.RowSpanProperty, Math.Abs (TileOverY - TileClickY) + 1);
         Selection.SetValue (Grid.ColumnSpanProperty, Math.Abs (TileOverX - TileClickX) + 1);
+
+        var a = new TileViewerMouseEventArgs ()
+        {
+          TileClickX = TileClickX,
+          TileClickY = TileClickY,
+          PosTileX = TileOverX,
+          PosTileY = TileOverY,
+          ClickX = ClickX,
+          ClickY = ClickY,
+          PosX = OverX,
+          PosY = OverY
+        };
+        MouseDrag?.Invoke (this, a);
       }
       else
       {
@@ -270,8 +287,10 @@ namespace SM3E
         return;
       mouseDown = true;
       Point p = e.GetPosition (MainGrid);
-      TileClickX = Convert.ToInt32 (Math.Floor (p.X / TileSize));
-      TileClickY = Convert.ToInt32 (Math.Floor (p.Y / TileSize));
+      ClickX = p.X / TileSize;
+      ClickY = p.Y / TileSize;
+      TileClickX = Convert.ToInt32 (Math.Floor (ClickX));
+      TileClickY = Convert.ToInt32 (Math.Floor (ClickY));
       if (TileClickX < 0)
         TileClickX = 0;
       if (TileClickX >= ColCount)
@@ -283,10 +302,10 @@ namespace SM3E
 
       var a = new TileViewerMouseEventArgs ()
       {
-        ClickX = p.X,
-        ClickY = p.Y,
-        ClickTileX = TileClickX,
-        ClickTileY = TileClickY,
+        ClickX = ClickX,
+        ClickY = ClickY,
+        TileClickX = TileClickX,
+        TileClickY = TileClickY,
         Button = e.ChangedButton
       };
       MouseDown?.Invoke (this, a);
@@ -298,8 +317,10 @@ namespace SM3E
       mouseDown = false;
 
       Point p = e.GetPosition (MainGrid);
-      TileOverX = Convert.ToInt32 (Math.Floor (p.X / TileSize));
-      TileOverY = Convert.ToInt32 (Math.Floor (p.Y / TileSize));
+      OverX = p.X / TileSize;
+      OverY = p.Y / TileSize;
+      TileOverX = Convert.ToInt32 (Math.Floor (OverX));
+      TileOverY = Convert.ToInt32 (Math.Floor (OverY));
       if (TileOverX < 0)
         TileOverX = 0;
       if (TileOverX >= ColCount)
@@ -311,12 +332,12 @@ namespace SM3E
 
       var a = new TileViewerMouseEventArgs ()
       {
-        ClickX = 0.0, // [wip]
-        ClickY = 0.0, // [wip]
-        ClickTileX = TileClickX,
-        ClickTileY = TileClickY,
-        PosX = p.X,
-        PosY = p.Y,
+        ClickX = ClickX, // [wip]
+        ClickY = ClickY, // [wip]
+        TileClickX = TileClickX,
+        TileClickY = TileClickY,
+        PosX = OverX,
+        PosY = OverY,
         PosTileX = TileOverX,
         PosTileY = TileOverY,
         Button = e.ChangedButton
@@ -386,8 +407,8 @@ namespace SM3E
     public double ClickY;
     public double PosX;
     public double PosY;
-    public int ClickTileX;
-    public int ClickTileY;
+    public int TileClickX;
+    public int TileClickY;
     public int PosTileX;
     public int PosTileY;
 

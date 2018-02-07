@@ -104,7 +104,7 @@
               <Button Grid.Row="0" Grid.Column="0" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,33,0" VerticalAlignment="Bottom" Width="20" Grid.ColumnSpan="3"/>
               <Button Grid.Row="0" Grid.Column="0" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8,0" VerticalAlignment="Bottom" Width="20" Grid.ColumnSpan="3"/>
               <!-- DOORS OUT -->
-              <ListBox x:Name="DoorListBox" Grid.Row="1" HorizontalAlignment="Stretch" Margin="8,4,8,4" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="DoorListBox_SelectionChanged" />
+              <ListBox x:Name="DoorListBox" Grid.Row="1" HorizontalAlignment="Stretch" Margin="8,4,8,4" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="DoorListBox_SelectionChanged" MouseDoubleClick="DoorListBox_DoubleClick" />
             </Grid>
             <Grid x:Name="MapTileViewer" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="4,8,4,8"/>
             <Grid x:Name="MapViewer" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="4,8,8,8"/>

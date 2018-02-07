@@ -26,7 +26,7 @@ namespace SM3E
 //========================================================================================
 
 
-  partial class Project
+  public partial class Project
   {
     // Consts
     public const int IndexNone = -1;
@@ -723,6 +723,34 @@ namespace SM3E
 //========================================================================================
 // Getters & Setters
 
+    
+    // List of room names for an area.
+    public List <string> GetRoomNames (int AreaIndex)
+    {
+      var names = new List <string> ();
+      if (AreaIndex >= 0 && AreaIndex < AreaCount)
+        foreach (Room r in Rooms [AreaIndex])
+          names.Add (r.Name);
+      return names;
+    }
+
+
+    public void GetRoomSizeInScreens (int areaIndex, int roomIndex,
+                                      out int width, out int height)
+    {
+      width = 0;
+      height = 0;
+      if (areaIndex >= 0 && areaIndex < AreaCount &&
+          roomIndex >= 0 && roomIndex < Rooms [areaIndex].Count)
+      {
+        Room r = (Room) Rooms [areaIndex] [roomIndex];
+        width = r.RoomW;
+        height = r.RoomH;
+      } 
+    }
+
+
+//========================================================================================
 // Level data
 
     // Check if room and room state are active.
@@ -1002,8 +1030,68 @@ namespace SM3E
 
 
 //========================================================================================
-// Room State Data
+// PLMs and Enemies
 
+    
+    // Return position and size of selected PLM
+    public void GetPlmPosition (out int x, out int y, out int width, out int height)
+    {
+      x = 0;
+      y = 0;
+      width = 0;
+      height = 0;
+      if (ActivePlm != null)
+      {
+        x = ActivePlm.PosX;
+        y = ActivePlm.PosY;
+        width  = ActivePlm.MyPlmType?.Graphics.Width  / 16 ?? 1;
+        height = ActivePlm.MyPlmType?.Graphics.Height / 16 ?? 1;
+      }
+    }
+
+
+    // Return position and size of selected PLM
+    public void GetEnemyPosition (out double x, out double y,
+                                  out double width, out double height)
+    {
+      x = 0.0;
+      y = 0.0;
+      width = 0.0;
+      height = 0.0;
+      if (ActivePlm != null)
+      {
+        width  = ActiveEnemy.MyEnemyType?.Graphics.Width  / 16.0 ?? 1.0;
+        height = ActiveEnemy.MyEnemyType?.Graphics.Height / 16.0 ?? 1.0;
+        x = ActiveEnemy.PosX / 16.0 - width  / 2.0;
+        y = ActiveEnemy.PosY / 16.0 - height / 2.0;
+      }
+    }
+
+
+//========================================================================================
+// Doors
+
+
+    public void GetDoorDestination (out int areaIndex, out int roomIndex,
+                                    out int screenX, out int screenY,
+                                    out int doorCapX, out int doorCapY,
+                                    out int distanceToSpawn)
+    {
+      Room r = ActiveDoor?.MyTargetRoom;
+      areaIndex = r?.Area ?? IndexNone;
+      if (areaIndex != IndexNone)
+        roomIndex = Rooms [areaIndex].FindIndex (x => x == r);
+      else
+        roomIndex = IndexNone;
+      screenX = ActiveDoor?.ScreenX ?? 0;
+      screenY = ActiveDoor?.ScreenY ?? 0;
+      doorCapX = ActiveDoor?.DoorCapX ?? 0;
+      doorCapY = ActiveDoor?.DoorCapY ?? 0;
+      distanceToSpawn = ActiveDoor?.DistanceToSpawn ?? 0;
+    }
+
+
+    // public void GetDoorData ()
 
   } // class Project
 

@@ -1,0 +1,82 @@
+﻿<Window x:Class="SM3E.UI.EditDoorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SM3E.UI"
+        mc:Ignorable="d"
+        Title="Edit Door" Height="500" Width="550">
+  
+  <!-- MAIN GRID -->
+  <Grid Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Width="Auto" Height="Auto">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="1*"/>
+      <ColumnDefinition Width="Auto"/>
+    </Grid.ColumnDefinitions>
+
+    <Grid Grid.Column="0">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="25"/>
+        <RowDefinition Height="120"/>
+        <RowDefinition Height="1*"/>
+      </Grid.RowDefinitions>
+      <Label   Grid.Row="0" Content="Destination" HorizontalAlignment="Left" Width="100" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
+      <ListBox Grid.Row="1" x:Name="AreaListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,4" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="AreaListBox_SelectionChanged" />
+      <ListBox Grid.Row="2" x:Name="RoomListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,4" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="RoomListBox_SelectionChanged"/>
+    </Grid>
+    
+    <Grid Grid.Column="1">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="8"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="25"/>
+        <RowDefinition Height="1*"/>
+      </Grid.RowDefinitions>
+      <Label Grid.Row="1" Content="Type" Margin="0,-3,0,-3" HorizontalAlignment="Left"/>
+      <ComboBox  Grid.Row="1" Margin="75,1,8,1" HorizontalAlignment="Stretch" SelectedIndex="0">
+        <ComboBoxItem>Door</ComboBoxItem>
+        <ComboBoxItem>Elevator</ComboBoxItem>
+        <ComboBoxItem>Elevator pad</ComboBoxItem>
+      </ComboBox>
+      <Label Grid.Row="2" Content="Direction" Margin="0,-3,0,-3" HorizontalAlignment="Left"/>
+      <ComboBox Grid.Row="2" Margin="75,1,83,1" HorizontalAlignment="Stretch" SelectedIndex="0">
+        <ComboBoxItem>Right</ComboBoxItem>
+        <ComboBoxItem>Left</ComboBoxItem>
+        <ComboBoxItem>Down</ComboBoxItem>
+        <ComboBoxItem>Up</ComboBoxItem>
+      </ComboBox>
+      <CheckBox Grid.Row="2" Content="Close" Margin="75,-3,10,-3" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+      <Label Grid.Row="3" Content="ASM" Margin="0,-3,0,-3" HorizontalAlignment="Left"/>
+      <CheckBox Grid.Row="3" Content="Scroll" Margin="75,-3,10,-3" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+      <Label Grid.Row="4" Content="Spawn dist." Margin="0,-3,0,-3" HorizontalAlignment="Left"/>
+      <TextBox Grid.Row="4" x:Name="SpawnDistanceInput" Margin="75,2,8,2" HorizontalAlignment="Stretch"/>
+      <Label Grid.Row="5" Content="Entrance screen and door cap position:" Margin="0,1,0,-7" HorizontalAlignment="Left"/>
+
+      <Grid Grid.Row="6" Width="Auto" Height="Auto" Margin="8,8,8,8">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="20"/>
+          <RowDefinition Height="256"/>
+          <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="20"/>
+          <ColumnDefinition Width="256"/>
+          <ColumnDefinition Width="20"/>
+        </Grid.ColumnDefinitions>
+        <Button Grid.Row="0" Grid.Column="1" x:Name="ButtonUp"    Content="&#x2BC5;" Height="20" Width="100" Click="ButtonUp_Click"/>
+        <Button Grid.Row="2" Grid.Column="1" x:Name="ButtonDown"  Content="&#x2BC6;" Height="20" Width="100" Click="ButtonDown_Click"/>
+        <Button Grid.Row="1" Grid.Column="0" x:Name="ButtonLeft"  Content="&#x2BC7;" Height="100" Width="20" Click="ButtonLeft_Click"/>
+        <Button Grid.Row="1" Grid.Column="2" x:Name="ButtonRight" Content="&#x2BC8;" Height="100" Width="20" Click="ButtonRight_Click"/>
+        <Grid x:Name="ScreenPreviewGrid" Grid.Row="1" Grid.Column="1"/>
+      </Grid>
+      <Button Grid.Row="7" Width="100" Height="20" Content="Save"   Margin="0,0,110,0" Click="Save_Click"/>
+      <Button Grid.Row="7" Width="100" Height="20" Content="Cancel" Margin="110,0,0,0" Click="Cancel_Click"/>
+    </Grid>
+  
+  </Grid>
+</Window>

@@ -199,8 +199,31 @@ namespace SM3E
 
 //----------------------------------------------------------------------------------------
 
+    
+    // Renders a screen from a room.
+    public void RenderScreen (int areaIndex, int roomIndex, BlitImage screenImage,
+                              int x, int y)
+    {
+      if (areaIndex >= 0 && areaIndex < AreaCount &&
+          roomIndex >= 0 && roomIndex < Rooms [areaIndex].Count)
+      {
+        ActiveItems a = new ActiveItems (this);
+        ActiveRoom = (Room) Rooms [areaIndex] [roomIndex];
+        ActiveRoomState = ActiveRoom.RoomStates.Last ();
+        LoadRoomTiles (ActiveRoomState.TileSet);
+        RenderScreen (screenImage, x, y);
+        ActiveRoom = a.ActiveRoom;
+        ActiveRoomState = a.ActiveRoomState;
+        LoadRoomTiles (ActiveRoomState.TileSet);
+      }
+      else
+      {
+        screenImage.Black ();
+      }
+    }
 
-    // Renders a screen.
+
+    // Renders a screen from the active room.
     public bool RenderScreen (BlitImage screenImage, int x, int y)
     {
       int rowMin = y * 16;
@@ -615,7 +638,7 @@ namespace SM3E
 
   
   // BGRA image that can be blitted onto other blitimages.
-  unsafe class BlitImage
+  public unsafe class BlitImage
   {
 
     byte* Bytes;

@@ -602,8 +602,9 @@ namespace SM3E
     }
 
 
-    // Select plm at given square
-    public bool SelectPlmAt (int row, int col)
+    // Select PLM at given tile position (col, row), updates row, col, width & height to
+    // exact position and size of PLM.
+    public bool SelectPlmAt (int col, int row)
     {
       if (ActivePlmSet == null)
         return false;
@@ -627,19 +628,19 @@ namespace SM3E
     }
 
 
-    public bool SelectEnemyAt (int x, int y)
+    // Select enemy at given pixel position (x, y), updates x, y, width & height to
+    // exact position and size of enemy.
+    public bool SelectEnemyAt (double x, double y)
     {
       if (ActiveEnemySet == null)
         return false;
       for (int index = 0; index < ActiveEnemySet.EnemyCount; index++)
       {
         Enemy e = ActiveEnemySet.Enemies [index];
-        int width = e.MyEnemyType?.Graphics.Width ?? 0;
-        int height = e.MyEnemyType?.Graphics.Height ?? 0;
-        width /= 2;
-        height /= 2;
-        if (x >= e.PosX - width  && x < e.PosX + width &&
-            y >= e.PosY - height && y < e.PosY + height)
+        double width = e.MyEnemyType?.Graphics.Width ?? 1.0;
+        double height = e.MyEnemyType?.Graphics.Height ?? 1.0;
+        if (x >= e.PosX - width  / 2 && x < e.PosX + width  / 2 &&
+            y >= e.PosY - height / 2 && y < e.PosY + height / 2)
         {
           HandlingSelection = true;
           var a = new ActiveItems (this);
