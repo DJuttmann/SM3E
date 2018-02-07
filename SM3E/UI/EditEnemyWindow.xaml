@@ -1,0 +1,35 @@
+﻿<Window x:Class="SM3E.UI.EditEnemyWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:SM3E.UI"
+    mc:Ignorable="d"
+    Title="Edit Enemy" Height="300" Width="300" WindowStartupLocation="CenterOwner">
+  
+  <!-- MAIN GRID -->
+  <Grid Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="8"/>
+      <RowDefinition Height="22"/>
+      <RowDefinition Height="22"/>
+      <RowDefinition Height="22"/>
+      <RowDefinition Height="22"/>
+      <RowDefinition Height="22"/>
+      <RowDefinition Height="25"/>
+      <RowDefinition Height="1*"/>
+    </Grid.RowDefinitions>
+    <Label Grid.Row="1" Margin="4,-3,0,-3" Content="Special" HorizontalAlignment="Left"/>
+    <TextBox Grid.Row="1" x:Name="SpecialInput" Grid.ColumnSpan="3" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" MaxLength="4" KeyDown="ValidateHexInput"/>
+    <Label Grid.Row="2" Margin="4,-3,0,-3" Content="Graphics" HorizontalAlignment="Left"/>
+    <TextBox Grid.Row="2" x:Name="GraphicsInput" Grid.ColumnSpan="3" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" MaxLength="4" KeyDown="ValidateHexInput"/>
+    <Label Grid.Row="3" Margin="4,-3,0,-3" Content="Tilemaps" HorizontalAlignment="Left"/>
+    <TextBox Grid.Row="3" x:Name="TilemapsInput" Grid.ColumnSpan="3" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" MaxLength="4" KeyDown="ValidateHexInput"/>
+    <Label Grid.Row="4" Margin="4,-3,0,-3" Content="Speed" HorizontalAlignment="Left"/>
+    <TextBox Grid.Row="4" x:Name="SpeedInput" Grid.ColumnSpan="3" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" MaxLength="4" KeyDown="ValidateHexInput"/>
+    <Label Grid.Row="5" Margin="4,-3,0,-3" Content="Speed2" HorizontalAlignment="Left"/>
+    <TextBox Grid.Row="5" x:Name="Speed2Input" Grid.ColumnSpan="3" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" MaxLength="4" KeyDown="ValidateHexInput"/>
+    <Button Grid.Row="6" Width="100" Height="20" Content="Save"   Margin="0,0,110,0" Click="Save_Click"/>
+    <Button Grid.Row="6" Width="100" Height="20" Content="Cancel" Margin="110,0,0,0" Click="Cancel_Click"/>
+  </Grid>
+</Window>

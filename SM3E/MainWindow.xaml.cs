@@ -41,7 +41,7 @@ namespace SM3E
       SetupMapEditor ();
 
       SetProjectHandlers ();
-      MainProject.Load ("SuperMetroid.txt");
+      MainProject.Load ("SuperMetroid.xml");
 
       SetupMapTileSelector ();
     }
@@ -96,5 +96,7 @@ namespace SM3E
       MainProject.Save ();
       Logging.Close ();
     }
-  }
+
+  } // partial class MainWindow
+
 }

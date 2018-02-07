@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace SM3E
 {
@@ -33,7 +35,7 @@ namespace SM3E
       List <string> roomNames;
 
       ProjectFileName = projectFile;
-      ReadProjectFile (out roomAddresses, out roomDoorCounts, out roomNames);
+      ReadProjectFileXml (out roomAddresses, out roomDoorCounts, out roomNames);
 
       // Read uncompressed data from ROM.
       ReadRooms (CurrentRom, roomAddresses, roomNames, roomDoorCounts);
@@ -76,7 +78,7 @@ namespace SM3E
     }
 
 
-    // Read information about the ROM from the project file, including:
+    /* Read information about the ROM from the project file, including:
     // - The file name of the ROM.
     // - A list of area names.
     // - A list of room names, addresses and number of doors per room.
@@ -151,6 +153,102 @@ namespace SM3E
           }
         }
       }
+      return true;
+    }*/
+
+
+    // Read the project file in Xml format.
+    private bool ReadProjectFileXml (out List <int> roomAddresses,
+                                     out List <int> roomDoorCounts,
+                                     out List <string> roomNames)
+    {
+      RomFileName = null;
+      roomAddresses = new List <int> ();
+      roomDoorCounts = new List <int> ();
+      roomNames = new List <string> ();
+
+      Stream stream;
+      try {stream = new FileStream (ProjectFileName, FileMode.Open, 
+                                    FileAccess.Read, FileShare.Read);}
+      catch {return false;}
+      var reader = XmlReader.Create (stream);
+      XElement root = XElement.Load (reader);
+      stream.Close ();
+
+      RomFileName = root.Attribute ("rom")?.Value;
+      if (root.Name != "Project" || RomFileName == null)
+        return false;
+      CurrentRom = new Rom (RomFileName);
+      foreach (XElement x in root.Elements ())
+      {
+        switch (x.Name.ToString ())
+        {
+        case "Areas":
+          foreach (XElement area in x.Elements ("Area"))
+          {
+            string areaIndex = area.Attribute ("index")?.Value;
+            string areaName = area.Attribute ("name")?.Value;
+            if (areaIndex != null && areaName != null)
+            {
+              int i = Convert.ToInt32 (areaIndex);
+              Areas [i] = areaName;
+            }
+          }
+          break;
+
+        case "Sections":
+          foreach (XElement section in x.Elements ("Section"))
+          {
+            string sectionName = section.Attribute ("name")?.Value;
+            string sectionType = section.Attribute ("type")?.Value;
+            if (sectionName == null || sectionType == null)
+              continue;
+            CurrentRom.AddSection (sectionName, RomSection.StringToType (sectionType));
+            foreach (XElement data in section.Elements ("Data"))
+            {
+              string dataName = data.Attribute ("name")?.Value;
+              if (dataName != null)
+                CurrentRom.AddDataList (sectionName, dataName, DataLists [dataName]);
+            }
+            foreach (XElement block in section.Elements ("Block"))
+            {
+              string blockAddress = block.Attribute ("address")?.Value;
+              string blockEnd = block.Attribute ("end")?.Value;
+              if (blockAddress != null && blockEnd != null)
+              {
+                CurrentRom.AddBlock (sectionName, Tools.HexToInt (blockAddress),
+                  Tools.HexToInt (blockEnd) - Tools.HexToInt (blockAddress));
+              }
+            }
+          }
+          break;
+
+        case "Rooms":
+          foreach (XElement room in x.Elements ("Room"))
+          {
+            string roomAddress = room.Attribute ("address")?.Value;
+            string doorCount = room.Attribute ("doorCount")?.Value;
+            string roomName = room.Attribute ("name")?.Value;
+            if (roomAddress != null)
+            {
+              roomAddresses.Add (Tools.HexToInt (roomAddress));
+              if (doorCount != null)
+                roomDoorCounts.Add (Tools.DecToInt (doorCount));
+              else
+                roomDoorCounts.Add (0);
+              if (roomName != null)
+                roomNames.Add (roomName);
+              else
+                roomNames.Add ("");
+            }
+          }
+          break;
+
+        default:
+          break;
+        }
+      }
+
       return true;
     }
 
@@ -584,7 +682,7 @@ namespace SM3E
     }
 
     
-    // Write information about the ROM to the project file
+    /* Write information about the ROM to the project file
     private void WriteProjectFile ()
     {
       StreamWriter output = new StreamWriter (ProjectFileName);
@@ -630,6 +728,77 @@ namespace SM3E
       }
 
       output.Close ();
+    }*/
+
+
+    // [test] Write project file as XML.
+    private void WriteProjectFileXml ()
+    {
+      var stream = new FileStream (ProjectFileName, FileMode.Create);
+      var settings = new XmlWriterSettings ()
+      {
+        NewLineChars = Environment.NewLine,
+        Indent = true,
+      };
+      var writer = XmlWriter.Create (stream, settings);
+
+      // Root element.
+      XElement root = new XElement ("Project");
+      root.SetAttributeValue ("rom", RomFileName);
+
+      // Areas element.
+      XElement areasElement = new XElement ("Areas");
+      for (int n = 0; n < AreaCount; n++)
+      {
+        XElement area = new XElement ("Area");
+        area.SetAttributeValue ("index", n);
+        area.SetAttributeValue ("name", AreaNames [n]);
+        areasElement.Add (area);
+      }
+      root.Add (areasElement);
+
+      // Sections element.
+      XElement sectionsElement = new XElement ("Sections");
+      foreach (RomSection s in CurrentRom.Sections)
+      {
+        XElement section = new XElement ("Section");
+        section.SetAttributeValue ("name", s.Name);
+        section.SetAttributeValue ("type", s.SectionType.ToString ());
+        sectionsElement.Add (section);
+        // Add data.
+        foreach (KeyValuePair <string, List <Data>> kv in s.Data)
+        {
+          XElement data = new XElement ("Data");
+          data.SetAttributeValue ("name", kv.Key);
+          section.Add (data);
+        }
+        // Add blocks.
+        foreach (var b in s.Blocks)
+        {
+          XElement block = new XElement ("Block");
+          block.SetAttributeValue ("address", Tools.IntToHex (b.Item1));
+          block.SetAttributeValue ("end"    , Tools.IntToHex (b.Item2));
+          section.Add (block);
+        }
+      }
+      root.Add (sectionsElement);
+
+      // Write room data.
+      XElement roomsElement = new XElement ("Rooms");
+      for (int i = 0; i < AreaCount; i++)
+        foreach (Room r in Rooms [i])
+        {
+          XElement room = new XElement ("Room");
+          room.SetAttributeValue ("address", Tools.IntToHex (r.StartAddressPC));
+          room.SetAttributeValue ("doorCount", r.MyDoorSet?.DoorCount ?? 0);
+          room.SetAttributeValue ("name", r.Name);
+          roomsElement.Add (room);
+        }
+      root.Add (roomsElement);
+      
+      root.WriteTo (writer);
+      writer.Close ();
+      stream.Close ();
     }
 
 
@@ -640,7 +809,7 @@ namespace SM3E
       Tools.TrimFileExtension (ref RomFileName, out string extension);
       RomFileName += "_out.sfc";
       Tools.TrimFileExtension (ref ProjectFileName, out extension);
-      ProjectFileName += "_out.txt";
+      ProjectFileName += "_out.xml";
       // [wip] END OF TEST
       
       ReallocateAll ();
@@ -688,7 +857,7 @@ namespace SM3E
       }
       output.Close ();
 
-      WriteProjectFile ();
+      WriteProjectFileXml ();
     }
 
   } // partial class project

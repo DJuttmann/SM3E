@@ -21,6 +21,7 @@ namespace SM3E.UI
   public partial class EditDoorWindow : Window
   {
     private Project MyProject;
+    private bool CreateNew;
     private UITileViewer ScreenPreview;
     private BlitImage ScreenImage;
     private int RoomWidth;
@@ -31,13 +32,13 @@ namespace SM3E.UI
     private int DoorCapY;
 
 
-
     // Constructor.
     public EditDoorWindow (Project p, bool createNew)
     {
       InitializeComponent ();
 
       MyProject = p;
+      CreateNew = createNew;
       ScreenPreview = new UITileViewer (16.0, 16, 16, 16, 16, ScreenPreviewGrid);
       ScreenPreviewGrid.Children.Add (ScreenPreview.Element);
       ScreenPreview.MouseDown += Tile_Click;
@@ -46,12 +47,13 @@ namespace SM3E.UI
       foreach (string name in MyProject.AreaNames)
         AreaListBox.Items.Add (name);
 
-      if (createNew)
+      if (CreateNew)
       {
         AreaListBox.SelectedIndex = MyProject.AreaIndex;
       }
       else
       {
+        // Get destination info.
         MyProject.GetDoorDestination (out int areaIndex, out int roomIndex,
                                       out int screenX, out int screenY,
                                       out int doorCapX, out int doorCapY,
@@ -63,6 +65,20 @@ namespace SM3E.UI
         DoorCapX = doorCapX;
         DoorCapY = doorCapY;
         SpawnDistanceInput.Text = Tools.IntToHex (distanceToSpawn, 4);
+
+        // Get other door properties.
+        MyProject.GetDoorProperties (out bool isElevator, out bool isElevatorPad,
+                                     out int direction, out bool closes);
+        if (isElevatorPad)
+          DoorTypeSelect.SelectedIndex = 2;
+        else if (isElevator)
+          DoorTypeSelect.SelectedIndex = 1;
+        else
+          DoorTypeSelect.SelectedIndex = 0;
+        DirectionSelect.SelectedIndex = direction;
+        ClosesCheckbox.IsChecked = closes;
+
+        // Update screen.
         RenderScreen ();
         UpdateDoorCap ();
         UpdateButtons ();
@@ -176,15 +192,23 @@ namespace SM3E.UI
 
     private void Tile_Click (object sender, TileViewerMouseEventArgs e)
     {
-      DoorCapX = e.TileClickX;
-      DoorCapY = e.TileClickY;
+      DoorCapX = e.TileClickX + (ScreenX << 4);
+      DoorCapY = e.TileClickY + (ScreenY << 4);
       UpdateDoorCap ();
     }
 
 
     private void Save_Click (object sender, RoutedEventArgs e)
     {
-      // [wip] save the changes.
+      // [wip] add ASM.
+      MyProject.SetDoorProperties (DoorTypeSelect.SelectedIndex == 1, 
+                                   DoorTypeSelect.SelectedIndex == 2,
+                                   DirectionSelect.SelectedIndex,
+                                   ClosesCheckbox.IsChecked == true);
+      MyProject.SetDoorDestination (AreaListBox.SelectedIndex,
+                                    RoomListBox.SelectedIndex,
+                                    ScreenX, ScreenY, DoorCapX, DoorCapY,
+                                    Tools.HexToInt (SpawnDistanceInput.Text));
 
       DialogResult = true;
       Close ();
@@ -195,6 +219,15 @@ namespace SM3E.UI
     {
       DialogResult = false;
       Close ();
+    }
+
+
+    private void ValidateHexInput (object sender, KeyEventArgs e)
+    {
+      if (e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9)
+        return;
+      if (System.Text.RegularExpressions.Regex.IsMatch (e.Key.ToString (), "[^0-9^A-F^a-f]"))
+        e.Handled = true;
     }
 
   } // partial class EditDoorWindow

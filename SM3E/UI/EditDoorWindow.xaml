@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SM3E.UI"
         mc:Ignorable="d"
-        Title="Edit Door" Height="500" Width="550">
+        Title="Edit Door" Height="500" Width="550" WindowStartupLocation="CenterOwner">
   
   <!-- MAIN GRID -->
   <Grid Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Width="Auto" Height="Auto">
@@ -38,23 +38,23 @@
         <RowDefinition Height="1*"/>
       </Grid.RowDefinitions>
       <Label Grid.Row="1" Content="Type" Margin="0,-3,0,-3" HorizontalAlignment="Left"/>
-      <ComboBox  Grid.Row="1" Margin="75,1,8,1" HorizontalAlignment="Stretch" SelectedIndex="0">
+      <ComboBox  Grid.Row="1" x:Name="DoorTypeSelect" Margin="75,1,8,1" HorizontalAlignment="Stretch" SelectedIndex="0">
         <ComboBoxItem>Door</ComboBoxItem>
         <ComboBoxItem>Elevator</ComboBoxItem>
         <ComboBoxItem>Elevator pad</ComboBoxItem>
       </ComboBox>
       <Label Grid.Row="2" Content="Direction" Margin="0,-3,0,-3" HorizontalAlignment="Left"/>
-      <ComboBox Grid.Row="2" Margin="75,1,83,1" HorizontalAlignment="Stretch" SelectedIndex="0">
+      <ComboBox Grid.Row="2" x:Name="DirectionSelect" Margin="75,1,83,1" HorizontalAlignment="Stretch" SelectedIndex="0">
         <ComboBoxItem>Right</ComboBoxItem>
         <ComboBoxItem>Left</ComboBoxItem>
         <ComboBoxItem>Down</ComboBoxItem>
         <ComboBoxItem>Up</ComboBoxItem>
       </ComboBox>
-      <CheckBox Grid.Row="2" Content="Close" Margin="75,-3,10,-3" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+      <CheckBox Grid.Row="2" x:Name="ClosesCheckbox" Content="Close" Margin="75,-3,10,-3" HorizontalAlignment="Right" VerticalAlignment="Center"/>
       <Label Grid.Row="3" Content="ASM" Margin="0,-3,0,-3" HorizontalAlignment="Left"/>
-      <CheckBox Grid.Row="3" Content="Scroll" Margin="75,-3,10,-3" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+      <CheckBox Grid.Row="3" x:Name="ScrollCheckbox" Content="Scroll" Margin="75,-3,10,-3" HorizontalAlignment="Right" VerticalAlignment="Center"/>
       <Label Grid.Row="4" Content="Spawn dist." Margin="0,-3,0,-3" HorizontalAlignment="Left"/>
-      <TextBox Grid.Row="4" x:Name="SpawnDistanceInput" Margin="75,2,8,2" HorizontalAlignment="Stretch"/>
+      <TextBox Grid.Row="4" x:Name="SpawnDistanceInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" MaxLength="4" FontFamily="Courier New" KeyDown="ValidateHexInput" />
       <Label Grid.Row="5" Content="Entrance screen and door cap position:" Margin="0,1,0,-7" HorizontalAlignment="Left"/>
 
       <Grid Grid.Row="6" Width="Auto" Height="Auto" Margin="8,8,8,8">

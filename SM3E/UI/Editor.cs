@@ -527,6 +527,7 @@ namespace SM3E
     private void DoorListBox_DoubleClick (object sender, MouseButtonEventArgs e)
     {
       var window = new UI.EditDoorWindow (MainProject, false);
+      window.Owner = this;
       window.ShowDialog ();
     }
 
@@ -552,6 +553,14 @@ namespace SM3E
       EnemyListBox.ScrollIntoView (EnemyListBox.SelectedItem);
       if (!QuietSelect)
         MainProject.SelectEnemy (EnemyListBox.SelectedIndex);
+    }
+
+
+    private void EnemyListBox_DoubleClick (object sender, MouseButtonEventArgs e)
+    {
+      var window = new UI.EditEnemyWindow (MainProject, false);
+      window.Owner = this;
+      window.ShowDialog ();
     }
 
 

@@ -466,8 +466,13 @@ namespace SM3E
         {
           for (int n = 0; n < ActiveRoom.MyDoorSet.DoorCount; n++)
           {
-            Room destRoom = ActiveRoom.MyDoorSet.MyDoors [n].MyTargetRoom;
-            names.Add (Tools.IntToHex (n) + " " + (destRoom?.Name ?? ""));
+            string name = Tools.IntToHex (n) + " ";
+            Door d = ActiveRoom.MyDoorSet.MyDoors [n];
+            if (d.ElevatorPad)
+              name += "[Elevator pad]";
+            else
+              name += d.MyTargetRoom?.Name ?? "";
+            names.Add (name);
           }
         }
         return names;
@@ -1068,6 +1073,30 @@ namespace SM3E
     }
 
 
+    public void GetEnemyProperties (out int special, out int graphics, out int tilemaps,
+                                    out int speed, out int speed2)
+    {
+      special = ActiveEnemy?.Special ?? 0;
+      graphics = ActiveEnemy?.Graphics ?? 0;
+      tilemaps = ActiveEnemy?.Tilemaps ?? 0;
+      speed = ActiveEnemy?.Speed ?? 0;
+      speed2 = ActiveEnemy?.Speed2 ?? 0;
+    }
+
+
+    public void SetEnemyProperties (int special, int graphics, int tilemaps,
+                                    int speed, int speed2)
+    {
+      if (ActiveEnemy == null)
+        return;
+      ActiveEnemy.Special = special;
+      ActiveEnemy.Graphics = graphics;
+      ActiveEnemy.Tilemaps = tilemaps;
+      ActiveEnemy.Speed = speed;
+      ActiveEnemy.Speed2 = speed2;
+    }
+
+
 //========================================================================================
 // Doors
 
@@ -1091,7 +1120,47 @@ namespace SM3E
     }
 
 
-    // public void GetDoorData ()
+    public void GetDoorProperties (out bool isElevator, out bool isElevatorPad,
+                                   out int direction, out bool closes)
+    {
+      isElevator = ActiveDoor?.GetElevatorBit () ?? false;
+      isElevatorPad = ActiveDoor?.ElevatorPad ?? false;
+      direction = ActiveDoor?.GetDirection () ?? 0;
+      closes = ActiveDoor?.GetDoorCloses () ?? false;
+    }
+
+
+    public void SetDoorDestination (int areaIndex, int roomIndex,
+                                    int screenX, int screenY,
+                                    int doorCapX, int doorCapY,
+                                    int distanceToSpawn)
+    {
+      if (ActiveDoor == null)
+        return;
+      if (areaIndex >= 0 && areaIndex < AreaCount && 
+          roomIndex >= 0 && roomIndex < Rooms [areaIndex].Count)
+        ActiveDoor.MyTargetRoom = (Room) Rooms [areaIndex] [roomIndex];
+      else
+        ActiveDoor.MyTargetRoom = null;
+      ActiveDoor.ScreenX = (byte) screenX;
+      ActiveDoor.ScreenY = (byte) screenY;
+      ActiveDoor.DoorCapX = (byte) doorCapX;
+      ActiveDoor.DoorCapY = (byte) doorCapY;
+      ActiveDoor.DistanceToSpawn = distanceToSpawn;
+    }
+
+
+    public void SetDoorProperties (bool isElevator, bool isElevatorPad,
+                                   int direction, bool closes)
+    {
+      if (ActiveDoor == null)
+        return;
+      ActiveDoor.SetElevatorBit (isElevator);
+      ActiveDoor.ElevatorPad = isElevatorPad;
+      ActiveDoor.SetDirection (direction);
+      ActiveDoor.SetDoorCloses (closes);
+    }
+
 
   } // class Project
 

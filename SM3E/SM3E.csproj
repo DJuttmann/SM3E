@@ -100,6 +100,9 @@
     <Compile Include="UI\EditDoorWindow.xaml.cs">
       <DependentUpon>EditDoorWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\EditEnemyWindow.xaml.cs">
+      <DependentUpon>EditEnemyWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Editor.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -129,6 +132,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="UI\EditDoorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\EditEnemyWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

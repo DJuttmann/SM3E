@@ -201,7 +201,7 @@
                 <Button  Grid.Row="0" Content="&#x2BC5;" HorizontalAlignment="Right" Height="20" Margin="0,0,58,0" VerticalAlignment="Bottom" Width="20"/>
                 <Button  Grid.Row="0" Content="&#x2BC6;" HorizontalAlignment="Right" Height="20" Margin="0,0,33,0" VerticalAlignment="Bottom" Width="20"/>
                 <Button  Grid.Row="0" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8,0" VerticalAlignment="Bottom" Width="20"/>
-                <ListBox Grid.Row="1" x:Name="EnemyListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,8" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="EnemyListBox_SelectionChanged"/>
+                <ListBox Grid.Row="1" x:Name="EnemyListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,8" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="EnemyListBox_SelectionChanged" MouseDoubleClick="EnemyListBox_DoubleClick"/>
               </Grid>
               <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
