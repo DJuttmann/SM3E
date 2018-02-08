@@ -84,8 +84,10 @@ namespace SM3E
 
       MainProject.LevelDataSelected += NewLevelData;
       MainProject.TileSetSelected += UpdateTileSelector;
+      MainProject.MapTileSelected += UpdateActiveMapTile;
 
       MainProject.LevelDataModified += LevelDataModified;
+      MainProject.MapDateModified += UpdateMapEditor;
       MainProject.RoomDataModified += LoadRoomData;
       MainProject.RoomStateDataModified += LoadRoomStateData;
     }

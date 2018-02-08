@@ -44,6 +44,7 @@ namespace SM3E
     {
       MapTileSelector = new UITileViewer (8.0, 16, 16, 16, 16, null);
       MapTileSelector.Screens [0, 0].Source = MainProject.MapTileSheet.ToBitmap ();
+      MapTileSelector.MouseDown += MapTileSelector_MouseDown;
       MapTileViewer.Children.Add (MapTileSelector.Element);
     }
 
@@ -61,6 +62,7 @@ namespace SM3E
       RoomSizeEditor.Screens [0, 0].SetValue (RenderOptions.BitmapScalingModeProperty,
                                               BitmapScalingMode.NearestNeighbor);
       RoomSizeViewer.Content = RoomSizeEditor.Element;
+      SelectedMapTileImage.RenderTransformOrigin = new Point (0.5, 0.5);
     }
 
 
@@ -121,7 +123,7 @@ namespace SM3E
       double hFlip = MainProject.TileHFlip ? -1.0 : 1.0;
       double vFlip = MainProject.TileVFlip ? -1.0 : 1.0;
       if (index != -1)
-      SelectedTileImage.Source = MainProject.RoomTiles [index].ToBitmap ();
+        SelectedTileImage.Source = MainProject.RoomTiles [index].ToBitmap ();
       SelectedTileImage.RenderTransform = new ScaleTransform (hFlip, vFlip);
     }
 
@@ -146,6 +148,17 @@ namespace SM3E
       image.Clear ();
       MainProject.RenderBts (image, 0, 0, type, value);
       SelectedBtsImage.Source = image.ToBitmap ();
+    }
+
+
+    private void UpdateActiveMapTile (object sender, EventArgs e)
+    {
+      int index = MainProject.MapTileType;
+      double hFlip = MainProject.MapTileHFlip ? -1.0 : 1.0;
+      double vFlip = MainProject.MapTileVFlip ? -1.0 : 1.0;
+      if (index != -1)
+        SelectedMapTileImage.Source = MainProject.MapTiles [index].ToBitmap ();
+      SelectedMapTileImage.RenderTransform = new ScaleTransform (hFlip, vFlip);
     }
 
 
@@ -877,16 +890,56 @@ namespace SM3E
 //----------------------------------------------------------------------------------------
 // Map viewer events
 
+    private void MapNavigateRadio_Click (object sender, RoutedEventArgs e)
+    {
+      MapEditor.MarkerVisible = true;
+      MapEditor.Element.SetValue (Grid.CursorProperty, Cursors.Hand);
+    }
+
+
+    private void MapEditRadio_Click (object sender, RoutedEventArgs e)
+    {
+      MapEditor.MarkerVisible = false;
+      MapEditor.Element.SetValue (Grid.CursorProperty, Cursors.Arrow);
+    }
+
+
+    private void MapEditVFlip_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.MapTileVFlip = !MainProject.MapTileVFlip;
+    }
+
+
+    private void MapEditHFlip_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.MapTileHFlip = !MainProject.MapTileHFlip;
+    }
+
+
     private void MapEditor_MouseDown (object sender, TileViewerMouseEventArgs e)
     {
-      if (MainProject.NavigateToMapPosition (e.TileClickX, e.TileClickY - 1,
-                                             out int screenX, out int screenY))
-        LevelData.ScrollToScreen (screenX, screenY);
+      if (MapNavigateRadio.IsChecked == true)
+      {
+        if (MainProject.NavigateToMapPosition (e.TileClickX, e.TileClickY - 1,
+                                               out int screenX, out int screenY))
+          LevelData.ScrollToScreen (screenX, screenY);
+      }
     }
 
 
     private void MapEditor_MouseUp (object sender, TileViewerMouseEventArgs e)
     {
+      if (MapEditRadio.IsChecked == true)
+      {
+        MainProject.SetMapTile (e.TileClickX, e.TileClickY, e.PosTileX, e.PosTileY);
+      }
+    }
+
+
+    private void MapTileSelector_MouseDown (object sender, TileViewerMouseEventArgs e)
+    {
+      MainProject.MapTilePalette = MapPaletteSelect.SelectedIndex;
+      MainProject.MapTileType = 16 * e.TileClickY + e.TileClickX;
     }
 
 

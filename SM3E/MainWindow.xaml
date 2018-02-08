@@ -106,7 +106,35 @@
               <!-- DOORS OUT -->
               <ListBox x:Name="DoorListBox" Grid.Row="1" HorizontalAlignment="Stretch" Margin="8,4,8,4" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="DoorListBox_SelectionChanged" MouseDoubleClick="DoorListBox_DoubleClick" />
             </Grid>
-            <Grid x:Name="MapTileViewer" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="4,8,4,8"/>
+            <Grid Grid.Column="1">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="22"/>
+                <RowDefinition Height="22"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="22"/>
+                <RowDefinition Height="22"/>
+                <RowDefinition Height="1*"/>
+              </Grid.RowDefinitions>
+              <Grid Grid.Row="0" Grid.RowSpan="2" Width="32" Height="32" Margin="8,0,8,0" HorizontalAlignment="Right">
+                <Image x:Name="SelectedMapTileImage" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+              </Grid>
+              <RadioButton Grid.Row="0" x:Name="MapNavigateRadio" Content="Nav" Margin="4,3,0,-5" IsChecked="True" Click="MapNavigateRadio_Click" />
+              <Button Grid.Row="0" x:Name="MapEditVFlip" Width="20" Height="20" Content="&#x2195;" HorizontalAlignment="Left" Margin="60,0,0,0" Click="MapEditVFlip_Click"/>
+              <RadioButton Grid.Row="1" x:Name="MapEditRadio" Content="Edit" Margin="4,3,0,-5" Click="MapEditRadio_Click"/>
+              <Button Grid.Row="1" x:Name="MapEditHFlip" Width="20" Height="20" Content="&#x2194;" HorizontalAlignment="Left" Margin="60,0,0,0" Click="MapEditHFlip_Click"/>
+              <Grid Grid.Row="2" x:Name="MapTileViewer" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="4,8,4,8"/>
+              <Label Grid.Row="3" Content="Palette row" HorizontalAlignment="Stretch" Margin="0,-3,0,-3" />
+              <ComboBox Grid.Row="3" x:Name="MapPaletteSelect" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="80,-1,8,-1">
+                <ComboBoxItem Content="0"/>
+                <ComboBoxItem Content="1"/>
+                <ComboBoxItem Content="2"/>
+                <ComboBoxItem Content="3"/>
+                <ComboBoxItem Content="4"/>
+                <ComboBoxItem Content="5"/>
+                <ComboBoxItem Content="6"/>
+                <ComboBoxItem Content="7"/>
+              </ComboBox>
+            </Grid>
             <Grid x:Name="MapViewer" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="4,8,8,8"/>
           </Grid>
         </TabItem>

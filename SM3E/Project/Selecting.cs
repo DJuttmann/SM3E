@@ -46,6 +46,11 @@ namespace SM3E
       get {return ActiveRoomState?.MyEnemySet;}
     }
 
+    private AreaMap ActiveAreaMap
+    {
+      get {return AreaIndex != IndexNone ? (AreaMap) AreaMaps [AreaIndex] : null;}
+    }
+
 
     // Indices of selected items.
     public int AreaIndex {get; private set;} = IndexNone;

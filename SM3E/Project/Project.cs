@@ -163,6 +163,61 @@ namespace SM3E
       }
     }
 
+    // Type/h-flip/v-flip/palette/... of selected map tile
+    private int mapTileType = 0;
+    public int MapTileType
+    {
+      get {return mapTileType;}
+      set
+      {
+        if (value >= 0 && value < 256 && value != mapTileType)
+        {
+          mapTileType = value;
+          MapTileSelected?.Invoke (this, null);
+        }
+      }
+    }
+    private bool mapTileHFlip = false;
+    public bool MapTileHFlip
+    {
+      get {return mapTileHFlip;}
+      set
+      {
+        if (value != mapTileHFlip)
+        {
+          mapTileHFlip = value;
+          MapTileSelected?.Invoke (this, null);
+        }
+      }
+    }
+    private bool mapTileVFlip = false;
+    public bool MapTileVFlip
+    {
+      get {return mapTileVFlip;}
+      set
+      {
+        if (value != mapTileVFlip)
+        {
+          mapTileVFlip = value;
+          MapTileSelected?.Invoke (this, null);
+        }
+      }
+    }
+    private int mapTilePalette = 0;
+    public int MapTilePalette
+    {
+      get {return mapTilePalette;}
+      set
+      {
+        if (value >= 0 && value < 8 && value != mapTilePalette)
+        {
+          mapTilePalette = value;
+          MapTileSelected?.Invoke (this, null);
+        }
+      }
+    }
+
+
     // Area of the selected room.
     public int RoomArea
     {
@@ -1161,6 +1216,31 @@ namespace SM3E
       ActiveDoor.SetDoorCloses (closes);
     }
 
+
+//========================================================================================
+// Map
+
+
+    // Set the map tile at position (x, y) to the currently selected map tile.
+    public void SetMapTile (int xMin, int yMin, int xMax, int yMax)
+    {
+      if (ActiveAreaMap == null)
+        return;
+      Tools.Order (ref xMin, ref xMax);
+      Tools.Order (ref yMin, ref yMax);
+      for (int y = yMin; y <= yMax; y++)
+      {
+        for (int x = xMin; x <= xMax; x++)
+        {
+          int index = 64 * y + x; 
+          ActiveAreaMap.SetTile (index, MapTileType);
+          ActiveAreaMap.SetHFlip (index, MapTileHFlip);
+          ActiveAreaMap.SetVFlip (index, MapTileVFlip);
+          ActiveAreaMap.SetPalette (index, MapTilePalette);
+        }
+      }
+      MapDateModified?.Invoke (this, null);
+    }
 
   } // class Project
 
