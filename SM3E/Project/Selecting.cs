@@ -360,7 +360,7 @@ namespace SM3E
       {
         RoomIndex = index;
         ActiveRoom = (Room) Rooms [AreaIndex] [RoomIndex];
-        ForceSelectRoomState (0);
+        ForceSelectRoomState (ActiveRoom.RoomStates.Count - 1);
         ForceSelectDoor (0);
       }
       else

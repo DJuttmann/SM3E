@@ -53,7 +53,7 @@ namespace SM3E
                                       int tileIndex)
     {
       TileSheet t = (TileSheet) TileSheets [tilesheetIndex];
-      Palette p = (Palette) Palettes [paletteIndex];
+      CompressedPalette p = (CompressedPalette) Palettes [paletteIndex];
       int index = 256;
       byte [] data = t.RenderTile (index, p, 0);
       return new BlitImage (data, 8);
@@ -64,7 +64,7 @@ namespace SM3E
     public BlitImage TilesheetToImage (int tilesheetIndex, int paletteIndex)
     {
       TileSheet t = (TileSheet) TileSheets [tilesheetIndex];
-      Palette p = (Palette) Palettes [paletteIndex];
+      CompressedPalette p = (CompressedPalette) Palettes [paletteIndex];
 
       byte [] data = new byte [16 * 64 * 64 * 4];
       for (int row = 0; row < 64; row++)
@@ -150,12 +150,13 @@ namespace SM3E
       t.SetSize (256 * 64);
       t.ReadFromROM (rom, MapTileSheetAddress);
 
-      // Palette p = new Palette ();
-      // p.ReadFromROM (rom, 0x1B7012);
+      Palette p = new UncompressedPalette ();
+      p.ColorCount = 128;
+      p.ReadFromROM (rom, 0x1B7000);
       
       for (int n = 0; n < 256; n++)
       {
-        byte [] b = t.RenderTile (n, (Palette) Palettes [0], 0);
+        byte [] b = t.RenderTile (n, p, 3);
         MapTiles.Add (new BlitImage (b, 8));
       }
 

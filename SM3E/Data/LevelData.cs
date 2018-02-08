@@ -31,8 +31,7 @@ namespace SM3E
     {
       get
       {
-        if (!CompressionUpToDate)
-          Compress ();
+        Compress ();
         return CompressedData.Count;
       }
     }
@@ -99,9 +98,11 @@ namespace SM3E
     }
 
 
-    // Compress the level data [wip].
+    // Compress the level data.
     public bool Compress ()
     {
+      if (CompressionUpToDate)
+        return true;
       int L1Size = 2 * Layer1.Count;
       int UncompressedSize = 2 + 2 * Layer1.Count + BTS.Count + 2 * Layer2.Count;
       byte [] buffer = new byte [UncompressedSize];
@@ -123,7 +124,8 @@ namespace SM3E
 
       Compressor c = new Compressor (buffer);
       CompressedData = c.Compress ();
-      return CompressedData != null;
+      CompressionUpToDate = CompressedData != null;
+      return CompressionUpToDate;
     }
 
 

@@ -63,7 +63,7 @@ namespace SM3E
 
     // Draw a tile from the tilemap on a tile sheet.
     public void DrawTile (byte [] image, int width, int height,
-                          Palette p, int paletteRow,
+                          CompressedPalette p, int paletteRow,
                           int posX, int posY,
                           int tileIndex, bool hFlip, bool vFlip)
     {
@@ -374,24 +374,68 @@ namespace SM3E
 //========================================================================================
 
 
-  class Palette: Data
+  abstract class Palette: Data
   {
     public List <byte> R;
     public List <byte> G;
     public List <byte> B;
 
+
+    // Get and set the number of colors in the palette.
+    public int ColorCount
+    {
+      get {return R.Count;}
+      set
+      {
+        if (value < 0)
+          return;
+        int currentCount = R.Count;
+        if (value < currentCount)
+        {
+          int range = currentCount - value;
+          R.RemoveRange (value, range);
+          G.RemoveRange (value, range);
+          B.RemoveRange (value, range);
+        }
+        else
+          for (int i = currentCount; i < value; i++)
+          {
+            R.Add (0);
+            G.Add (0);
+            B.Add (0);
+          }
+      }
+    }
+
+  } // abstract class Palette
+  
+
+//========================================================================================
+// class CompressedPalette
+
+
+  class CompressedPalette: Palette, ICompressed
+  {
+    protected List <byte> CompressedData;
+    protected bool CompressionUpToDate = false;
+
     public override int Size
     {
-      get {return 0;} // [wip] NOT YET FINISHED
+      get
+      {
+        Compress ();
+        return CompressedData.Count;
+      }
     }
 
 
     // Constructor.
-    public Palette ()
+    public CompressedPalette ()
     {
       R = new List <byte> ();
       G = new List <byte> ();
       B = new List <byte> ();
+      CompressedData = new List <byte> ();
     }
 
 
@@ -401,7 +445,11 @@ namespace SM3E
       //byte [] buffer;
       //int DecompressedSize = Compression.ReadCompressedData (out buffer, addressPC);
       rom.Seek (addressPC);
-      rom.Decompress (out List <byte> buffer);
+      int compressedSize = rom.Decompress (out List <byte> buffer);
+      CompressedData.Clear ();
+      rom.Seek (addressPC);
+      rom.Read (CompressedData, compressedSize);
+      CompressionUpToDate = true;
       int decompressedSize = buffer.Count;
       int colour_count = decompressedSize / 2;
 
@@ -420,11 +468,36 @@ namespace SM3E
     }
 
 
+    // Compress the palette data.
+    public bool Compress ()
+    {
+      if (CompressionUpToDate)
+        return true;
+      byte [] buffer = new byte [Size];
+
+      for (int n = 0; n < ColorCount; n++)
+      {
+        int value = (R [n] >> 3) | (G [n] << 2) | (B [n] << 7);
+        Tools.CopyBytes (value, buffer, 2 * n, 2);
+      }
+
+      Compressor c = new Compressor (buffer);
+      CompressedData = c.Compress ();
+      CompressionUpToDate = CompressedData != null;
+      return CompressionUpToDate;
+    }
+
+
     // Write data to ROM at current position (addressPC), which is updated.
     public override bool WriteToROM (Stream rom, ref int addressPC)
     {
-      // [wip]
-      return false;
+      if (CompressedData == null)
+        return false;
+      if (!CompressionUpToDate)
+        Compress ();
+      rom.Write (CompressedData.ToArray (), 0, Size);
+      addressPC += Size;
+      return true;
     }
 
 
@@ -434,10 +507,70 @@ namespace SM3E
       // Do nothing.
     }
 
+  } // class CompressedPalette
 
 
+//========================================================================================
+// class UncompressedPalette
+
+
+  class UncompressedPalette: Palette
+  {
+    public override int Size
+    {
+      get {return 2 * ColorCount;} // [wip] NOT YET FINISHED
+    }
+
+
+    // Constructor.
+    public UncompressedPalette ()
+    {
+      R = new List <byte> ();
+      G = new List <byte> ();
+      B = new List <byte> ();
+    }
+
+
+    // Read data from ROM at given PC address.
+    public override bool ReadFromROM (Rom rom, int addressPC)
+    {
+      List <byte> buffer = new List <byte> ();
+      rom.Seek (addressPC);
+      rom.Read (buffer, Size);
+
+      for (int n = 0; n < ColorCount; n++)
+      {
+        int colour = Tools.ConcatBytes (buffer [n << 1], buffer [n << 1 | 1]);
+        R [n] = ((byte) ((colour & 0x001F) << 3));
+        G [n] = ((byte) ((colour & 0x03E0) >> 2));
+        B [n] = ((byte) ((colour & 0x7C00) >> 7));
+      }
+      startAddressPC = addressPC;
+      return true;
+    }
+
+
+    // Write data to ROM at current position (addressPC), which is updated.
+    public override bool WriteToROM (Stream rom, ref int addressPC)
+    {
+      byte [] buffer = new byte [Size];
+      for (int n = 0; n < ColorCount; n++)
+      {
+        int value = (R [n] >> 3) | (G [n] << 2) | (B [n] << 7);
+        Tools.CopyBytes (value, buffer, 2 * n, 2);
+      }
+      rom.Write (buffer, 0, Size);
+      addressPC += Size;
+      return true;
+    }
+
+
+    // Set default values.
+    public override void SetDefault ()
+    {
+      // Do nothing.
+    }
   }
-
 
 //========================================================================================
 // CLASS TILE TABLE 
@@ -566,7 +699,7 @@ namespace SM3E
     public TileSheet MyCreSheet;
     public TileTable MySceTable;
     public TileSheet MySceSheet;
-    public Palette MyPalette;
+    public CompressedPalette MyPalette;
 
     public override int Size
     {
@@ -633,7 +766,7 @@ namespace SM3E
       MySceSheet = (TileSheet) TileSheets.Find (x => x.StartAddressLR == SceSheetPtr);
       if (MySceSheet == null)
         success = false;
-      MyPalette = (Palette) Palettes.Find (x => x.StartAddressLR == PalettePtr);
+      MyPalette = (CompressedPalette) Palettes.Find (x => x.StartAddressLR == PalettePtr);
       if (MyPalette == null)
         success = false;
       return success;

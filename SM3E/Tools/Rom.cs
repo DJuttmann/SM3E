@@ -203,9 +203,9 @@ namespace SM3E
       switch (s.ToLower ())
       {
       case "fixed":
-        return Type.Free;
+        return Type.Fixed;
       case "bank":
-        return Type.Free;
+        return Type.Bank;
       case "free":
         return Type.Free;
       default:
@@ -218,7 +218,7 @@ namespace SM3E
     public bool DisjointFromInterval (int address, int length)
     {
       foreach (DataBlock b in blocks)
-        if (address + length >= b.Address && address <= b.Address + b.Length)
+        if (address + length > b.Address && address < b.Address + b.Length)
           return false;
       return true;
     }

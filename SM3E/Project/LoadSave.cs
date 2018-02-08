@@ -594,7 +594,7 @@ namespace SM3E
       Palettes.Clear ();
       for (int n = 0; n < addressesPC.Count; n++)
       {
-        Palettes.Add (new Palette ());
+        Palettes.Add (new CompressedPalette ());
         Palettes [n].ReadFromROM (rom, addressesPC [n]);
       }
     }
