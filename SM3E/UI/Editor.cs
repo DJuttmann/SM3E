@@ -685,6 +685,78 @@ namespace SM3E
       LevelData.ReloadVisibleTiles ();
     }
 
+
+    private void AddPlm_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.AddPlm (0, 0);
+    }
+
+
+    private void MovePlmUp_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.MovePlmUp ();
+    }
+
+
+    private void MovePlmDown_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.MovePlmDown ();
+    }
+
+
+    private void DeletePlm_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.DeletePlm ();
+    }
+
+
+    private void AddEnemy_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.AddEnemy (64, 64);
+    }
+
+
+    private void MoveEnemyUp_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.MoveEnemyUp ();
+    }
+
+
+    private void MoveEnemyDown_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.MoveEnemyDown ();
+    }
+
+
+    private void DeleteEnemy_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.DeleteEnemy ();
+    }
+
+
+    private void AddEnemyGfx_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.AddEnemyGfx ();
+    }
+
+
+    private void MoveEnemyGfxUp_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.MoveEnemyGfxUp ();
+    }
+
+
+    private void MoveEnemyGfxDown_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.MoveEnemyGfxDown ();
+    }
+
+
+    private void DeleteEnemyGfx_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.DeleteEnemyGfx ();
+    }
+
 //----------------------------------------------------------------------------------------
 // Level viewer events
 

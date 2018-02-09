@@ -188,6 +188,15 @@ namespace SM3E
       }
     }
 
+
+    // Swapping for generic types.
+    public static void Swap <T> (ref T x, ref T y)
+    {
+      T temp = y;
+      y = x;
+      x = temp;
+    }
+
 //----------------------------------------------------------------------------------------
 
     // Removes duplicates from a List, List is sorted in the process.

@@ -93,8 +93,8 @@ namespace SM3E
     public override void SetDefault ()
     {
       PlmID        = 0xB63B;
-      PosX    = 0;
-      PosY    = 0;
+      PosX         = 0;
+      PosY         = 0;
       MainVariable = 0x8000;
 
       startAddressPC = -1;

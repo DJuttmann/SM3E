@@ -252,10 +252,10 @@ namespace SM3E
     public const int TerminatorSize = 2;
     public const byte TerminatorByte = 0xFF;
 
-    public List <int> EnemyIDs;
-    public List <int> Palettes;
+    public List <int> EnemyIDs; // [wip] these 3 lists may be a bit redundant
+    public List <int> Palettes; // [wip] these 3 lists may be a bit redundant
 
-    public List <EnemyType> MyEnemyTypes;
+    public List <EnemyType> MyEnemyTypes; // [wip] these 3 lists may be a bit redundant
     public HashSet <RoomState> MyRoomStates;
 
     public override int Size
