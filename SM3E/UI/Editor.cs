@@ -35,6 +35,8 @@ namespace SM3E
     LevelDataRenderer MainRenderer;
 
     bool QuietSelect = false;
+    bool DraggingPlm = false;
+    bool DraggingEnemy = false;
 
 //========================================================================================
 // Navigate
@@ -97,6 +99,32 @@ namespace SM3E
       MainRenderer = new LevelDataRenderer (MainProject, MainProject.RoomWidthInScreens,
                                                          MainProject.RoomHeightInScreens);
       LevelData.ReloadVisibleTiles ();
+    }
+
+
+    private void UpdateLevelDataMarker ()
+    {
+      if (LevelData == null)
+        return;
+      bool editing = (EditorTabs.SelectedIndex == 1);
+      if (editing && LayerSelect.SelectedIndex == 3) // Plm layer
+      {
+        MainProject.GetPlmPosition (out int x, out int y,
+                                    out int width, out int height);
+        LevelData.SetMarker (x, y, width, height);
+        LevelData.MarkerVisible = true;
+      }
+      else if (editing && LayerSelect.SelectedIndex == 4) // Enemy layer
+      {
+        MainProject.GetEnemyPosition (out double x, out double y,
+                                      out double width, out double height);
+        LevelData.SetMarker (x - width / 2, y - height / 2, width, height);
+        LevelData.MarkerVisible = true;
+      }
+      else
+      {
+        LevelData.MarkerVisible = false;
+      }
     }
 
 
@@ -465,6 +493,12 @@ namespace SM3E
 // Event handlers
 
 
+    private void EditorTabs_SelectionChanged (object sender, SelectionChangedEventArgs e)
+    {
+      UpdateLevelDataMarker ();
+    }
+
+
     private void LayerSelect_SelectionChanged (object sender, SelectionChangedEventArgs e)
     {
       if (LayerSelect.SelectedItem == null)
@@ -476,6 +510,8 @@ namespace SM3E
           LayerSelect.SelectedIndex = 0;
         return;
       }
+
+      UpdateLevelDataMarker ();
 
       TileLayersEditor.Visibility = Visibility.Hidden;
       PlmLayerEditor.Visibility = Visibility.Hidden;
@@ -772,32 +808,26 @@ namespace SM3E
       case 1: // Edit
         if (LayerSelect.SelectedIndex == 3) // Plm layer
         {
-          if (MainProject.SelectPlmAt (e.TileClickX, e.TileClickY))
+          if (MainProject.SelectPlmAt (e.TileClickX, e.TileClickY) &&
+              e.Button == MouseButton.Left)
           {
-            MainProject.GetPlmPosition (out int x, out int y,
-                                        out int width, out int height);
-            LevelData.MarkerVisible = true;
-            LevelData.SetMarker (x, y, width, height);
+            DraggingPlm = true;
+            UpdateLevelDataMarker ();
           }
           else
-          {
-            LevelData.MarkerVisible = false;
-          }
+            DraggingPlm = false;
         }
         
         else if (LayerSelect.SelectedIndex == 4) // Enemy layer
         {
-          if (MainProject.SelectEnemyAt (e.ClickX * 16, e.ClickY * 16))
+          if (MainProject.SelectEnemyAt (e.ClickX * 16, e.ClickY * 16) &&
+              e.Button == MouseButton.Left)
           {
-            MainProject.GetEnemyPosition (out double x, out double y,
-                                          out double width, out double height);
-            LevelData.MarkerVisible = true;
-            LevelData.SetMarker (x, y, width, height);
+            DraggingEnemy = true;
+            UpdateLevelDataMarker ();
           }
           else
-          {
-            LevelData.MarkerVisible = false;
-          }
+            DraggingEnemy = false;
         }
 
         break;
@@ -843,12 +873,23 @@ namespace SM3E
       case 1: // Edit
         if (LayerSelect.SelectedIndex == 3) // Plm layer
         {
-          if (LevelData.MarkerVisible == true)
+          if (LevelData.MarkerVisible == true && DraggingPlm)
           {
             MainProject.GetPlmPosition (out int x, out int y,
                                         out int width, out int height);
             LevelData.SetMarker (x + e.PosTileX - e.TileClickX,
                                  y + e.PosTileY - e.TileClickY,
+                                 width, height);
+          }
+        }
+        else if (LayerSelect.SelectedIndex == 4) // Enemy layer
+        {
+          if (LevelData.MarkerVisible == true && DraggingEnemy)
+          {
+            MainProject.GetEnemyPosition (out double x, out double y,
+                                          out double width, out double height);
+            LevelData.SetMarker (x + e.PosX - e.ClickX - width / 2,
+                                 y + e.PosY - e.ClickY - height / 2,
                                  width, height);
           }
         }
@@ -876,6 +917,8 @@ namespace SM3E
       default:
         break;
       }
+      DraggingPlm = false;
+      DraggingEnemy = false;
     }
 
 
@@ -895,6 +938,15 @@ namespace SM3E
           break;
         case 2: // Layer 2
           MainProject.SetLayer2 (e.PosTileY, e.PosTileX, e.TileClickY, e.TileClickX);
+          break;
+        case 3: // PLMs
+          if (DraggingPlm)
+            MainProject.SetPlmPositionRelative (e.PosTileX - e.TileClickX,
+                                                e.PosTileY - e.TileClickY);
+          break;
+        case 4: // Enemies
+          if (DraggingEnemy)
+            MainProject.SetEnemyPositionRelative (e.PosX - e.ClickX, e.PosY - e.ClickY);
           break;
         case 5: // Scrolls
           MainProject.SetScroll (e.PosTileX / 16, e.PosTileY / 16,

@@ -85,7 +85,7 @@
 
 
       <!-- TOOLS -->
-      <TabControl x:Name="EditorTabs" TabStripPlacement="Left" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="2" Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}">
+      <TabControl x:Name="EditorTabs" TabStripPlacement="Left" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="2" Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" SelectionChanged="EditorTabs_SelectionChanged">
 
         <!-- NAVIGATOR / DOOR EDITOR -->
         <TabItem x:Name="NavigateTab" Header="Navigate" Width="130">

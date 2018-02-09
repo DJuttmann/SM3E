@@ -1110,6 +1110,27 @@ namespace SM3E
     }
 
 
+    public void SetPlmPosition (int x, int y)
+    {
+      ActivePlm.PosX = (byte) x;
+      ActivePlm.PosY = (byte) y;
+      var e = new LevelDataEventArgs ()
+      {
+        ScreenXmin = 0,
+        ScreenXmax = RoomWidthInScreens - 1,
+        ScreenYmin = 0,
+        ScreenYmax = RoomHeightInScreens - 1
+      };
+      LevelDataModified (this, e);
+    }
+
+
+    public void SetPlmPositionRelative (int dx, int dy)
+    {
+      SetPlmPosition (ActivePlm.PosX + dx, ActivePlm.PosY + dy);
+    }
+
+
     // Return position and size of selected PLM
     public void GetEnemyPosition (out double x, out double y,
                                   out double width, out double height)
@@ -1118,13 +1139,43 @@ namespace SM3E
       y = 0.0;
       width = 0.0;
       height = 0.0;
-      if (ActivePlm != null)
+      if (ActiveEnemy != null)
       {
         width  = ActiveEnemy.MyEnemyType?.Graphics.Width  / 16.0 ?? 1.0;
         height = ActiveEnemy.MyEnemyType?.Graphics.Height / 16.0 ?? 1.0;
-        x = ActiveEnemy.PosX / 16.0 - width  / 2.0;
-        y = ActiveEnemy.PosY / 16.0 - height / 2.0;
+        x = ActiveEnemy.PosX / 16.0;
+        y = ActiveEnemy.PosY / 16.0;
       }
+    }
+
+
+    public void SetEnemyPosition (double x, double y)
+    {
+      ActiveEnemy.PosX = (int) Math.Round (x * 16.0);
+      ActiveEnemy.PosY = (int) Math.Round (y * 16.0);
+      var e = new LevelDataEventArgs ()
+      {
+        ScreenXmin = 0,
+        ScreenXmax = RoomWidthInScreens - 1,
+        ScreenYmin = 0,
+        ScreenYmax = RoomHeightInScreens - 1
+      };
+      LevelDataModified (this, e);
+    }
+
+
+    public void SetEnemyPositionRelative (double dx, double dy)
+    {
+      ActiveEnemy.PosX += (int) Math.Round (dx * 16.0);
+      ActiveEnemy.PosY += (int) Math.Round (dy * 16.0);
+      var e = new LevelDataEventArgs ()
+      {
+        ScreenXmin = 0,
+        ScreenXmax = RoomWidthInScreens - 1,
+        ScreenYmin = 0,
+        ScreenYmax = RoomHeightInScreens - 1
+      };
+      LevelDataModified (this, e);
     }
 
 

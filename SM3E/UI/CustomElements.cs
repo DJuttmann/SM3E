@@ -246,10 +246,13 @@ namespace SM3E
       }
       Selection.Visibility = Visibility.Visible;
       mouseOver = true;
-      if (System.Windows.Input.Mouse.LeftButton != MouseButtonState.Pressed)
+      if (System.Windows.Input.Mouse.LeftButton != MouseButtonState.Pressed &&
+          System.Windows.Input.Mouse.RightButton != MouseButtonState.Pressed)
         mouseDown = false;
       TileOverX = newX;
       TileOverY = newY;
+      OverX = p.X / TileSize;
+      OverY = p.Y / TileSize;
 
       if (mouseDown)
       {

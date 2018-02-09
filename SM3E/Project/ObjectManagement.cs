@@ -356,12 +356,15 @@ namespace SM3E
     }
 
 
+    // Delete scroll PLM data from currently active PLM (if it is scroll PLM).
+    // Delete alltogether if it is not referenced by any other PLM.
     private bool ForceDeleteScrollPlmData ()
     {
       if (ActivePlm?.MyScrollPlmData != null)
       {
         ActivePlm.MyScrollPlmData.MyPlms.Remove (ActivePlm);
-        ScrollPlmDatas.Remove (ActivePlm.MyScrollPlmData);
+        if (ActivePlm.MyScrollPlmData.MyPlms.Count == 0)
+          ScrollPlmDatas.Remove (ActivePlm.MyScrollPlmData);
         ActivePlm.MyScrollPlmData = null;
         return true;
       }
