@@ -39,13 +39,14 @@ namespace SM3E.UI
     }
 
 
-    public void Init (Project p, UITileViewer levelData)
+    public void SetProject (Project p, UITileViewer levelData)
     {
       MainProject = p;
       LevelData = levelData;
 
       MainProject.DoorListChanged += LoadDoorListBox;
       MainProject.AreaSelected += UpdateMapEditor;
+      MainProject.RoomSelected += UpdateMapMarker;
       MainProject.DoorSelected += DoorSelected;
       MainProject.MapTileSelected += UpdateActiveMapTile;
       MainProject.MapPaletteSelected += UpdateMapTileSelector;
@@ -85,6 +86,14 @@ namespace SM3E.UI
     {
       ImageSource source = MainProject.RenderAreaMap ().ToBitmap ();
       MapEditor.Screens [0, 0].Source = source;
+    }
+
+
+    private void UpdateMapMarker (object sender, EventArgs e)
+    {
+      MapEditor.SetMarker (MainProject.RoomX, MainProject.RoomY + 1,
+                           MainProject.RoomWidthInScreens, 
+                           MainProject.RoomHeightInScreens);
     }
 
 

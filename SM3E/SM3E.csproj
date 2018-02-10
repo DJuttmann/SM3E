@@ -110,6 +110,9 @@
     <Compile Include="UI\NavigateTab.xaml.cs">
       <DependentUpon>NavigateTab.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\PropertiesTab.xaml.cs">
+      <DependentUpon>PropertiesTab.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -150,6 +153,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\NavigateTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\PropertiesTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
