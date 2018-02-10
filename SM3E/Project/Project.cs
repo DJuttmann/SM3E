@@ -212,7 +212,7 @@ namespace SM3E
         if (value >= 0 && value < 8 && value != mapTilePalette)
         {
           mapTilePalette = value;
-          MapTileSelected?.Invoke (this, null);
+          MapPaletteSelected?.Invoke (this, null);
         }
       }
     }
@@ -1290,7 +1290,7 @@ namespace SM3E
           ActiveAreaMap.SetPalette (index, MapTilePalette);
         }
       }
-      MapDateModified?.Invoke (this, null);
+      MapDataModified?.Invoke (this, null);
     }
 
   } // class Project

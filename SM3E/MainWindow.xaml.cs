@@ -35,7 +35,7 @@ namespace SM3E
       }
       MainProject = new Project ();
 
-      EditorView.SetProject (MainProject);
+      EditorView.Init (MainProject);
 
       MainProject.Load ("SuperMetroid.xml");
 

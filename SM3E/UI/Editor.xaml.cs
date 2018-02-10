@@ -22,12 +22,9 @@ namespace SM3E.UI
   {
     private Project MainProject;
 
-    UITileViewer MapTileSelector;
-    UITileViewer MapEditor;
-
-    UITileViewer LevelData;
-    UITileViewer TileSelector;
-    UITileViewer BtsSelector;
+    private UITileViewer LevelData;
+    private UITileViewer TileSelector;
+    private UITileViewer BtsSelector;
 
     UITileViewer RoomSizeEditor;
 
@@ -46,20 +43,18 @@ namespace SM3E.UI
       SetupLevelData ();
       SetupTileSelector ();
       SetupBtsSelector ();
-      SetupMapEditor ();
-      SetupMapTileSelector ();
+      SetupRoomSizeEditor ();
     }
 
 
     // Set the project and subscribe to its events.
-    public void SetProject (Project p)
+    public void Init (Project p)
     {
       MainProject = p;
 
       MainProject.AreaListChanged += LoadAreaListBox;
       MainProject.RoomListChanged += LoadRoomListBox;
       MainProject.RoomStateListChanged += LoadRoomStateListBox;
-      MainProject.DoorListChanged += LoadDoorListBox;
       MainProject.PlmListChanged += LoadPlmListBox;
       MainProject.PlmTypeListChanged += LoadPlmTypeListBox;
       MainProject.EnemyListChanged += LoadEnemyListBox;
@@ -68,14 +63,13 @@ namespace SM3E.UI
       MainProject.ScrollDataListChanged += LoadScrollDataListBox;
       MainProject.ScrollColorListChanged += LoadScrollColorListBox;
 
-      MainProject.AreaSelected += UpdateMapEditor;
       MainProject.AreaSelected += AreaSelected;
+      MainProject.AreaSelected += UpdateRoomSizeEditor;
       MainProject.RoomSelected += LoadRoomData;
       MainProject.RoomSelected += RoomSelected;
       MainProject.RoomStateSelected += LoadRoomStateData;
       MainProject.RoomStateSelected += RoomStateSelected;
       MainProject.DoorSelected += LoadDoorData;
-      MainProject.DoorSelected += DoorSelected;
       MainProject.PlmSelected += LoadPlmData;
       MainProject.PlmSelected += PlmSelected;
       MainProject.PlmTypeSelected += LoadPlmTypeData;
@@ -93,47 +87,34 @@ namespace SM3E.UI
       MainProject.TileSetSelected += UpdateTileSelector;
       MainProject.TileSelected += UpdateActiveTile;
       MainProject.BtsSelected += UpdateActiveBts;
-      MainProject.MapTileSelected += UpdateActiveMapTile;
 
+      MainProject.MapDataModified += UpdateRoomSizeEditor;
       MainProject.LevelDataModified += LevelDataModified;
-      MainProject.MapDateModified += UpdateMapEditor;
       MainProject.RoomDataModified += LoadRoomData;
       MainProject.RoomStateDataModified += LoadRoomStateData;
+
+      NavigateView.Init (MainProject, LevelData);
     }
 
 //========================================================================================
-// Navigate
+// Properties
 
 
-    private void SetupMapTileSelector ()
+    private void SetupRoomSizeEditor ()
     {
-      MapTileSelector = new UITileViewer (8.0, 16, 16, 16, 16, null);
-      MapTileSelector.MouseDown += MapTileSelector_MouseDown;
-      MapTileViewer.Children.Add (MapTileSelector.Element);
-    }
-
-
-    private void SetupMapEditor ()
-    {
-      MapEditor = new UITileViewer (8.0, 64, 32, 64, 32, null);
-      MapEditor.MarkerVisible = true;
-      MapEditor.MouseDown += MapEditor_MouseDown;
-      MapEditor.MouseUp += MapEditor_MouseUp;
-      MapViewer.Children.Add (MapEditor.Element);
-
       RoomSizeEditor = new UITileViewer (16.0, 64, 32, 64, 32, RoomSizeViewer);
       RoomSizeEditor.MarkerVisible = true;
       RoomSizeEditor.Screens [0, 0].SetValue (RenderOptions.BitmapScalingModeProperty,
                                               BitmapScalingMode.NearestNeighbor);
       RoomSizeViewer.Content = RoomSizeEditor.Element;
-      SelectedMapTileImage.RenderTransformOrigin = new Point (0.5, 0.5);
     }
 
 
-    private void UpdateMapEditor (object sender, EventArgs e)
+    private void UpdateRoomSizeEditor (object sender, EventArgs e)
     {
+      // [wip] this line does the same as UpdateMapEditor () in NavigateTab.xaml.cs
+      // Streamline this to avoid redundant work?
       ImageSource source = MainProject.RenderAreaMap ().ToBitmap ();
-      MapEditor.Screens [0, 0].Source = source;
       RoomSizeEditor.Screens [0, 0].Source = source;
     }
   
@@ -238,17 +219,6 @@ namespace SM3E.UI
     }
 
 
-    private void UpdateActiveMapTile (object sender, EventArgs e)
-    {
-      int index = MainProject.MapTileType;
-      double hFlip = MainProject.MapTileHFlip ? -1.0 : 1.0;
-      double vFlip = MainProject.MapTileVFlip ? -1.0 : 1.0;
-      if (index != -1)
-        SelectedMapTileImage.Source = MainProject.MapTiles [index].ToBitmap ();
-      SelectedMapTileImage.RenderTransform = new ScaleTransform (hFlip, vFlip);
-    }
-
-
 //========================================================================================
 
 
@@ -312,26 +282,6 @@ namespace SM3E.UI
     {
       QuietSelect = true;
       RoomStateListBox.SelectedIndex = MainProject.RoomStateIndex;
-      QuietSelect = false;
-    }
-
-
-    private void LoadDoorListBox (object sender, ListLoadEventArgs e)
-    {
-      List <string> names = MainProject.DoorNames;
-      DoorListBox.Items.Clear ();
-      foreach (string name in names)
-        DoorListBox.Items.Add (name);
-      QuietSelect = true;
-      DoorListBox.SelectedIndex = e.SelectItem;
-      QuietSelect = false;
-    }
-
-
-    private void DoorSelected (object sender, EventArgs e)
-    {
-      QuietSelect = true;
-      DoorListBox.SelectedIndex = MainProject.DoorIndex;
       QuietSelect = false;
     }
 
@@ -483,10 +433,12 @@ namespace SM3E.UI
       UpScrollerInput.Text = Tools.IntToHex (MainProject.UpScroller, 2);
       DownScrollerInput.Text = Tools.IntToHex (MainProject.DownScroller, 2);
       SpecialGfxInput.Text = Tools.IntToHex (MainProject.SpecialGfx, 2);
-      MapEditor.SetMarker (MainProject.RoomX, MainProject.RoomY + 1,
-        MainProject.RoomWidthInScreens, MainProject.RoomHeightInScreens);
+      NavigateView.MapEditor.SetMarker (MainProject.RoomX, MainProject.RoomY + 1,
+                                        MainProject.RoomWidthInScreens, 
+                                        MainProject.RoomHeightInScreens);
       RoomSizeEditor.SetMarker (MainProject.RoomX, MainProject.RoomY + 1,
-        MainProject.RoomWidthInScreens, MainProject.RoomHeightInScreens);
+                                MainProject.RoomWidthInScreens, 
+                                MainProject.RoomHeightInScreens);
       RoomSizeEditor.ScrollToMarker ();
     }
 
@@ -621,22 +573,6 @@ namespace SM3E.UI
       RoomStateListBox.ScrollIntoView (RoomStateListBox.SelectedItem);
       if (!QuietSelect)
         MainProject.SelectRoomState (RoomStateListBox.SelectedIndex);
-    }
-
-
-    private void DoorListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
-    {
-      DoorListBox.ScrollIntoView (DoorListBox.SelectedItem);
-      if (!QuietSelect)
-        MainProject.SelectDoor (DoorListBox.SelectedIndex);
-    }
-
-
-    private void DoorListBox_DoubleClick (object sender, MouseButtonEventArgs e)
-    {
-      var window = new UI.EditDoorWindow (MainProject, false);
-      window.Owner = Window.GetWindow (this);
-      window.ShowDialog ();
     }
 
 
@@ -1070,64 +1006,10 @@ namespace SM3E.UI
       MainProject.HFlipBts ();
     }
 
-//----------------------------------------------------------------------------------------
-// Map viewer events
-
-    private void MapNavigateRadio_Click (object sender, RoutedEventArgs e)
-    {
-      MapEditor.MarkerVisible = true;
-      MapEditor.Element.SetValue (Grid.CursorProperty, Cursors.Hand);
-    }
-
-
-    private void MapEditRadio_Click (object sender, RoutedEventArgs e)
-    {
-      MapEditor.MarkerVisible = false;
-      MapEditor.Element.SetValue (Grid.CursorProperty, Cursors.Arrow);
-    }
-
-
-    private void MapEditVFlip_Click (object sender, RoutedEventArgs e)
-    {
-      MainProject.MapTileVFlip = !MainProject.MapTileVFlip;
-    }
-
-
-    private void MapEditHFlip_Click (object sender, RoutedEventArgs e)
-    {
-      MainProject.MapTileHFlip = !MainProject.MapTileHFlip;
-    }
-
-
-    private void MapEditor_MouseDown (object sender, TileViewerMouseEventArgs e)
-    {
-      if (MapNavigateRadio.IsChecked == true)
-      {
-        if (MainProject.NavigateToMapPosition (e.TileClickX, e.TileClickY - 1,
-                                               out int screenX, out int screenY))
-          LevelData.ScrollToScreen (screenX, screenY);
-      }
-    }
-
-
-    private void MapEditor_MouseUp (object sender, TileViewerMouseEventArgs e)
-    {
-      if (MapEditRadio.IsChecked == true)
-      {
-        MainProject.SetMapTile (e.TileClickX, e.TileClickY, e.PosTileX, e.PosTileY);
-      }
-    }
-
-
-    private void MapTileSelector_MouseDown (object sender, TileViewerMouseEventArgs e)
-    {
-      MainProject.MapTilePalette = MapPaletteSelect.SelectedIndex;
-      MainProject.MapTileType = 16 * e.TileClickY + e.TileClickX;
-    }
-
 
 //========================================================================================
 // Room state data edit events
+
 
     private void RoomAreaSelect_Update (object sender, SelectionChangedEventArgs e)
     {

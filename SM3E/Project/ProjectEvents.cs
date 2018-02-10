@@ -46,10 +46,11 @@ namespace SM3E
     public event EventHandler TileSelected;
     public event EventHandler BtsSelected;
     public event EventHandler MapTileSelected;
+    public event EventHandler MapPaletteSelected;
 
     // Level data of the current room state is changed.
     public event LevelDataEventHandler LevelDataModified;
-    public event EventHandler MapDateModified;
+    public event EventHandler MapDataModified;
 
     // Room data changed
     public event EventHandler RoomDataModified;

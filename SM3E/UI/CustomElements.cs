@@ -21,7 +21,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class UITileViewer
+  public class UITileViewer
   {
     private static readonly GridLength gridSize =
       new GridLength (1.0, GridUnitType.Star);
