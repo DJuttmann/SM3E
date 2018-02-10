@@ -107,11 +107,23 @@
     <Compile Include="UI\Editor.xaml.cs">
       <DependentUpon>Editor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\EnemyLayer.xaml.cs">
+      <DependentUpon>EnemyLayer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\NavigateTab.xaml.cs">
       <DependentUpon>NavigateTab.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\PlmLayerTab.xaml.cs">
+      <DependentUpon>PlmLayerTab.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\PropertiesTab.xaml.cs">
       <DependentUpon>PropertiesTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ScrollLayerTab.xaml.cs">
+      <DependentUpon>ScrollLayerTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\TileLayersTab.xaml.cs">
+      <DependentUpon>TileLayersTab.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -152,11 +164,27 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\EnemyLayer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\NavigateTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\PlmLayerTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\PropertiesTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\ScrollLayerTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\TileLayersTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

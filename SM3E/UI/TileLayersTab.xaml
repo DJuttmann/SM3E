@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="SM3E.UI.TileLayersTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SM3E.UI"
+             mc:Ignorable="d" 
+             d:DesignHeight="250" d:DesignWidth="850">
+  
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="371*"/>
+      <ColumnDefinition Width="152"/>
+      <ColumnDefinition Width="542"/>
+    </Grid.ColumnDefinitions>
+    
+    <!-- BTS & TILE SELECTORS -->
+    <ScrollViewer x:Name="TileSelectorViewer" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,8,8,8"/>
+    <ScrollViewer x:Name="BtsSelectorViewer" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,8,4,8"/>
+
+    <!-- ACTIVE TILES -->
+    <Grid x:Name="ActiveTiles" Visibility="Visible">
+      <Grid HorizontalAlignment="Right" Height="48" Margin="0,10,40,0" VerticalAlignment="Top" Width="48" Background="Black">
+        <Image x:Name="SelectedTileImage" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+      </Grid>
+      <Grid HorizontalAlignment="Right" Height="48" Margin="0,110,40,0" VerticalAlignment="Top" Width="48" Background="Black">
+        <Image x:Name="SelectedBtsImage" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+      </Grid>
+      <Button x:Name="TileVFlipButton" Content="&#x2195;" HorizontalAlignment="Right" Height="48" Margin="0,10,10,0" VerticalAlignment="Top" Width="20" Click="TileVFlipButton_Click"/>
+      <Button x:Name="TileHFlipButton" Content="&#x2194;" HorizontalAlignment="Right" Height="20" Margin="0,70,40,0" VerticalAlignment="Top" Width="48" Click="TileHFlipButton_Click"/>
+      <Button x:Name="BtsVFlipButton" Content="&#x2195;" HorizontalAlignment="Right" Height="48" Margin="0,110,10,0" VerticalAlignment="Top" Width="20" Click="BtsVFlipButton_Click"/>
+      <Button x:Name="BtsHFlipButton" Content="&#x2194;" HorizontalAlignment="Right" Height="20" Margin="0,170,40,0" VerticalAlignment="Top" Width="48" Click="BtsHFlipButton_Click"/>
+    </Grid>
+    
+    <!-- CLIPBOARD -->
+    <Grid x:Name="Clipboard" Visibility="Hidden">
+    </Grid>
+  </Grid>
+</UserControl>

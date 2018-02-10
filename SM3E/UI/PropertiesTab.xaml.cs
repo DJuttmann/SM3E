@@ -115,7 +115,7 @@ namespace SM3E.UI
 
 
 //========================================================================================
-// Events
+// Event handlers
 
     
     private void RoomAreaSelect_Update (object sender, SelectionChangedEventArgs e)

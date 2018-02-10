@@ -21,12 +21,13 @@ namespace SM3E.UI
   public partial class NavigateTab : UserControl
   {
     private Project MainProject;
-    private UITileViewer LevelData; // [wip] Make this unnecessary through events?
 
     public UITileViewer MapTileSelector;
     public UITileViewer MapEditor;
 
     private bool QuietSelect = false;
+
+    public event RoomSelectEventHandler ScreenSelected;
 
 
     // Constructor.
@@ -39,10 +40,9 @@ namespace SM3E.UI
     }
 
 
-    public void SetProject (Project p, UITileViewer levelData)
+    public void SetProject (Project p)
     {
       MainProject = p;
-      LevelData = levelData;
 
       MainProject.DoorListChanged += LoadDoorListBox;
       MainProject.AreaSelected += UpdateMapEditor;
@@ -53,7 +53,9 @@ namespace SM3E.UI
       MainProject.MapDataModified += UpdateMapEditor;
     }
 
+
 //========================================================================================
+// Setup & Updating
 
 
     private void SetupMapTileSelector ()
@@ -129,7 +131,7 @@ namespace SM3E.UI
 
 
 //========================================================================================
-// Events
+// Event handlers
 
     
     private void DoorListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
@@ -182,7 +184,8 @@ namespace SM3E.UI
       {
         if (MainProject.NavigateToMapPosition (e.TileClickX, e.TileClickY - 1,
                                                out int screenX, out int screenY))
-          LevelData.ScrollToScreen (screenX, screenY);
+          ScreenSelected?.Invoke (this, new RoomSelectEventArgs (screenX, screenY));
+//          LevelData.ScrollToScreen (screenX, screenY);
       }
     }
 
@@ -210,5 +213,33 @@ namespace SM3E.UI
     }
 
   } // class NavigateTab
+
+
+//========================================================================================
+// EVENT DELEGATES
+//========================================================================================
+
+
+  public class RoomSelectEventArgs: EventArgs
+  {
+    public int ScreenX;
+    public int ScreenY;
+
+
+    public RoomSelectEventArgs ()
+    {
+    }
+
+
+    public RoomSelectEventArgs (int screenX, int screenY)
+    {
+      ScreenX = screenX;
+      ScreenY = screenY;
+    }
+  }
+
+
+  public delegate void RoomSelectEventHandler (object sender, RoomSelectEventArgs e);
+
 
 }

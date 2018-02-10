@@ -23,8 +23,6 @@ namespace SM3E.UI
     private Project MainProject;
 
     private UITileViewer LevelData;
-    private UITileViewer TileSelector;
-    private UITileViewer BtsSelector;
 
     private LevelDataRenderer MainRenderer;
 
@@ -34,13 +32,12 @@ namespace SM3E.UI
     bool DraggingEnemy = false;
 
 
+    // Constructor.
     public Editor ()
     {
       InitializeComponent();
 
       SetupLevelData ();
-      SetupTileSelector ();
-      SetupBtsSelector ();
     }
 
 
@@ -52,48 +49,27 @@ namespace SM3E.UI
       MainProject.AreaListChanged += LoadAreaListBox;
       MainProject.RoomListChanged += LoadRoomListBox;
       MainProject.RoomStateListChanged += LoadRoomStateListBox;
-      MainProject.PlmListChanged += LoadPlmListBox;
-      MainProject.PlmTypeListChanged += LoadPlmTypeListBox;
-      MainProject.EnemyListChanged += LoadEnemyListBox;
-      MainProject.EnemyGfxListChanged += LoadEnemyGfxListBox;
-      MainProject.EnemyTypeListChanged += LoadEnemyTypeListBox;
-      MainProject.ScrollDataListChanged += LoadScrollDataListBox;
-      MainProject.ScrollColorListChanged += LoadScrollColorListBox;
-
       MainProject.AreaSelected += AreaSelected;
       MainProject.RoomSelected += RoomSelected;
       MainProject.RoomStateSelected += RoomStateSelected;
       MainProject.DoorSelected += LoadDoorData;
-      MainProject.PlmSelected += LoadPlmData;
-      MainProject.PlmSelected += PlmSelected;
-      MainProject.PlmTypeSelected += LoadPlmTypeData;
-      MainProject.PlmTypeSelected += PlmTypeSelected;
-      MainProject.EnemySelected += LoadEnemyData;
-      MainProject.EnemySelected += EnemySelected;
-      MainProject.EnemyGfxSelected += LoadEnemyGfxData;
-      MainProject.EnemyGfxSelected += EnemyGfxSelected;
-      MainProject.EnemyTypeSelected += LoadEnemyTypeData;
-      MainProject.EnemyTypeSelected += EnemyTypeSelected;
-      MainProject.ScrollDataSelected += ScrollDataSelected;
-      MainProject.ScrollColorSelected += ScrollColorSelected;
-
       MainProject.LevelDataSelected += NewLevelData;
-      MainProject.TileSetSelected += UpdateTileSelector;
-      MainProject.TileSelected += UpdateActiveTile;
-      MainProject.BtsSelected += UpdateActiveBts;
-
       MainProject.LevelDataModified += LevelDataModified;
 
-      NavigateView.SetProject (MainProject, LevelData);
+      NavigateView.ScreenSelected += LevelDataScrollToScreen;
+
+      NavigateView.SetProject (MainProject);
       PropertiesView.SetProject (MainProject);
+      TileLayersEditor.SetProject (MainProject);
+      PlmLayerEditor.SetProject (MainProject);
+      EnemyLayerEditor.SetProject (MainProject);
+      ScrollLayerEditor.SetProject (MainProject);
     }
 
-//========================================================================================
-// Properties
-
 
 //========================================================================================
-// Edit
+// Setup & Updating
+
 
     private void SetupLevelData ()
     {
@@ -143,56 +119,10 @@ namespace SM3E.UI
     }
 
 
-    private void SetupTileSelector ()
+    private void LevelDataScrollToScreen (object sender, RoomSelectEventArgs e)
     {
-      TileSelector = new UITileViewer (16.0, 32, 32, 32, 32, TileSelectorViewer);
-      TileSelector.MouseDown += TileSelector_MouseDown;
-      TileSelector.BackgroundColor = Color.FromRgb (0xFF, 0x00, 0xFF);
-      TileSelectorViewer.Content = TileSelector.Element;
-      SelectedTileImage.RenderTransformOrigin = new Point (0.5, 0.5);
+      LevelData.ScrollToScreen (e.ScreenX, e.ScreenY);
     }
-
-
-    private void UpdateTileSelector (object sender, EventArgs e)
-    {
-      TileSelector.Screens [0, 0].Source = MainProject.RenderTileset ().ToBitmap ();
-    }
-
-
-    private void UpdateActiveTile (object sender, EventArgs e)
-    {
-      int index = MainProject.TileIndex;
-      double hFlip = MainProject.TileHFlip ? -1.0 : 1.0;
-      double vFlip = MainProject.TileVFlip ? -1.0 : 1.0;
-      if (index != -1)
-        SelectedTileImage.Source = MainProject.RoomTiles [index].ToBitmap ();
-      SelectedTileImage.RenderTransform = new ScaleTransform (hFlip, vFlip);
-    }
-
-
-    private void SetupBtsSelector ()
-    {
-      BtsSelector = new UITileViewer (16.0, 8, 17, 8, 17, BtsSelectorViewer);
-      BtsSelector.MouseDown += BtsSelector_MouseDown;
-      BtsSelector.BackgroundColor = Color.FromRgb (0x00, 0x00, 0x00);
-      BtsSelectorViewer.Content = BtsSelector.Element;
-      // [wip] perhaps Bts tiles should be obtained from MainProject.
-      BtsSelector.Screens [0, 0].Source = GraphicsIO.LoadBitmap (Project.BtsTilesFile);
-    }
-
-
-    private void UpdateActiveBts (object sender, EventArgs e)
-    {
-      int type = MainProject.BtsType;
-      int value = MainProject.BtsValue;
-      BlitImage image = new BlitImage (16, 16);
-      image.Clear ();
-      MainProject.RenderBts (image, 0, 0, type, value);
-      SelectedBtsImage.Source = image.ToBitmap ();
-    }
-
-
-//========================================================================================
 
 
     private void LoadAreaListBox (object sender, ListLoadEventArgs e)
@@ -255,181 +185,9 @@ namespace SM3E.UI
     }
 
 
-    private void LoadPlmListBox (object sender, ListLoadEventArgs e)
-    {
-      List <string> names = MainProject.PlmNames;
-      PlmListBox.Items.Clear ();
-      foreach (string name in names)
-        PlmListBox.Items.Add (name);
-      QuietSelect = true;
-      PlmListBox.SelectedIndex = e.SelectItem;
-      QuietSelect = false;
-    }
-
-
-    private void PlmSelected (object sender, EventArgs e)
-    {
-      QuietSelect = true;
-      PlmListBox.SelectedIndex = MainProject.PlmIndex;
-      QuietSelect = false;
-    }
-
-
-    private void LoadPlmTypeListBox (object sender, ListLoadEventArgs e)
-    {
-      List <string> names = MainProject.PlmTypeNames;
-      PlmTypeListBox.Items.Clear ();
-      foreach (string name in names)
-        PlmTypeListBox.Items.Add (name);
-      QuietSelect = true;
-      PlmTypeListBox.SelectedIndex = e.SelectItem;
-      QuietSelect = false;
-    }
-
-
-    private void PlmTypeSelected (object sender, EventArgs e)
-    {
-      QuietSelect = true;
-      PlmTypeListBox.SelectedIndex = MainProject.PlmTypeIndex;
-      QuietSelect = false;
-    }
-
-
-    private void LoadEnemyListBox (object sender, ListLoadEventArgs e)
-    {
-      List <string> names = MainProject.EnemyNames;
-      EnemyListBox.Items.Clear ();
-      foreach (string name in names)
-        EnemyListBox.Items.Add (name);
-      QuietSelect = true;
-      EnemyListBox.SelectedIndex = e.SelectItem;
-      QuietSelect = false;
-    }
-
-
-    private void EnemySelected (object sender, EventArgs e)
-    {
-      QuietSelect = true;
-      EnemyListBox.SelectedIndex = MainProject.EnemyIndex;
-      QuietSelect = false;
-    }
-
-
-    private void LoadEnemyGfxListBox (object sender, ListLoadEventArgs e)
-    {
-      List <string> names = MainProject.EnemyGfxNames;
-      EnemyGfxListBox.Items.Clear ();
-      foreach (string name in names)
-        EnemyGfxListBox.Items.Add (name);
-      QuietSelect = true;
-      EnemyGfxListBox.SelectedIndex = e.SelectItem;
-      QuietSelect = false;
-    }
-
-
-    private void EnemyGfxSelected (object sender, EventArgs e)
-    {
-      QuietSelect = true;
-      EnemyGfxListBox.SelectedIndex = MainProject.EnemyGfxIndex;
-      QuietSelect = false;
-    }
-
-
-    private void LoadEnemyTypeListBox (object sender, ListLoadEventArgs e)
-    {
-      List <string> names = MainProject.EnemyTypeNames;
-      EnemyTypeListBox.Items.Clear ();
-      foreach (string name in names)
-        EnemyTypeListBox.Items.Add (name);
-      QuietSelect = true;
-      EnemyTypeListBox.SelectedIndex = e.SelectItem;
-      QuietSelect = false;
-    }
-
-
-    private void EnemyTypeSelected (object sender, EventArgs e)
-    {
-      QuietSelect = true;
-      EnemyTypeListBox.SelectedIndex = MainProject.EnemyTypeIndex;
-      QuietSelect = false;
-    }
-
-
-    private void LoadScrollDataListBox (object sender, ListLoadEventArgs e)
-    {
-      List <string> names = MainProject.ScrollDataNames;
-      ScrollDataListBox.Items.Clear ();
-      foreach (string name in names)
-        ScrollDataListBox.Items.Add (name);
-      QuietSelect = true;
-      ScrollDataListBox.SelectedIndex = e.SelectItem;
-      QuietSelect = false;
-    }
-
-
-    private void ScrollDataSelected (object sender, EventArgs e)
-    {
-      QuietSelect = true;
-      ScrollDataListBox.SelectedIndex = MainProject.ScrollDataIndex;
-      QuietSelect = false;
-    }
-
-
-    private void LoadScrollColorListBox (object sender, ListLoadEventArgs e)
-    {
-      List <string> names = MainProject.ScrollColorNames;
-      ScrollColorListBox.Items.Clear ();
-      foreach (string name in names)
-        ScrollColorListBox.Items.Add (name);
-      QuietSelect = true;
-      ScrollColorListBox.SelectedIndex = e.SelectItem;
-      QuietSelect = false;
-    }
-
-
-    private void ScrollColorSelected (object sender, EventArgs e)
-    {
-      QuietSelect = true;
-      ScrollColorListBox.SelectedIndex = MainProject.ScrollColorIndex;
-      QuietSelect = false;
-    }
-
-
     private void LoadDoorData (object sender, EventArgs e)
     {
       // [wip]
-    }
-
-
-    private void LoadPlmData (object sender, EventArgs e)
-    {
-      // [wip]
-    }
-
-
-    private void LoadPlmTypeData (object sender, EventArgs e)
-    {
-      PlmName.Content = MainProject.PlmTypeName;
-      PlmImage.Source = MainProject.PlmTypeImage?.ToBitmap ();
-    }
-
-
-    private void LoadEnemyData (object sender, EventArgs e)
-    {
-      // [wip]
-    }
-
-
-    private void LoadEnemyGfxData (object sender, EventArgs e)
-    {
-      // [wip] maybe do nothing?
-    }
-
-
-    private void LoadEnemyTypeData (object sender, EventArgs e)
-    {
-      EnemyName.Content = MainProject.EnemyTypeName;
-      EnemyImage.Source = MainProject.EnemyTypeImage?.ToBitmap ();
     }
 
 
@@ -509,70 +267,6 @@ namespace SM3E.UI
     }
 
 
-    private void PlmListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
-    {
-      PlmListBox.ScrollIntoView (PlmListBox.SelectedItem);
-      if (!QuietSelect)
-        MainProject.SelectPlm (PlmListBox.SelectedIndex);
-    }
-
-
-    private void PlmTypeListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
-    {
-      PlmTypeListBox.ScrollIntoView (PlmTypeListBox.SelectedItem);
-      if (!QuietSelect)
-        MainProject.SelectPlmType (PlmTypeListBox.SelectedIndex);
-    }
-
-
-    private void EnemyListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
-    {
-      EnemyListBox.ScrollIntoView (EnemyListBox.SelectedItem);
-      if (!QuietSelect)
-        MainProject.SelectEnemy (EnemyListBox.SelectedIndex);
-    }
-
-
-    private void EnemyListBox_DoubleClick (object sender, MouseButtonEventArgs e)
-    {
-      var window = new UI.EditEnemyWindow (MainProject, false);
-      window.Owner = Window.GetWindow (this);
-      window.ShowDialog ();
-    }
-
-
-    private void EnemyGfxListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
-    {
-      EnemyGfxListBox.ScrollIntoView (EnemyGfxListBox.SelectedItem);
-      if (!QuietSelect)
-        MainProject.SelectEnemyGfx (EnemyGfxListBox.SelectedIndex);
-    }
-
-
-    private void EnemyTypeListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
-    {
-      EnemyTypeListBox.ScrollIntoView (EnemyTypeListBox.SelectedItem);
-      if (!QuietSelect)
-        MainProject.SelectEnemyType (EnemyTypeListBox.SelectedIndex);
-    }
-
-
-    private void ScrollDataListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
-    {
-      ScrollDataListBox.ScrollIntoView (ScrollDataListBox.SelectedItem);
-      if (!QuietSelect)
-        MainProject.SelectScrollData (ScrollDataListBox.SelectedIndex);
-    }
-
-
-    private void ScrollColorListBox_SelectionChanged (object sender, SelectionChangedEventArgs e)
-    {
-      ScrollColorListBox.ScrollIntoView (ScrollColorListBox.SelectedItem);
-      if (!QuietSelect)
-        MainProject.SelectScrollColor (ScrollColorListBox.SelectedIndex);
-    }
-
-
     // Loads the screens that need to be visible in the level viewer.
     private void LevelDataViewportChanged (object sender, ViewportEventArgs e)
     {
@@ -647,78 +341,6 @@ namespace SM3E.UI
       MainProject.EffectsVisible = LayerEffectsCheckBox.IsChecked ?? false;
       MainRenderer.InvalidateAll ();
       LevelData.ReloadVisibleTiles ();
-    }
-
-
-    private void AddPlm_Click (object sender, RoutedEventArgs e)
-    {
-      MainProject.AddPlm (0, 0);
-    }
-
-
-    private void MovePlmUp_Click (object sender, RoutedEventArgs e)
-    {
-      MainProject.MovePlmUp ();
-    }
-
-
-    private void MovePlmDown_Click (object sender, RoutedEventArgs e)
-    {
-      MainProject.MovePlmDown ();
-    }
-
-
-    private void DeletePlm_Click (object sender, RoutedEventArgs e)
-    {
-      MainProject.DeletePlm ();
-    }
-
-
-    private void AddEnemy_Click (object sender, RoutedEventArgs e)
-    {
-      MainProject.AddEnemy (64, 64);
-    }
-
-
-    private void MoveEnemyUp_Click (object sender, RoutedEventArgs e)
-    {
-      MainProject.MoveEnemyUp ();
-    }
-
-
-    private void MoveEnemyDown_Click (object sender, RoutedEventArgs e)
-    {
-      MainProject.MoveEnemyDown ();
-    }
-
-
-    private void DeleteEnemy_Click (object sender, RoutedEventArgs e)
-    {
-      MainProject.DeleteEnemy ();
-    }
-
-
-    private void AddEnemyGfx_Click (object sender, RoutedEventArgs e)
-    {
-      MainProject.AddEnemyGfx ();
-    }
-
-
-    private void MoveEnemyGfxUp_Click (object sender, RoutedEventArgs e)
-    {
-      MainProject.MoveEnemyGfxUp ();
-    }
-
-
-    private void MoveEnemyGfxDown_Click (object sender, RoutedEventArgs e)
-    {
-      MainProject.MoveEnemyGfxDown ();
-    }
-
-
-    private void DeleteEnemyGfx_Click (object sender, RoutedEventArgs e)
-    {
-      MainProject.DeleteEnemyGfx ();
     }
 
 //----------------------------------------------------------------------------------------
@@ -894,56 +516,6 @@ namespace SM3E.UI
       }
     }
 
-//----------------------------------------------------------------------------------------
-// Tile/Bts selector events
-
-    // TileSelector Mouse down.
-    private void TileSelector_MouseDown (object sender, TileViewerMouseEventArgs e)
-    {
-      if (e.Button != MouseButton.Left && e.Button != MouseButton.Left)
-        return;
-      MainProject.TileIndex = e.TileClickY * 32 + e.TileClickX;
-    }
-
-
-    // BtsSelector Mouse down.
-    private void BtsSelector_MouseDown (object sender, TileViewerMouseEventArgs e)
-    {
-      if (e.Button != MouseButton.Left && e.Button != MouseButton.Left)
-        return;
-      BtsConvert.TextureIndexToBts (e.TileClickX, e.TileClickY,
-                                    out int btsType, out int btsValue);
-      MainProject.BtsValue = btsValue;
-      MainProject.BtsType = btsType;
-    }
-
-
-    // H/V-flip buttons
-    private void TileVFlipButton_Click (object sender, RoutedEventArgs e)
-    {
-      MainProject.TileVFlip = !MainProject.TileVFlip;
-    }
-
-    private void TileHFlipButton_Click (object sender, RoutedEventArgs e)
-    {
-      MainProject.TileHFlip = !MainProject.TileHFlip;
-    }
-
-    private void BtsVFlipButton_Click (object sender, RoutedEventArgs e)
-    {
-      MainProject.VFlipBts ();
-    }
-
-    private void BtsHFlipButton_Click (object sender, RoutedEventArgs e)
-    {
-      MainProject.HFlipBts ();
-    }
-
-
-//========================================================================================
-// Room state data edit events
-
-
-  }
+  } // partial class Editor
 
 }
