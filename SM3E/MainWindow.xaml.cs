@@ -29,67 +29,16 @@ namespace SM3E
       InitializeComponent ();
 
       if (!Logging.Open ())
-        {
-          System.Windows.MessageBox.Show ("log failed");
-          return;
-        }
+      {
+        System.Windows.MessageBox.Show ("log failed");
+        return;
+      }
       MainProject = new Project ();
 
-      SetupLevelData ();
-      SetupTileSelector ();
-      SetupBtsSelector ();
-      SetupMapEditor ();
+      EditorView.SetProject (MainProject);
 
-      SetProjectHandlers ();
       MainProject.Load ("SuperMetroid.xml");
 
-      SetupMapTileSelector ();
-    }
-
-
-    private void SetProjectHandlers ()
-    {
-      MainProject.AreaListChanged += LoadAreaListBox;
-      MainProject.RoomListChanged += LoadRoomListBox;
-      MainProject.RoomStateListChanged += LoadRoomStateListBox;
-      MainProject.DoorListChanged += LoadDoorListBox;
-      MainProject.PlmListChanged += LoadPlmListBox;
-      MainProject.PlmTypeListChanged += LoadPlmTypeListBox;
-      MainProject.EnemyListChanged += LoadEnemyListBox;
-      MainProject.EnemyGfxListChanged += LoadEnemyGfxListBox;
-      MainProject.EnemyTypeListChanged += LoadEnemyTypeListBox;
-      MainProject.ScrollDataListChanged += LoadScrollDataListBox;
-      MainProject.ScrollColorListChanged += LoadScrollColorListBox;
-
-      MainProject.AreaSelected += UpdateMapEditor;
-      MainProject.AreaSelected += AreaSelected;
-      MainProject.RoomSelected += LoadRoomData;
-      MainProject.RoomSelected += RoomSelected;
-      MainProject.RoomStateSelected += LoadRoomStateData;
-      MainProject.RoomStateSelected += RoomStateSelected;
-      MainProject.DoorSelected += LoadDoorData;
-      MainProject.DoorSelected += DoorSelected;
-      MainProject.PlmSelected += LoadPlmData;
-      MainProject.PlmSelected += PlmSelected;
-      MainProject.PlmTypeSelected += LoadPlmTypeData;
-      MainProject.PlmTypeSelected += PlmTypeSelected;
-      MainProject.EnemySelected += LoadEnemyData;
-      MainProject.EnemySelected += EnemySelected;
-      MainProject.EnemyGfxSelected += LoadEnemyGfxData;
-      MainProject.EnemyGfxSelected += EnemyGfxSelected;
-      MainProject.EnemyTypeSelected += LoadEnemyTypeData;
-      MainProject.EnemyTypeSelected += EnemyTypeSelected;
-      MainProject.ScrollDataSelected += ScrollDataSelected;
-      MainProject.ScrollColorSelected += ScrollColorSelected;
-
-      MainProject.LevelDataSelected += NewLevelData;
-      MainProject.TileSetSelected += UpdateTileSelector;
-      MainProject.MapTileSelected += UpdateActiveMapTile;
-
-      MainProject.LevelDataModified += LevelDataModified;
-      MainProject.MapDateModified += UpdateMapEditor;
-      MainProject.RoomDataModified += LoadRoomData;
-      MainProject.RoomStateDataModified += LoadRoomStateData;
     }
 
 

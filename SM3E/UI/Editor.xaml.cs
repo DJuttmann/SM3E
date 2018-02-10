@@ -13,17 +13,15 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SM3E
+namespace SM3E.UI
 {
-
-//========================================================================================
-// CLASS MAINWINDOW -- LEVEL EDITOR METHODS
-//========================================================================================
-
-
-  /*
-  public partial class MainWindow: Window
+  /// <summary>
+  /// Interaction logic for Editor.xaml
+  /// </summary>
+  public partial class Editor: UserControl
   {
+    private Project MainProject;
+
     UITileViewer MapTileSelector;
     UITileViewer MapEditor;
 
@@ -35,9 +33,73 @@ namespace SM3E
 
     LevelDataRenderer MainRenderer;
 
+
     bool QuietSelect = false;
     bool DraggingPlm = false;
     bool DraggingEnemy = false;
+
+
+    public Editor ()
+    {
+      InitializeComponent();
+
+      SetupLevelData ();
+      SetupTileSelector ();
+      SetupBtsSelector ();
+      SetupMapEditor ();
+      SetupMapTileSelector ();
+    }
+
+
+    // Set the project and subscribe to its events.
+    public void SetProject (Project p)
+    {
+      MainProject = p;
+
+      MainProject.AreaListChanged += LoadAreaListBox;
+      MainProject.RoomListChanged += LoadRoomListBox;
+      MainProject.RoomStateListChanged += LoadRoomStateListBox;
+      MainProject.DoorListChanged += LoadDoorListBox;
+      MainProject.PlmListChanged += LoadPlmListBox;
+      MainProject.PlmTypeListChanged += LoadPlmTypeListBox;
+      MainProject.EnemyListChanged += LoadEnemyListBox;
+      MainProject.EnemyGfxListChanged += LoadEnemyGfxListBox;
+      MainProject.EnemyTypeListChanged += LoadEnemyTypeListBox;
+      MainProject.ScrollDataListChanged += LoadScrollDataListBox;
+      MainProject.ScrollColorListChanged += LoadScrollColorListBox;
+
+      MainProject.AreaSelected += UpdateMapEditor;
+      MainProject.AreaSelected += AreaSelected;
+      MainProject.RoomSelected += LoadRoomData;
+      MainProject.RoomSelected += RoomSelected;
+      MainProject.RoomStateSelected += LoadRoomStateData;
+      MainProject.RoomStateSelected += RoomStateSelected;
+      MainProject.DoorSelected += LoadDoorData;
+      MainProject.DoorSelected += DoorSelected;
+      MainProject.PlmSelected += LoadPlmData;
+      MainProject.PlmSelected += PlmSelected;
+      MainProject.PlmTypeSelected += LoadPlmTypeData;
+      MainProject.PlmTypeSelected += PlmTypeSelected;
+      MainProject.EnemySelected += LoadEnemyData;
+      MainProject.EnemySelected += EnemySelected;
+      MainProject.EnemyGfxSelected += LoadEnemyGfxData;
+      MainProject.EnemyGfxSelected += EnemyGfxSelected;
+      MainProject.EnemyTypeSelected += LoadEnemyTypeData;
+      MainProject.EnemyTypeSelected += EnemyTypeSelected;
+      MainProject.ScrollDataSelected += ScrollDataSelected;
+      MainProject.ScrollColorSelected += ScrollColorSelected;
+
+      MainProject.LevelDataSelected += NewLevelData;
+      MainProject.TileSetSelected += UpdateTileSelector;
+      MainProject.TileSelected += UpdateActiveTile;
+      MainProject.BtsSelected += UpdateActiveBts;
+      MainProject.MapTileSelected += UpdateActiveMapTile;
+
+      MainProject.LevelDataModified += LevelDataModified;
+      MainProject.MapDateModified += UpdateMapEditor;
+      MainProject.RoomDataModified += LoadRoomData;
+      MainProject.RoomStateDataModified += LoadRoomStateData;
+    }
 
 //========================================================================================
 // Navigate
@@ -46,7 +108,6 @@ namespace SM3E
     private void SetupMapTileSelector ()
     {
       MapTileSelector = new UITileViewer (8.0, 16, 16, 16, 16, null);
-      MapTileSelector.Screens [0, 0].Source = MainProject.MapTileSheet.ToBitmap ();
       MapTileSelector.MouseDown += MapTileSelector_MouseDown;
       MapTileViewer.Children.Add (MapTileSelector.Element);
     }
@@ -89,7 +150,6 @@ namespace SM3E
       LevelData.MouseDrag += LevelViewer_MouseDrag;
       LevelData.BackgroundColor = Color.FromRgb (0x00, 0x00, 0x00);
       LevelDataViewer.Content = LevelData.Element;
-      NewLevelData (null, null);
     }
 
 
@@ -135,7 +195,6 @@ namespace SM3E
       TileSelector.MouseDown += TileSelector_MouseDown;
       TileSelector.BackgroundColor = Color.FromRgb (0xFF, 0x00, 0xFF);
       TileSelectorViewer.Content = TileSelector.Element;
-      MainProject.TileSelected += UpdateActiveTile;
       SelectedTileImage.RenderTransformOrigin = new Point (0.5, 0.5);
     }
 
@@ -165,7 +224,6 @@ namespace SM3E
       BtsSelectorViewer.Content = BtsSelector.Element;
       // [wip] perhaps Bts tiles should be obtained from MainProject.
       BtsSelector.Screens [0, 0].Source = GraphicsIO.LoadBitmap (Project.BtsTilesFile);
-      MainProject.BtsSelected += UpdateActiveBts;
     }
 
 
@@ -577,7 +635,7 @@ namespace SM3E
     private void DoorListBox_DoubleClick (object sender, MouseButtonEventArgs e)
     {
       var window = new UI.EditDoorWindow (MainProject, false);
-      window.Owner = this;
+      window.Owner = Window.GetWindow (this);
       window.ShowDialog ();
     }
 
@@ -609,7 +667,7 @@ namespace SM3E
     private void EnemyListBox_DoubleClick (object sender, MouseButtonEventArgs e)
     {
       var window = new UI.EditEnemyWindow (MainProject, false);
-      window.Owner = this;
+      window.Owner = Window.GetWindow (this);
       window.ShowDialog ();
     }
 
@@ -1124,7 +1182,6 @@ namespace SM3E
       MainProject.BackgroundScrolling = Tools.HexToInt (StateBgScrollingInput.Text);
     }
 
-  } // class MainWindow */
-
+  }
 
 }
