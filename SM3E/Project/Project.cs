@@ -49,6 +49,9 @@ namespace SM3E
     private List <Data> EnemySets;
     private List <Data> EnemyGfxs;
     private List <Data> ScrollAsms;
+    private List <Data> DoorAsms;
+    private List <Data> SetupAsms;
+    private List <Data> MainAsms;
 
     private List <Data> TileSets;
     private List <Data> TileTables;
@@ -438,6 +441,11 @@ namespace SM3E
       get {return ActiveRoomState?.EnemyGfxPtr ?? 0;}
     }
 
+    public int BackgroundPtr
+    {
+      get {return ActiveRoomState?.BackgroundPtr ?? 0;}
+    }
+
     public int FxPtr
     {
       get {return ActiveRoomState?.FxPtr ?? 0;}
@@ -506,7 +514,7 @@ namespace SM3E
         if (AreaIndex != IndexNone && RoomIndex != IndexNone)
           foreach (RoomStateHeader r 
                    in ((Room) Rooms [AreaIndex] [RoomIndex]).RoomStateHeaders)
-            names.Add (r.HeaderType.ToString ());
+            names.Add (r.Name);
         return names;
       }
     }
@@ -690,25 +698,25 @@ namespace SM3E
     // Width of active room in tiles.
     public int RoomWidthInTiles
     {
-      get {return ActiveRoom?.RoomW * 16 ?? 0;}
+      get {return ActiveRoom?.Width * 16 ?? 0;}
     }
 
     // Height of active room in tiles.
     public int RoomHeightInTiles
     {
-      get {return ActiveRoom?.RoomH * 16 ?? 0;}
+      get {return ActiveRoom?.Height * 16 ?? 0;}
     }
 
     // Width of active room in Screens.
     public int RoomWidthInScreens
     {
-      get {return ActiveRoom?.RoomW ?? 0;}
+      get {return ActiveRoom?.Width ?? 0;}
     }
 
     // Height of active room in Screens.
     public int RoomHeightInScreens
     {
-      get {return ActiveRoom?.RoomH ?? 0;}
+      get {return ActiveRoom?.Height ?? 0;}
     }
 
     // Position of room on map
@@ -745,6 +753,9 @@ namespace SM3E
       EnemySets      = new List <Data> ();
       EnemyGfxs      = new List <Data> ();
       ScrollAsms     = new List <Data> ();
+      DoorAsms       = new List <Data> ();
+      SetupAsms      = new List <Data> ();
+      MainAsms       = new List <Data> ();
       TileSets       = new List <Data> ();
       TileTables     = new List <Data> ();
       TileSheets     = new List <Data> ();
@@ -769,6 +780,9 @@ namespace SM3E
       DataLists.Add ("enemysets"     , EnemySets     );
       DataLists.Add ("enemygfxs"     , EnemyGfxs     );
       DataLists.Add ("scrollasms"    , ScrollAsms    );
+      DataLists.Add ("doorasms"      , DoorAsms      );
+      DataLists.Add ("setupasms"     , SetupAsms     );
+      DataLists.Add ("mainasms"      , MainAsms      );
       DataLists.Add ("tilesets"      , TileSets      );
       DataLists.Add ("tiletables"    , TileTables    );
       DataLists.Add ("tilesheets"    , TileSheets    );
@@ -804,8 +818,8 @@ namespace SM3E
           roomIndex >= 0 && roomIndex < Rooms [areaIndex].Count)
       {
         Room r = (Room) Rooms [areaIndex] [roomIndex];
-        width = r.RoomW;
-        height = r.RoomH;
+        width = r.Width;
+        height = r.Height;
       } 
     }
 
@@ -821,7 +835,7 @@ namespace SM3E
       if (ActiveLevelData != null)
       {
         data = ActiveLevelData; // ActiveRoomState.MyLevelData;
-        width = ActiveRoom.RoomW * 16;
+        width = ActiveRoom.Width * 16;
         return true;
       }
       data = null;
@@ -1050,7 +1064,7 @@ namespace SM3E
           return ScrollColor.None;
         }
       }
-      int index = ActiveRoom.RoomW * y + x;
+      int index = ActiveRoom.Width * y + x;
       return ActiveRoomState.MyScrollSet [index];
     }
 
@@ -1074,7 +1088,7 @@ namespace SM3E
       {
         for (int y = yMin; y <= yMax; y++)
         {
-          int index = ActiveRoom.RoomW * y + x;
+          int index = ActiveRoom.Width * y + x;
           ActiveScrollData [index] = ActiveScrollColor;
         }
       }
@@ -1253,6 +1267,9 @@ namespace SM3E
       ActiveDoor.DoorCapX = (byte) doorCapX;
       ActiveDoor.DoorCapY = (byte) doorCapY;
       ActiveDoor.DistanceToSpawn = distanceToSpawn;
+      HandlingSelection = true;
+      DoorListChanged?.Invoke (this, new ListLoadEventArgs (DoorIndex));
+      HandlingSelection = false;
     }
 
 

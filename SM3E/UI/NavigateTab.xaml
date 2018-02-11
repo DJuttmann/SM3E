@@ -20,8 +20,8 @@
 
       <!-- DOORS OUT -->
       <Label Grid.Row="0" Content="Doors" HorizontalAlignment="Stretch" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
-      <Button Grid.Row="0" Grid.Column="0" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,33,0" VerticalAlignment="Bottom" Width="20" Grid.ColumnSpan="3"/>
-      <Button Grid.Row="0" Grid.Column="0" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8,0" VerticalAlignment="Bottom" Width="20" Grid.ColumnSpan="3"/>
+      <Button Grid.Row="0" Grid.Column="0" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,33,0" VerticalAlignment="Bottom" Width="20" Grid.ColumnSpan="3" Click="AddDoor_Click"/>
+      <Button Grid.Row="0" Grid.Column="0" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8,0" VerticalAlignment="Bottom" Width="20" Grid.ColumnSpan="3" Click="DeleteDoor_Click"/>
       <ListBox x:Name="DoorListBox" Grid.Row="1" HorizontalAlignment="Stretch" Margin="8,4,8,4" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="DoorListBox_SelectionChanged" MouseDoubleClick="DoorListBox_DoubleClick" />
     </Grid>
     <Grid Grid.Column="1">

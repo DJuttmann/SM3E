@@ -195,6 +195,42 @@ namespace SM3E.UI
 // Event handlers
 
 
+    private void AddRoom_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.AddRoom ();
+    }
+
+
+    private void DeleteRoom_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.DeleteRoom ();
+    }
+
+
+    private void AddRoomState_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.AddRoomState ();
+    }
+
+
+    private void MoveRoomStateUp_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.MoveRoomStateUp ();
+    }
+
+
+    private void MoveRoomStateDown_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.MoveRoomStateDown ();
+    }
+
+
+    private void DeleteRoomState_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.DeleteRoomState ();
+    }
+
+
     private void EditorTabs_SelectionChanged (object sender, SelectionChangedEventArgs e)
     {
       UpdateLevelDataMarker ();

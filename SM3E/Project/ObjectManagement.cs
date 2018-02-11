@@ -27,7 +27,178 @@ namespace SM3E
       return index;
     }
 
+
+//========================================================================================
+// Object management - exposed methods.
+
+    
+    public void AddRoom ()
+    {
+      if (AreaIndex == IndexNone)
+        return;
+      if (ForceAddRoom (1, 1, 1, 1, "(new room)"))
+      {
+        HandlingSelection = true;
+        var a = new ActiveItems (this);
+        ForceSelectRoom (Rooms [AreaIndex].Count - 1);
+        RoomListChanged?.Invoke (this, new ListLoadEventArgs (RoomIndex));
+        RaiseChangeEvents (a);
+        HandlingSelection = false;
+      }
+    }
+
+
+    public void DeleteRoom ()
+    {
+      if (AreaIndex == IndexNone)
+        return;
+      if (ForceDeleteRoom ())
+      {
+        HandlingSelection = true;
+        var a = new ActiveItems (this);
+        ForceSelectRoom (Math.Min (RoomIndex, Rooms [AreaIndex].Count - 1));
+        RoomListChanged?.Invoke (this, new ListLoadEventArgs (RoomIndex));
+        RaiseChangeEvents (a);
+        HandlingSelection = false;
+      }
+    }
+
+
+    public void AddDoor ()
+    {
+      if (ActiveRoom?.MyDoorSet == null)
+        return;
+      if (ForceAddDoor ())
+      {
+        HandlingSelection = true;
+        var a = new ActiveItems (this);
+        ForceSelectDoor (ActiveRoom.MyDoorSet.DoorCount - 1);
+        DoorListChanged?.Invoke (this, new ListLoadEventArgs (DoorIndex));
+        RaiseChangeEvents (a);
+        HandlingSelection = false;
+      }
+    }
+
+
+    public void DeleteDoor ()
+    {
+      if (ActiveRoom?.MyDoorSet == null || ActiveDoor == null)
+        return;
+      if (ForceRemoveDoor ())
+      {
+        HandlingSelection = true;
+        var a = new ActiveItems (this);
+        ForceSelectDoor (Math.Max (DoorIndex, ActiveRoom.MyDoorSet.DoorCount - 1));
+        DoorListChanged?.Invoke (this, new ListLoadEventArgs (DoorIndex));
+        RaiseChangeEvents (a);
+        HandlingSelection = false;
+      }
+    }
+
+
+    // Move selected room state up in list.
+    public void MoveRoomStateUp ()
+    {
+      if (ActiveRoom == null || ActiveRoomState == null)
+        return;
+      if (RoomStateIndex > 0 && RoomStateIndex + 1 < ActiveRoom.RoomStates.Count)
+      {
+        var temp1 = ActiveRoom.RoomStates [RoomStateIndex];
+        ActiveRoom.RoomStates [RoomStateIndex] =
+          ActiveRoom.RoomStates [RoomStateIndex - 1];
+        ActiveRoom.RoomStates [RoomStateIndex - 1] = temp1;
+
+        var temp2 = ActiveRoom.RoomStateHeaders [RoomStateIndex];
+        ActiveRoom.RoomStateHeaders [RoomStateIndex] =
+          ActiveRoom.RoomStateHeaders [RoomStateIndex - 1];
+        ActiveRoom.RoomStateHeaders [RoomStateIndex - 1] = temp2;
+
+        RoomStateIndex--;
+        HandlingSelection = true;
+        RoomStateListChanged?.Invoke (this, new ListLoadEventArgs (RoomStateIndex));
+        HandlingSelection = false;
+      }
+    }
+
+
+    // Move selected room state down in list.
+    public void MoveRoomStateDown ()
+    {
+      if (ActiveRoom == null || ActiveRoomState == null)
+        return;
+      if (RoomStateIndex + 2 < ActiveRoom.RoomStates.Count)
+      {
+        var temp1 = ActiveRoom.RoomStates [RoomStateIndex];
+        ActiveRoom.RoomStates [RoomStateIndex] =
+          ActiveRoom.RoomStates [RoomStateIndex + 1];
+        ActiveRoom.RoomStates [RoomStateIndex + 1] = temp1;
+
+        var temp2 = ActiveRoom.RoomStateHeaders [RoomStateIndex];
+        ActiveRoom.RoomStateHeaders [RoomStateIndex] =
+          ActiveRoom.RoomStateHeaders [RoomStateIndex + 1];
+        ActiveRoom.RoomStateHeaders [RoomStateIndex + 1] = temp2;
+
+        RoomStateIndex++;
+        HandlingSelection = true;
+        RoomStateListChanged?.Invoke (this, new ListLoadEventArgs (RoomStateIndex));
+        HandlingSelection = false;
+      }
+    }
+
+
+    // Add new room state.
+    public void AddRoomState ()
+    {
+      if (ActiveRoom == null)
+        return;
+      if (ForceAddRoomState (StateType.Events))
+      {
+        HandlingSelection = true;
+        var a = new ActiveItems (this);
+        ForceSelectRoomState (0);
+        RoomStateListChanged?.Invoke (this, new ListLoadEventArgs (RoomStateIndex));
+        var e = new LevelDataEventArgs ()
+        {
+          ScreenXmin = 0,
+          ScreenXmax = RoomWidthInScreens - 1,
+          ScreenYmin = 0,
+          ScreenYmax = RoomHeightInScreens - 1
+        };
+        LevelDataModified?.Invoke (this, e);
+        RaiseChangeEvents (a);
+        HandlingSelection = false;
+      }
+    }
+
+
+    // Delete active room state.
+    public void DeleteRoomState ()
+    {
+      if (ActiveRoom == null || ActiveRoomState == null ||
+          RoomStateIndex == ActiveRoom.RoomStates.Count - 1)
+        return;
+      if (ForceDeleteRoomState ())
+      {
+        HandlingSelection = true;
+        var a = new ActiveItems (this);
+        ForceSelectRoomState (RoomStateIndex);
+        RoomStateListChanged?.Invoke (this, new ListLoadEventArgs (RoomStateIndex));
+        var e = new LevelDataEventArgs ()
+        {
+          ScreenXmin = 0,
+          ScreenXmax = RoomWidthInScreens - 1,
+          ScreenYmin = 0,
+          ScreenYmax = RoomHeightInScreens - 1
+        };
+        LevelDataModified?.Invoke (this, e);
+        RaiseChangeEvents (a);
+        HandlingSelection = false;
+      }
+    }
+
+
 //----------------------------------------------------------------------------------------
+// PLMs
 
     // Move selected PLM up in list.
     public void MovePlmUp ()
@@ -37,7 +208,7 @@ namespace SM3E
       if (PlmIndex > 0)
       {
         Plm temp = ActivePlmSet.Plms [PlmIndex];
-        ActivePlmSet.Plms [PlmIndex] =  ActivePlmSet.Plms [PlmIndex - 1];
+        ActivePlmSet.Plms [PlmIndex] = ActivePlmSet.Plms [PlmIndex - 1];
         ActivePlmSet.Plms [PlmIndex - 1] = temp;
         PlmIndex--;
         HandlingSelection = true;
@@ -55,7 +226,7 @@ namespace SM3E
       if (PlmIndex + 1 < ActivePlmSet.PlmCount)
       {
         Plm temp = ActivePlmSet.Plms [PlmIndex];
-        ActivePlmSet.Plms [PlmIndex] =  ActivePlmSet.Plms [PlmIndex + 1];
+        ActivePlmSet.Plms [PlmIndex] = ActivePlmSet.Plms [PlmIndex + 1];
         ActivePlmSet.Plms [PlmIndex + 1] = temp;
         PlmIndex++;
         HandlingSelection = true;
@@ -96,6 +267,7 @@ namespace SM3E
       if (ForceDeletePlm ())
       {
         HandlingSelection = true;
+        var a = new ActiveItems (this);
         int newIndex = Math.Min (PlmIndex, ActivePlmSet.PlmCount - 1);
         ForceSelectPlm (newIndex);
         PlmListChanged?.Invoke (this, new ListLoadEventArgs (PlmIndex));
@@ -107,6 +279,7 @@ namespace SM3E
           ScreenYmax = RoomHeightInScreens - 1
         };
         LevelDataModified?.Invoke (this, e);
+        RaiseChangeEvents (a);
         HandlingSelection = false;
       }
     }
@@ -133,7 +306,7 @@ namespace SM3E
     {
       if (ActivePlm.MyScrollPlmData == null)
         return;
-      if (ForceDeleteScrollPlmData ())
+      if (ForceRemoveScrollPlmData ())
       {
         HandlingSelection = true;
         int newIndex = Math.Min (ScrollDataIndex, ScrollDataNames.Count - 1);
@@ -144,6 +317,7 @@ namespace SM3E
     }
 
 //----------------------------------------------------------------------------------------
+// Enemies
 
     public void MoveEnemyUp ()
     {
@@ -152,7 +326,7 @@ namespace SM3E
       if (EnemyIndex > 0)
       {
         Enemy temp = ActiveEnemySet.Enemies [EnemyIndex];
-        ActiveEnemySet.Enemies [EnemyIndex] =  ActiveEnemySet.Enemies [EnemyIndex - 1];
+        ActiveEnemySet.Enemies [EnemyIndex] = ActiveEnemySet.Enemies [EnemyIndex - 1];
         ActiveEnemySet.Enemies [EnemyIndex - 1] = temp;
         EnemyIndex--;
         HandlingSelection = true;
@@ -169,7 +343,7 @@ namespace SM3E
       if (EnemyIndex + 1 < ActiveEnemySet.EnemyCount)
       {
         Enemy temp = ActiveEnemySet.Enemies [EnemyIndex];
-        ActiveEnemySet.Enemies [EnemyIndex] =  ActiveEnemySet.Enemies [EnemyIndex + 1];
+        ActiveEnemySet.Enemies [EnemyIndex] = ActiveEnemySet.Enemies [EnemyIndex + 1];
         ActiveEnemySet.Enemies [EnemyIndex + 1] = temp;
         EnemyIndex++;
         HandlingSelection = true;
@@ -208,6 +382,7 @@ namespace SM3E
       if (ForceDeleteEnemy ())
       {
         HandlingSelection = true;
+        var a = new ActiveItems (this);
         int newIndex = Math.Min (EnemyIndex, ActiveEnemySet.EnemyCount - 1);
         ForceSelectEnemy (newIndex);
         EnemyListChanged?.Invoke (this, new ListLoadEventArgs (EnemyIndex));
@@ -219,6 +394,7 @@ namespace SM3E
           ScreenYmax = RoomHeightInScreens - 1
         };
         LevelDataModified?.Invoke (this, e);
+        RaiseChangeEvents (a);
         HandlingSelection = false;
       }
     }
@@ -304,18 +480,285 @@ namespace SM3E
       if (ForceDeleteEnemyGfx ())
       {
         HandlingSelection = true;
+        var a = new ActiveItems (this);
         int newIndex = Math.Min (EnemyGfxIndex,
                                  ActiveRoomState.MyEnemyGfx.EnemyGfxCount - 1);
         ForceSelectEnemyGfx (newIndex);
         EnemyGfxListChanged?.Invoke (this, new ListLoadEventArgs (EnemyGfxIndex));
+        RaiseChangeEvents (a);
         HandlingSelection = false;
       }
     }
 
 
 //========================================================================================
-// Object management without UI concerns.
+// Object management - internal methods.
 
+
+    // Add room to active area.
+    private bool ForceAddRoom (int mapX, int mapY, int width, int height, string name)
+    {
+      if (AreaIndex == IndexNone)
+        return false;
+      int newRoomIndex = NewRoomIndex (AreaIndex);
+      if (newRoomIndex == -1)
+        return false;
+      DoorSet newDoorSet = new DoorSet ();
+      newDoorSet.SetDefault ();
+
+      Room newRoom = new Room ();
+      newRoom.SetDefault ();
+      newRoom.MapX = (byte) mapX;
+      newRoom.MapY = (byte) mapY;
+      newRoom.Width = (byte) width;
+      newRoom.Height = (byte) height;
+      newRoom.Name = name;
+      newRoom.MyDoorSet = newDoorSet;
+
+      Rooms [AreaIndex].Add (newRoom);
+      DoorSets.Add (newDoorSet);
+      ForceSelectRoom (Rooms [AreaIndex].Count - 1);
+      ForceAddRoomState (StateType.Standard);
+      return true;
+    }
+
+
+    // Delete selected room from active area.
+    private bool ForceDeleteRoom ()
+    {
+      if (AreaIndex == IndexNone || ActiveRoom == null)
+        return false;
+      ForceDeleteDoorSet ();
+      foreach (Door d in ActiveRoom.MyIncomingDoors)
+        d.MyTargetRoom = null;
+      while (ActiveRoom.RoomStates.Count > 0)
+      {
+        ForceSelectRoomState (ActiveRoom.RoomStates.Count - 1);
+        ForceDeleteRoomState ();
+      }
+      Rooms [AreaIndex].Remove (ActiveRoom);
+      return true;
+    }
+
+
+    // Delete doorset from currently active room.
+    private bool ForceDeleteDoorSet ()
+    {
+      if (ActiveRoom?.MyDoorSet == null)
+        return false;
+      ActiveRoom.MyDoorSet.MyRoom = null;
+      while (ActiveRoom.MyDoorSet.MyDoors.Count > 0)
+      {
+        ForceSelectDoor (ActiveRoom.MyDoorSet.MyDoors.Count - 1);
+        ForceRemoveDoor ();
+      }
+      DoorSets.Remove (ActiveRoom.MyDoorSet);
+      ActiveRoom.MyDoorSet = null;
+      return true;
+    }
+
+
+    // Add door to currently active room's doorset.
+    private bool ForceAddDoor ()
+    {
+      if (ActiveRoom?.MyDoorSet == null)
+        return false;
+      Door newDoor = new Door ();
+      newDoor.SetDefault ();
+      newDoor.MyDoorSets.Add (ActiveRoom.MyDoorSet);
+      ActiveRoom.MyDoorSet.MyDoors.Add (newDoor);
+      ActiveRoom.MyDoorSet.DoorPtrs.Add (0);
+      return true;
+    }
+
+
+    // Remove door from currently active room's doorset.
+    // Delete alltogether if it is not referenced by any other doorset.
+    private bool ForceRemoveDoor ()
+    {
+      if (ActiveRoom?.MyDoorSet == null || ActiveDoor == null)
+        return false;
+      ActiveDoor.MyDoorSets.Remove (ActiveRoom.MyDoorSet);
+      if (ActiveDoor.MyDoorSets.Count == 0)
+        Doors.Remove (ActiveDoor);
+      ActiveRoom.MyDoorSet.MyDoors.Remove (ActiveDoor);
+      ActiveRoom.MyDoorSet.DoorPtrs.RemoveAt (DoorIndex);
+      return true;
+    }
+
+    
+    // Add room state to active room.
+    private bool ForceAddRoomState (StateType type)
+    {
+      if (ActiveRoom == null)
+        return false;
+      RoomStateHeader newHeader = new RoomStateHeader ();
+      newHeader.SetDefault ();
+      newHeader.HeaderType = type;
+
+      RoomState newState = new RoomState ();
+      newState.SetDefault ();
+      newState.MyLevelData = new LevelData (RoomWidthInScreens, RoomHeightInScreens);
+      newState.MyScrollSet = null;
+      newState.MyPlmSet = new PlmSet ();
+      newState.MyEnemySet = new EnemySet ();
+      newState.MyEnemyGfx = new EnemyGfx ();
+      newState.MyFx = new Fx ();
+      newState.MyBackground = null;
+      // newState.MySetupAsm = null; // [wip]
+      // newState.MyMainAsm = null;
+
+      newState.MyLevelData.MyRoomStates.Add (newState);
+      newState.MyPlmSet.MyRoomStates.Add (newState);
+      newState.MyEnemySet.MyRoomStates.Add (newState);
+      newState.MyEnemyGfx.MyRoomStates.Add (newState);
+      newState.MyFx.MyRoomStates.Add (newState);
+
+      ActiveRoom.RoomStateHeaders.Insert (0, newHeader);
+      ActiveRoom.RoomStates.Insert (0, newState);
+      RoomStates.Add (newState);
+      LevelDatas.Add (newState.MyLevelData);
+      PlmSets.Add (newState.MyPlmSet);
+      EnemySets.Add (newState.MyEnemySet);
+      EnemyGfxs.Add (newState.MyEnemyGfx);
+      Fxs.Add (newState.MyFx);
+      return true;
+    }
+
+
+    // Delete selected room state from active room.
+    private bool ForceDeleteRoomState ()
+    {
+      if (ActiveRoom == null || ActiveRoomState == null)
+        return false;
+      ForceRemoveLevelData ();
+      ForceRemoveScrollSet ();
+      ForceRemovePlmSet ();
+      ForceRemoveEnemySet ();
+      ForceRemoveEnemyGfx ();
+      ForceRemoveFx ();
+      ForceRemoveBackground ();
+      
+      ActiveRoomState.MyRoom = null;
+      RoomStates.Remove (ActiveRoomState);
+      ActiveRoom.RoomStateHeaders.RemoveAt (RoomStateIndex);
+      ActiveRoom.RoomStates.RemoveAt (RoomStateIndex);
+      return true;
+    }
+
+
+    // Remove level data from currently active room state.
+    // Delete alltogether if it is not referenced by any other room state.
+    private bool ForceRemoveLevelData ()
+    {
+      if (ActiveRoomState == null || ActiveLevelData == null)
+        return false;
+      ActiveLevelData.MyRoomStates.Remove (ActiveRoomState);
+      if (ActiveLevelData.MyRoomStates.Count == 0)
+        LevelDatas.Remove (ActiveLevelData);
+      ActiveRoomState.MyLevelData = null;
+      return true;
+    }
+
+
+    // Remove scroll set from currently active room state.
+    // Delete alltogether if it is not referenced by any other room state.
+    private bool ForceRemoveScrollSet ()
+    {
+      if (ActiveRoomState == null || ActiveRoomState.MyScrollSet == null)
+        return false;
+      ActiveRoomState.MyScrollSet.MyRoomStates.Remove (ActiveRoomState);
+      if (ActiveRoomState.MyScrollSet.MyRoomStates.Count == 0)
+        ScrollSets.Remove (ActiveRoomState.MyScrollSet);
+      ActiveRoomState.MyScrollSet = null;
+      return true;
+    }
+
+
+    // Remove PLM set from currently active room state.
+    // Delete alltogether if it is not referenced by any other room state.
+    private bool ForceRemovePlmSet ()
+    {
+      if (ActiveRoomState == null || ActivePlmSet == null)
+        return false;
+      ActivePlmSet.MyRoomStates.Remove (ActiveRoomState);
+      if (ActivePlmSet.MyRoomStates.Count == 0)
+      {
+        while (ActivePlmSet.PlmCount > 0)
+        {
+          ForceSelectPlm (ActivePlmSet.PlmCount - 1);
+          ForceDeletePlm ();
+        }
+        PlmSets.Remove (ActivePlmSet);
+      }
+      ActiveRoomState.MyPlmSet = null;
+      return true;
+    }
+
+
+    // Remove enemy set from currently active room state.
+    // Delete alltogether if it is not referenced by any other room state.
+    private bool ForceRemoveEnemySet ()
+    {
+      if (ActiveRoomState == null || ActiveEnemySet == null)
+        return false;
+      ActiveEnemySet.MyRoomStates.Remove (ActiveRoomState);
+      if (ActiveEnemySet.MyRoomStates.Count == 0)
+      {
+        while (ActiveEnemySet.EnemyCount > 0)
+        {
+          ForceSelectEnemy (ActiveEnemySet.EnemyCount - 1);
+          ForceDeleteEnemy ();
+        }
+        EnemySets.Remove (ActiveEnemySet);
+      }
+      ActiveRoomState.MyEnemySet = null;
+      return true;
+    }
+
+
+    // Remove enemy gfx from currently active room state.
+    // Delete alltogether if it is not referenced by any other room state.
+    private bool ForceRemoveEnemyGfx ()
+    {
+      if (ActiveRoomState == null || ActiveRoomState.MyEnemyGfx == null)
+        return false;
+      ActiveRoomState.MyEnemyGfx.MyRoomStates.Remove (ActiveRoomState);
+      if (ActiveRoomState.MyEnemyGfx.MyRoomStates.Count == 0)
+        EnemyGfxs.Remove (ActiveRoomState.MyEnemyGfx);
+      ActiveRoomState.MyEnemyGfx = null;
+      return true;
+    }
+
+
+    // Remove fx from currently active room state.
+    // Delete alltogether if it is not referenced by any other room state.
+    private bool ForceRemoveFx ()
+    {
+      // [wip] implement ActiveFx and replace in this method?
+      if (ActiveRoomState == null || ActiveRoomState.MyFx == null)
+        return false;
+      ActiveRoomState.MyFx.MyRoomStates.Remove (ActiveRoomState);
+      if (ActiveRoomState.MyFx.MyRoomStates.Count == 0)
+        Fxs.Remove (ActiveRoomState.MyFx);
+      ActiveRoomState.MyFx = null;
+      return true;
+    }
+
+
+    // Remove background from currently active room state.
+    private bool ForceRemoveBackground ()
+    {
+      // [wip] implement ActiveBackground and replace in this method?
+      if (ActiveRoomState == null || ActiveRoomState.MyBackground == null)
+        return false;
+      ActiveRoomState.MyBackground.MyRoomStates.Remove (ActiveRoomState);
+      // Do not delete background if unreferenced
+      ActiveRoomState.MyBackground = null;
+      return true;
+    }
+
+//----------------------------------------------------------------------------------------
 
     private bool ForceAddPlm (int col, int row)
     {
@@ -336,7 +779,7 @@ namespace SM3E
     {
       if (ActivePlmSet == null || ActivePlm == null)
         return false;
-      ForceDeleteScrollPlmData ();
+      ForceRemoveScrollPlmData ();
       ActivePlmSet.Plms.RemoveAt (PlmIndex);
       return true;
     }
@@ -356,9 +799,9 @@ namespace SM3E
     }
 
 
-    // Delete scroll PLM data from currently active PLM (if it is scroll PLM).
+    // Remove scroll PLM data from currently active PLM (if it is scroll PLM).
     // Delete alltogether if it is not referenced by any other PLM.
-    private bool ForceDeleteScrollPlmData ()
+    private bool ForceRemoveScrollPlmData ()
     {
       if (ActivePlm?.MyScrollPlmData != null)
       {

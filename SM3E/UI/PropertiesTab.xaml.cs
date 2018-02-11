@@ -100,6 +100,7 @@ namespace SM3E.UI
       PlmSetPtrInput.Text = Tools.IntToHex (MainProject.PlmSetPtr, 6);
       EnemySetPtrInput.Text = Tools.IntToHex (MainProject.EnemySetPtr, 6);
       EnemyGfxPtrInput.Text = Tools.IntToHex (MainProject.EnemyGfxPtr, 6);
+      BackgroundInput.Text = Tools.IntToHex (MainProject.BackgroundPtr, 6);
       FxPtrInput.Text = Tools.IntToHex (MainProject.FxPtr, 6);
       SetupAsmPtrInput.Text = Tools.IntToHex (MainProject.SetupAsmPtr, 6);
       MainAsmPtrInput.Text = Tools.IntToHex (MainProject.MainAsmPtr, 6);

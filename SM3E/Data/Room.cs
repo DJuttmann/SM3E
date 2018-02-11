@@ -46,6 +46,36 @@ namespace SM3E
       }
     }
 
+    public string Name
+    {
+      get
+      {
+        switch (HeaderType)
+        {
+        case StateType.None:
+          return "[None]";
+        case StateType.Standard:
+          return "Standard";
+        case StateType.Events:
+          return "Event " + Tools.IntToHex (Value, 2);
+        case StateType.Bosses:
+          return "Boss " + Tools.IntToHex (Value, 2);
+        case StateType.TourianBoss:
+          return "Tourian Boss";
+        case StateType.Morph:
+          return "Morph";
+        case StateType.MorphMissiles:
+          return "Morph + Missiles";
+        case StateType.PowerBombs:
+          return "Power Bombs";
+        case StateType.SpeedBooster:
+          return "Speed Booster";
+        default:
+          return "[Unknown]";
+        }
+      }
+    }
+
 
     // Constructor.
     public RoomStateHeader (): base ()
@@ -414,8 +444,8 @@ namespace SM3E
     public byte Area;
     public byte MapX;
     public byte MapY;
-    public byte RoomW;
-    public byte RoomH;
+    public byte Width;
+    public byte Height;
     public byte UpScroller;
     public byte DownScroller;
     public byte SpecialGfxBitflag;
@@ -451,11 +481,11 @@ namespace SM3E
     public Room (): base ()
     {
       RoomIndex         = 0;
-      Area          = 0;
+      Area              = 0;
       MapX              = 0;
       MapY              = 0;
-      RoomW             = 0;
-      RoomH             = 0;
+      Width             = 0;
+      Height             = 0;
       UpScroller        = 0;
       DownScroller      = 0;
       SpecialGfxBitflag = 0;
@@ -482,8 +512,8 @@ namespace SM3E
       Area              = b [1];
       MapX              = b [2];
       MapY              = b [3];
-      RoomW             = b [4];
-      RoomH             = b [5];
+      Width             = b [4];
+      Height             = b [5];
       UpScroller        = b [6];
       DownScroller      = b [7];
       SpecialGfxBitflag = b [8];
@@ -530,8 +560,8 @@ namespace SM3E
       b [1] = Area;
       b [2] = MapX;
       b [3] = MapY;
-      b [4] = RoomW;
-      b [5] = RoomH;
+      b [4] = Width;
+      b [5] = Height;
       b [6] = UpScroller;
       b [7] = DownScroller;
       b [8] = SpecialGfxBitflag;
@@ -554,8 +584,8 @@ namespace SM3E
     {
       MapX              = 1;
       MapY              = 1;
-      RoomW             = 1;
-      RoomH             = 1;
+      Width             = 1;
+      Height             = 1;
       UpScroller        = 0x70;
       DownScroller      = 0xA0;
       SpecialGfxBitflag = 0;
@@ -582,8 +612,8 @@ namespace SM3E
       Logging.WriteLine ("  RoomArea         : " + Tools.IntToHex (Area, 2));
       Logging.WriteLine ("  MapX             : " + Tools.IntToHex (MapX, 2));
       Logging.WriteLine ("  MapY             : " + Tools.IntToHex (MapY, 2));
-      Logging.WriteLine ("  RoomW            : " + Tools.IntToHex (RoomW, 2));
-      Logging.WriteLine ("  RoomH            : " + Tools.IntToHex (RoomH, 2));
+      Logging.WriteLine ("  RoomW            : " + Tools.IntToHex (Width, 2));
+      Logging.WriteLine ("  RoomH            : " + Tools.IntToHex (Height, 2));
       Logging.WriteLine ("  UpScroller       : " + Tools.IntToHex (UpScroller, 2));
       Logging.WriteLine ("  DownScroller     : " + Tools.IntToHex (DownScroller, 2));
       Logging.WriteLine ("  SpecialGfxBitflag: " + Tools.IntToHex (SpecialGfxBitflag, 2));

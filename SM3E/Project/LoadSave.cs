@@ -30,12 +30,13 @@ namespace SM3E
     // Read all data from the ROM, guided by data from the projectfile.
     public void Load (string projectFile)
     {
-      List <int> roomAddresses;
-      List <int> roomDoorCounts;
-      List <string> roomNames;
-
       ProjectFileName = projectFile;
-      ReadProjectFileXml (out roomAddresses, out roomDoorCounts, out roomNames);
+      ReadProjectFileXml (out List <int> roomAddresses,
+                          out List <int> roomDoorCounts,
+                          out List <string> roomNames,
+                          out List <Tuple <int, int, string>> doorAsms,
+                          out List <Tuple <int, int, string>> setupAsms,
+                          out List <Tuple <int, int, string>> mainAsms);
 
       // Read uncompressed data from ROM.
       ReadRooms (CurrentRom, roomAddresses, roomNames, roomDoorCounts);
@@ -51,6 +52,9 @@ namespace SM3E
       ReadScrollAsms (CurrentRom);
       ReadTileSets (CurrentRom);
       ReadAreaMaps (CurrentRom, AreaMap.Addresses);
+      ReadDoorAsms (CurrentRom, doorAsms);
+      ReadSetupAsms (CurrentRom, setupAsms);
+      ReadMainAsms (CurrentRom, mainAsms);
 
       // Read Compressed data from ROM.
       ReadLevelDatas (CurrentRom);
@@ -160,12 +164,18 @@ namespace SM3E
     // Read the project file in Xml format.
     private bool ReadProjectFileXml (out List <int> roomAddresses,
                                      out List <int> roomDoorCounts,
-                                     out List <string> roomNames)
+                                     out List <string> roomNames,
+                                     out List <Tuple <int, int, string>> doorAsms,
+                                     out List <Tuple <int, int, string>> setupAsms,
+                                     out List <Tuple <int, int, string>> mainAsms)
     {
       RomFileName = null;
       roomAddresses = new List <int> ();
       roomDoorCounts = new List <int> ();
       roomNames = new List <string> ();
+      doorAsms  = new List <Tuple <int, int, string>> ();
+      setupAsms = new List <Tuple <int, int, string>> ();
+      mainAsms  = new List <Tuple <int, int, string>> ();
 
       Stream stream;
       try {stream = new FileStream (ProjectFileName, FileMode.Open, 
@@ -240,6 +250,36 @@ namespace SM3E
                 roomNames.Add (roomName);
               else
                 roomNames.Add ("");
+            }
+          }
+          break;
+
+        case "Asms":
+          foreach (XElement asm in x.Elements ())
+          {
+            List <Tuple <int, int, string>> asmList;
+            switch (asm.Name.ToString ())
+            {
+            case "DoorAsm":
+              asmList = doorAsms;
+              break;
+            case "SetupAsm":
+              asmList = setupAsms;
+              break;
+            case "MainAsm":
+              asmList = mainAsms;
+              break;
+            default:
+              continue;
+            }
+            string asmName = asm.Attribute ("name")?.Value;
+            string asmAddress = asm.Attribute ("address")?.Value;
+            string asmEnd = asm.Attribute ("end")?.Value;
+            if (asmAddress != null && asmEnd != null)
+            {
+              asmList.Add (new Tuple <int, int, string> (Tools.HexToInt (asmAddress),
+                                                         Tools.HexToInt (asmEnd),
+                                                         asmName ?? asmAddress));
             }
           }
           break;
@@ -336,7 +376,7 @@ namespace SM3E
       for (int k = 0; k < AreaCount; k++)
         foreach (Room r in Rooms [k])
         {
-          int roomArea = r.RoomW * r.RoomH;
+          int roomArea = r.Width * r.Height;
           int stateCount = r.RoomStates.Count;
           addressesPC.Clear ();
           for (int i = 0; i < stateCount; i++)
@@ -523,6 +563,45 @@ namespace SM3E
         var s = new ScrollAsm ();
         if (s.ReadFromROM (rom, addressesPC [n]))
           ScrollAsms.Add (s);
+      }
+    }
+
+
+    // Read all Door ASMs from ROM.
+    private void ReadDoorAsms (Rom rom, List <Tuple <int, int, string>> asms)
+    {
+      foreach (var a in asms)
+      {
+        Asm newAsm = new Asm () {Name = a.Item3};
+        newAsm.SetSize (a.Item2 - a.Item1);
+        newAsm.ReadFromROM (rom, a.Item1);
+        DoorAsms.Add (newAsm);
+      }
+    }
+
+
+    // Read all setup ASMs from ROM.
+    private void ReadSetupAsms (Rom rom, List <Tuple <int, int, string>> asms)
+    {
+      foreach (var a in asms)
+      {
+        Asm newAsm = new Asm () {Name = a.Item3};
+        newAsm.SetSize (a.Item2 - a.Item1);
+        newAsm.ReadFromROM (rom, a.Item1);
+        SetupAsms.Add (newAsm);
+      }
+    }
+
+
+    // Read all main ASMs from ROM.
+    private void ReadMainAsms (Rom rom, List <Tuple <int, int, string>> asms)
+    {
+      foreach (var a in asms)
+      {
+        Asm newAsm = new Asm () {Name = a.Item3};
+        newAsm.SetSize (a.Item2 - a.Item1);
+        newAsm.ReadFromROM (rom, a.Item1);
+        MainAsms.Add (newAsm);
       }
     }
 
@@ -795,10 +874,31 @@ namespace SM3E
           roomsElement.Add (room);
         }
       root.Add (roomsElement);
+
+      // Write asm data
+      XElement asmElement = new XElement ("Asms");
+      WriteAsmDataXml (asmElement, "DoorAsm", DoorAsms);
+      WriteAsmDataXml (asmElement, "SetupAsm", SetupAsms);
+      WriteAsmDataXml (asmElement, "MainAsm", MainAsms);
+      root.Add (asmElement);
       
       root.WriteTo (writer);
       writer.Close ();
       stream.Close ();
+    }
+
+
+    // Write asm data to xml element.
+    private void WriteAsmDataXml (XElement asmElement, string name, List <Data> data)
+    {
+      foreach (Asm a in data)
+      {
+        XElement asm = new XElement (name);
+        asm.SetAttributeValue ("Address", Tools.IntToHex (a.StartAddressPC));
+        asm.SetAttributeValue ("End", Tools.IntToHex (a.EndAddressPC));
+        asm.SetAttributeValue ("Name", a.Name);
+        asmElement.Add (asm);
+      }
     }
 
 

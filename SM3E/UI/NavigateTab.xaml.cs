@@ -149,6 +149,18 @@ namespace SM3E.UI
       window.ShowDialog ();
     }
 
+
+    private void AddDoor_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.AddDoor ();
+    }
+
+
+    private void DeleteDoor_Click (object sender, RoutedEventArgs e)
+    {
+      MainProject.DeleteDoor ();
+    }
+
 //----------------------------------------------------------------------------------------
 // Map viewer & tile selector
 

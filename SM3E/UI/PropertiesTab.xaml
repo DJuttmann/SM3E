@@ -94,6 +94,7 @@
           <RowDefinition Height="22"/>
           <RowDefinition Height="22"/>
           <RowDefinition Height="22"/>
+          <RowDefinition Height="22"/>
           <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -117,15 +118,18 @@
         <Label Grid.Row="4" Margin="0,-3,0,-3" Content="Enemy gfx" HorizontalAlignment="Left"/>
         <TextBox Grid.Row="4" x:Name="EnemyGfxPtrInput" Grid.Column="1" Margin="0,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$000000" IsReadOnly="True" Background="#FFDFDFDF"/>
         <Button Grid.Row="4" Grid.Column="2" Content="&#x270F;" HorizontalAlignment="Right" Height="20" Margin="0,0,0,0" VerticalAlignment="Top" Width="20"/>
-        <Label Grid.Row="5" Margin="0,-3,0,-3" Content="Effects" HorizontalAlignment="Left"/>
-        <TextBox Grid.Row="5" x:Name="FxPtrInput" Grid.Column="1" Margin="0,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$000000" IsReadOnly="True" Background="#FFDFDFDF"/>
+        <Label Grid.Row="5" Margin="0,-3,0,-3" Content="Background" HorizontalAlignment="Left"/>
+        <TextBox Grid.Row="5" x:Name="BackgroundInput" Grid.Column="1" Margin="0,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$000000" IsReadOnly="True" Background="#FFDFDFDF"/>
         <Button Grid.Row="5" Grid.Column="2" Content="&#x270F;" HorizontalAlignment="Right" Height="20" Margin="0,0,0,0" VerticalAlignment="Top" Width="20"/>
-        <Label Grid.Row="6" Margin="0,-3,0,-3" Content="Setup ASM" HorizontalAlignment="Left"/>
-        <TextBox Grid.Row="6" x:Name="SetupAsmPtrInput" Grid.Column="1" Margin="0,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$000000" IsReadOnly="True" Background="#FFDFDFDF"/>
+        <Label Grid.Row="6" Margin="0,-3,0,-3" Content="Effects" HorizontalAlignment="Left"/>
+        <TextBox Grid.Row="6" x:Name="FxPtrInput" Grid.Column="1" Margin="0,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$000000" IsReadOnly="True" Background="#FFDFDFDF"/>
         <Button Grid.Row="6" Grid.Column="2" Content="&#x270F;" HorizontalAlignment="Right" Height="20" Margin="0,0,0,0" VerticalAlignment="Top" Width="20"/>
-        <Label Grid.Row="7" Margin="0,-3,0,-3" Content="Main ASM" HorizontalAlignment="Left"/>
-        <TextBox Grid.Row="7" x:Name="MainAsmPtrInput" Grid.Column="1" Margin="0,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$000000" IsReadOnly="True" Background="#FFDFDFDF"/>
+        <Label Grid.Row="7" Margin="0,-3,0,-3" Content="Setup ASM" HorizontalAlignment="Left"/>
+        <TextBox Grid.Row="7" x:Name="SetupAsmPtrInput" Grid.Column="1" Margin="0,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$000000" IsReadOnly="True" Background="#FFDFDFDF"/>
         <Button Grid.Row="7" Grid.Column="2" Content="&#x270F;" HorizontalAlignment="Right" Height="20" Margin="0,0,0,0" VerticalAlignment="Top" Width="20"/>
+        <Label Grid.Row="8" Margin="0,-3,0,-3" Content="Main ASM" HorizontalAlignment="Left"/>
+        <TextBox Grid.Row="8" x:Name="MainAsmPtrInput" Grid.Column="1" Margin="0,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$000000" IsReadOnly="True" Background="#FFDFDFDF"/>
+        <Button Grid.Row="8" Grid.Column="2" Content="&#x270F;" HorizontalAlignment="Right" Height="20" Margin="0,0,0,0" VerticalAlignment="Top" Width="20"/>
       </Grid>
     </ScrollViewer>
     

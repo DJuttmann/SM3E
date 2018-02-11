@@ -47,16 +47,16 @@
         <RowDefinition Height="25"/>
         <RowDefinition Height="100"/>
       </Grid.RowDefinitions>
-      <ListBox Grid.Row="0" x:Name="AreaListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,8,8,4" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="AreaListBox_SelectionChanged" />
+      <ListBox Grid.Row="0" x:Name="AreaListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,8,8,4" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="AreaListBox_SelectionChanged"/>
       <Label   Grid.Row="1" Content="Room" HorizontalAlignment="Left" Width="100" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
-      <Button  Grid.Row="1" Grid.Column="2" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,33,0" VerticalAlignment="Bottom" Width="20"/>
-      <Button  Grid.Row="1" Grid.Column="2" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8,0" VerticalAlignment="Bottom" Width="20"/>
+      <Button  Grid.Row="1" Grid.Column="2" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,33,0" VerticalAlignment="Bottom" Width="20" Click="AddRoom_Click"/>
+      <Button  Grid.Row="1" Grid.Column="2" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8,0" VerticalAlignment="Bottom" Width="20" Click="DeleteRoom_Click"/>
       <ListBox Grid.Row="2" x:Name="RoomListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,4" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="RoomListBox_SelectionChanged"/>
       <Label   Grid.Row="3" Content="State" HorizontalAlignment="Left" Width="100" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
-      <Button  Grid.Row="3" Grid.Column="2" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,83,0" VerticalAlignment="Bottom" Width="20"/>
-      <Button  Grid.Row="3" Grid.Column="2" Content="&#x2BC5;" HorizontalAlignment="Right" Height="20" Margin="0,0,58,0" VerticalAlignment="Bottom" Width="20"/>
-      <Button  Grid.Row="3" Grid.Column="2" Content="&#x2BC6;" HorizontalAlignment="Right" Height="20" Margin="0,0,33,0" VerticalAlignment="Bottom" Width="20"/>
-      <Button  Grid.Row="3" Grid.Column="2" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8,0" VerticalAlignment="Bottom" Width="20"/>
+      <Button  Grid.Row="3" Grid.Column="2" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,83,0" VerticalAlignment="Bottom" Width="20" Click="AddRoomState_Click"/>
+      <Button  Grid.Row="3" Grid.Column="2" Content="&#x2BC5;" HorizontalAlignment="Right" Height="20" Margin="0,0,58,0" VerticalAlignment="Bottom" Width="20" Click="MoveRoomStateUp_Click"/>
+      <Button  Grid.Row="3" Grid.Column="2" Content="&#x2BC6;" HorizontalAlignment="Right" Height="20" Margin="0,0,33,0" VerticalAlignment="Bottom" Width="20" Click="MoveRoomStateDown_Click"/>
+      <Button  Grid.Row="3" Grid.Column="2" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8,0" VerticalAlignment="Bottom" Width="20" Click="DeleteRoomState_Click"/>
       <ListBox Grid.Row="4" x:Name="RoomStateListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,8" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="RoomStateListBox_SelectionChanged"/>
     </Grid>
 

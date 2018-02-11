@@ -570,8 +570,8 @@ namespace SM3E
       {
         i = (i + 1) % Rooms [AreaIndex].Count;
         Room r = (Room) Rooms [AreaIndex] [i];
-        if (x >= r.MapX && x < r.MapX + r.RoomW &&
-            y >= r.MapY && y < r.MapY + r.RoomH)
+        if (x >= r.MapX && x < r.MapX + r.Width &&
+            y >= r.MapY && y < r.MapY + r.Height)
         {
           HandlingSelection = true;
           var a = new ActiveItems (this);

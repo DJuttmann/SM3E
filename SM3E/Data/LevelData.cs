@@ -58,6 +58,25 @@ namespace SM3E
     }
 
 
+    public LevelData (int width, int height): base ()
+    {
+      ScreenCount = width * height;
+
+      Layer1 = new List <UInt16> ();
+      Layer2 = new List <UInt16> ();
+      BTS = new List <byte> ();
+      int tileCount = ScreenCount * 256;
+      for (int n = 0; n < tileCount; n++)
+        Layer1.Add (0x805F);
+        BTS.Add (0x00);
+
+      MyRoomStates = new List <RoomState> ();
+      CompressedData = new List <byte> ();
+
+      startAddressPC = 0;
+    }
+
+
     // Read data from ROM at given PC address.
     public override bool ReadFromROM (Rom rom, int addressPC)
     {

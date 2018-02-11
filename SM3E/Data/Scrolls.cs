@@ -65,6 +65,16 @@ namespace SM3E
     }
 
 
+    // Constructor
+    public ScrollSet (int screenCount, ScrollColor color): base ()
+    {
+      MyRoomStates = new HashSet <RoomState> ();
+      byte b = (byte) color;
+      for (int n = 0; n < screenCount; n++)
+        Bytes.Add (b);
+    }
+
+
     // Set default values.
     public override void SetDefault ()
     {
