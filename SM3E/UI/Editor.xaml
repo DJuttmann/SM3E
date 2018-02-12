@@ -7,6 +7,34 @@
              xmlns:ui="clr-namespace:SM3E.UI"
              mc:Ignorable="d" 
              d:DesignHeight="750" d:DesignWidth="1000">
+  <UserControl.Resources>
+    <ResourceDictionary>
+      <Style TargetType="ListBoxItem">
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate>
+              <Grid HorizontalAlignment="Stretch" Height="18" Background="Transparent">
+                <ContentPresenter Content="{Binding}" Margin="4,0,4,0"/>
+              </Grid>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+          <Trigger Property="IsSelected" Value="True">
+            <Setter Property="Template">
+              <Setter.Value>
+                <ControlTemplate>
+                  <Grid HorizontalAlignment="Stretch" Height="18" Background="#40C0C0">
+                    <ContentPresenter Content="{Binding}" Margin="4,0,4,0"/>
+                  </Grid>
+                </ControlTemplate>
+              </Setter.Value>
+            </Setter>
+          </Trigger>
+        </Style.Triggers>
+      </Style>
+    </ResourceDictionary>
+  </UserControl.Resources>
 
   <Grid Grid.Row="1">
     <Grid.RowDefinitions>
@@ -68,7 +96,7 @@
 
 
     <!-- TOOLS -->
-    <TabControl x:Name="EditorTabs" TabStripPlacement="Left" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="2" Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" SelectionChanged="EditorTabs_SelectionChanged">
+    <TabControl x:Name="EditorTabs" TabStripPlacement="Left" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="2" Background="Transparent" SelectionChanged="EditorTabs_SelectionChanged">
 
       <!-- NAVIGATOR / DOOR EDITOR -->
       <TabItem x:Name="NavigateTab" Header="Navigate" Width="130">
@@ -113,51 +141,7 @@
 
 
     <!-- LAYER SELECTOR -->
-    <ListBox x:Name="LayerSelect" Height="135" Width="110" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,9.8" Grid.ColumnSpan="3" SelectedIndex="0" SelectionChanged="LayerSelect_SelectionChanged">
-      <ListBoxItem>
-        <Grid Height="14">
-          <CheckBox x:Name="LayerForegroundCheckBox" IsChecked="True" Click="LayerForegroundCheckBox_Click"/>
-          <Label Content="Foreground" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,-6,0,0" Height="30"/>
-        </Grid>
-      </ListBoxItem>
-      <ListBoxItem>
-        <Grid Height="14">
-          <CheckBox x:Name="LayerBtsCheckBox" IsChecked="True" Click="LayerBtsCheckBox_Click"/>
-          <Label Content="BTS" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,-6,0,0" Height="30"/>
-        </Grid>
-      </ListBoxItem>
-      <ListBoxItem>
-        <Grid Height="14">
-          <CheckBox x:Name="LayerBackgroundCheckBox" IsChecked="True" Click="LayerBackgroundCheckBox_Click"/>
-          <Label Content="Background" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,-6,0,0" Height="30"/>
-        </Grid>
-      </ListBoxItem>
-      <ListBoxItem>
-        <Grid Height="14">
-          <CheckBox x:Name="LayerPlmsCheckBox" IsChecked="True" Click="LayerPlmsCheckBox_Click"/>
-          <Label Content="PLMs" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,-6,0,0" Height="30"/>
-        </Grid>
-      </ListBoxItem>
-      <ListBoxItem>
-        <Grid Height="14">
-          <CheckBox x:Name="LayerEnemiesCheckBox" IsChecked="True" Click="LayerEnemiesCheckBox_Click"/>
-          <Label Content="Enemies" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,-6,0,0" Height="30"/>
-        </Grid>
-      </ListBoxItem>
-      <ListBoxItem>
-        <Grid Height="14">
-          <CheckBox x:Name="LayerScrollsCheckBox" IsChecked="True" Click="LayerScrollsCheckBox_Click"/>
-          <Label Content="Scrolls" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,-6,0,0" Height="30"/>
-        </Grid>
-      </ListBoxItem>
-      <ListBoxItem>
-        <Grid Height="14">
-          <CheckBox x:Name="LayerEffectsCheckBox" IsChecked="True" Click="LayerEffectsCheckBox_Click"/>
-          <Label Content="Effects" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,-6,0,0" Height="30"/>
-        </Grid>
-      </ListBoxItem>
-    </ListBox>
-
+    <ListBox x:Name="LayerSelect" Height="135" Width="110" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,9.8" Grid.ColumnSpan="3" SelectedIndex="0" SelectionChanged="LayerSelect_SelectionChanged" />
 
   </Grid>
 </UserControl>

@@ -12,8 +12,8 @@ namespace SM3E
   public enum ScrollColor: byte
   {
     Red = 0x00,
-    Green = 0x01,
-    Blue = 0x02,
+    Blue = 0x01,
+    Green = 0x02,
     Unchanged = 0x03,
     None = 0xFF
   }

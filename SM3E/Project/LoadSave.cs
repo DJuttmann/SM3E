@@ -79,6 +79,8 @@ namespace SM3E
       EnemyTypeListChanged?.Invoke (this, new ListLoadEventArgs (0));
       SelectEnemyType (0);
       ScrollColorListChanged?.Invoke (this, new ListLoadEventArgs (0));
+      TileIndex = 0;
+      BtsType = 0;
     }
 
 

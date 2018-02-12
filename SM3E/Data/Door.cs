@@ -185,6 +185,15 @@ namespace SM3E
     }
 
 
+    public void SetAreaTransitionBit (bool isAreaTransition)
+    {
+      if (isAreaTransition)
+        Bitflag |= 0x40;
+      else
+        Bitflag &= 0xBF;
+    }
+
+
     public void SetDirection (int direction)
     {
       if (direction < 4)

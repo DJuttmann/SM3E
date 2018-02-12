@@ -1257,11 +1257,12 @@ namespace SM3E
     {
       if (ActiveDoor == null)
         return;
-      if (areaIndex >= 0 && areaIndex < AreaCount && 
+      if (areaIndex >= 0 && areaIndex < AreaCount &&
           roomIndex >= 0 && roomIndex < Rooms [areaIndex].Count)
         ActiveDoor.MyTargetRoom = (Room) Rooms [areaIndex] [roomIndex];
       else
         ActiveDoor.MyTargetRoom = null;
+      ActiveDoor.SetAreaTransitionBit (areaIndex != AreaIndex);
       ActiveDoor.ScreenX = (byte) screenX;
       ActiveDoor.ScreenY = (byte) screenY;
       ActiveDoor.DoorCapX = (byte) doorCapX;

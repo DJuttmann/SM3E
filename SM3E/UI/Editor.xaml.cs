@@ -38,6 +38,7 @@ namespace SM3E.UI
       InitializeComponent();
 
       SetupLevelData ();
+      SetupLayerSelect ();
     }
 
 
@@ -69,6 +70,35 @@ namespace SM3E.UI
 
 //========================================================================================
 // Setup & Updating
+
+    
+    private void SetupLayerSelect ()
+    {
+      LayerSelect.Items.Clear ();
+      LayerSelect.Items.Add (CreateLayerItem ("Foreground", LayerForegroundCheckBox_Click));
+      LayerSelect.Items.Add (CreateLayerItem ("BTS", LayerBtsCheckBox_Click));
+      LayerSelect.Items.Add (CreateLayerItem ("Background", LayerBackgroundCheckBox_Click));
+      LayerSelect.Items.Add (CreateLayerItem ("PLMs", LayerPlmsCheckBox_Click));
+      LayerSelect.Items.Add (CreateLayerItem ("Enemies", LayerEnemiesCheckBox_Click));
+      LayerSelect.Items.Add (CreateLayerItem ("Scrolls", LayerScrollsCheckBox_Click));
+      LayerSelect.Items.Add (CreateLayerItem ("Effects", LayerEffectsCheckBox_Click));
+      LayerSelect.SelectedIndex = 0;
+    }
+
+
+    private Grid CreateLayerItem (string text, RoutedEventHandler handler)
+    {
+      Grid g = new Grid ();
+      g.HorizontalAlignment = HorizontalAlignment.Stretch;
+      g.VerticalAlignment = VerticalAlignment.Stretch;
+      CheckBox c = new CheckBox () {VerticalAlignment = VerticalAlignment.Center,
+                                    IsChecked = true};
+      c.Click += handler;
+      g.Children.Add (c);
+      g.Children.Add (new Label () {Content = text,
+                                    Margin = new Thickness (20, -5, 0, -3)});
+      return g;
+    }
 
 
     private void SetupLevelData ()
@@ -326,7 +356,7 @@ namespace SM3E.UI
 
     private void LayerForegroundCheckBox_Click (object sender, RoutedEventArgs e)
     {
-      MainProject.ForegroundVisible = LayerForegroundCheckBox.IsChecked ?? false;
+      MainProject.ForegroundVisible = ((CheckBox) sender).IsChecked ?? false;
       MainRenderer.InvalidateAll ();
       LevelData.ReloadVisibleTiles ();
     }
@@ -334,7 +364,7 @@ namespace SM3E.UI
 
     private void LayerBtsCheckBox_Click (object sender, RoutedEventArgs e)
     {
-      MainProject.BtsVisible = LayerBtsCheckBox.IsChecked ?? false;
+      MainProject.BtsVisible = ((CheckBox) sender).IsChecked ?? false;
       MainRenderer.InvalidateAll ();
       LevelData.ReloadVisibleTiles ();
     }
@@ -342,7 +372,7 @@ namespace SM3E.UI
 
     private void LayerBackgroundCheckBox_Click (object sender, RoutedEventArgs e)
     {
-      MainProject.BackgroundVisible = LayerBackgroundCheckBox.IsChecked ?? false;
+      MainProject.BackgroundVisible = ((CheckBox) sender).IsChecked ?? false;
       MainRenderer.InvalidateAll ();
       LevelData.ReloadVisibleTiles ();
     }
@@ -350,7 +380,7 @@ namespace SM3E.UI
 
     private void LayerPlmsCheckBox_Click (object sender, RoutedEventArgs e)
     {
-      MainProject.PlmsVisible = LayerPlmsCheckBox.IsChecked ?? false;
+      MainProject.PlmsVisible = ((CheckBox) sender).IsChecked ?? false;
       MainRenderer.InvalidateAll ();
       LevelData.ReloadVisibleTiles ();
     }
@@ -358,7 +388,7 @@ namespace SM3E.UI
 
     private void LayerEnemiesCheckBox_Click (object sender, RoutedEventArgs e)
     {
-      MainProject.EnemiesVisible = LayerEnemiesCheckBox.IsChecked ?? false;
+      MainProject.EnemiesVisible = ((CheckBox) sender).IsChecked ?? false;
       MainRenderer.InvalidateAll ();
       LevelData.ReloadVisibleTiles ();
     }
@@ -366,7 +396,7 @@ namespace SM3E.UI
 
     private void LayerScrollsCheckBox_Click (object sender, RoutedEventArgs e)
     {
-      MainProject.ScrollsVisible = LayerScrollsCheckBox.IsChecked ?? false;
+      MainProject.ScrollsVisible = ((CheckBox) sender).IsChecked ?? false;
       MainRenderer.InvalidateAll ();
       LevelData.ReloadVisibleTiles ();
     }
@@ -374,7 +404,7 @@ namespace SM3E.UI
 
     private void LayerEffectsCheckBox_Click (object sender, RoutedEventArgs e)
     {
-      MainProject.EffectsVisible = LayerEffectsCheckBox.IsChecked ?? false;
+      MainProject.EffectsVisible = ((CheckBox) sender).IsChecked ?? false;
       MainRenderer.InvalidateAll ();
       LevelData.ReloadVisibleTiles ();
     }
@@ -394,26 +424,36 @@ namespace SM3E.UI
       case 1: // Edit
         if (LayerSelect.SelectedIndex == 3) // Plm layer
         {
-          if (MainProject.SelectPlmAt (e.TileClickX, e.TileClickY) &&
-              e.Button == MouseButton.Left)
-          {
-            DraggingPlm = true;
+          DraggingPlm = false;
+          if (e.Button == MouseButton.Right &&
+              MainProject.SelectPlmAt (e.TileClickX, e.TileClickY))
             UpdateLevelDataMarker ();
+          if (e.Button == MouseButton.Left)
+          {
+            MainProject.GetPlmPosition (out int x, out int y, 
+                                        out int width, out int height);
+            if (e.TileClickX >= x && e.TileClickX < x + width &&
+                e.TileClickY >= y && e.TileClickY < y + height)
+              DraggingPlm = true;
           }
-          else
-            DraggingPlm = false;
         }
         
         else if (LayerSelect.SelectedIndex == 4) // Enemy layer
         {
-          if (MainProject.SelectEnemyAt (e.ClickX * 16, e.ClickY * 16) &&
-              e.Button == MouseButton.Left)
-          {
-            DraggingEnemy = true;
+          DraggingEnemy = false;
+          if (e.Button == MouseButton.Right &&
+              MainProject.SelectEnemyAt (e.ClickX * 16, e.ClickY * 16))
             UpdateLevelDataMarker ();
+          if (e.Button == MouseButton.Left)
+          {
+            MainProject.GetEnemyPosition (out double x, out double y, 
+                                          out double width, out double height);
+            width /= 2;
+            height /= 2;
+            if (e.ClickX >= x - width && e.ClickX < x + width &&
+                e.ClickY >= y - height && e.ClickY < y + height)
+              DraggingEnemy = true;
           }
-          else
-            DraggingEnemy = false;
         }
 
         break;

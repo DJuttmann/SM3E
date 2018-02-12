@@ -28,7 +28,7 @@ namespace SM3E
     private TileSet ActiveTileSet
     {
       get {return TileSetIndex != IndexNone ? (TileSet) TileSets [TileSetIndex]
-                                            : (TileSet) TileSets [0];}
+                                            : null;}
     }
 
     private LevelData ActiveLevelData
@@ -66,7 +66,7 @@ namespace SM3E
     public int ScrollColorIndex {get; private set;} = IndexNone;
     public int TileSetIndex
     {
-      get {return ActiveRoomState?.TileSet ?? 0;}
+      get {return ActiveRoomState?.TileSet ?? -1;}
     }
 
 
