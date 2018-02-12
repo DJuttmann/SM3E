@@ -14,7 +14,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class LevelData: Data, ICompressed
+  class LevelData: Data, ICompressed, IReusable
   {
     int ScreenCount;
 
@@ -40,6 +40,8 @@ namespace SM3E
     {
       get {return Layer2.Count > 0;}
     }
+
+    public int ReferenceCount {get {return MyRoomStates.Count;}}
 
 
     // Constructor.

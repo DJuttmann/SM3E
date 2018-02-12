@@ -63,7 +63,7 @@ namespace SM3E
 
     // Draw a tile from the tilemap on a tile sheet.
     public void DrawTile (byte [] image, int width, int height,
-                          CompressedPalette p, int paletteRow,
+                          Palette p, int paletteRow,
                           int posX, int posY,
                           int tileIndex, bool hFlip, bool vFlip)
     {

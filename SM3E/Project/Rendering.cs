@@ -34,6 +34,7 @@ namespace SM3E
     public List <BlitImage> BtsTilesSmall = new List <BlitImage> ();
     public List <BlitImage> MapTiles = new List <BlitImage> ();
     public BlitImage MapTileSheet;
+    public BlitImage BackgroundImage;
 
     public bool ForegroundVisible = true;
     public bool BtsVisible        = true;
@@ -198,6 +199,19 @@ namespace SM3E
     }
 
 
+    // Render background for current room
+    private void LoadBackground ()
+    {
+      if (ActiveBackground?.MyBackgroundTiles != null)
+      {
+        byte [] image = ActiveBackground.MyBackgroundTiles.Render (ActiveTileSet);
+        BackgroundImage = new BlitImage (image, 256);
+      }
+      else
+        BackgroundImage = null;
+    }
+
+
 //----------------------------------------------------------------------------------------
 
     
@@ -212,10 +226,12 @@ namespace SM3E
         ActiveRoom = (Room) Rooms [areaIndex] [roomIndex];
         ActiveRoomState = ActiveRoom.RoomStates.Last ();
         LoadRoomTiles (ActiveRoomState.TileSet);
+        LoadBackground ();
         RenderScreen (screenImage, x, y);
         ActiveRoom = a.ActiveRoom;
         ActiveRoomState = a.ActiveRoomState;
         LoadRoomTiles (ActiveRoomState.TileSet);
+        LoadBackground ();
       }
       else
       {
@@ -230,11 +246,17 @@ namespace SM3E
       int rowMin = y * 16;
       int colMin = x * 16;
       bool HasLayer2 = ActiveLevelData?.HasLayer2 ?? false;
+      bool HasBackground = ActiveBackground?.MyBackgroundTiles != null;
 
       screenImage.Black ();
 
-      if (BackgroundVisible && HasLayer2)
-        RenderSceenLayer2 (screenImage, rowMin, colMin);
+      if (BackgroundVisible)
+      {
+        if (BackgroundImage != null)
+          RenderSceenBackground (screenImage);
+        else if (HasLayer2)
+          RenderSceenLayer2 (screenImage, rowMin, colMin);
+      }
       if (ForegroundVisible)
         RenderSceenLayer1 (screenImage, rowMin, colMin);
       if (PlmsVisible)
@@ -249,6 +271,13 @@ namespace SM3E
         RenderScrollModification (screenImage, x, y);
       }
       return true;
+    }
+
+
+    // Renders background for a room.
+    private void RenderSceenBackground (BlitImage screenImage)
+    {
+      screenImage.Blit (BackgroundImage, 0, 0, false, false);
     }
 
 

@@ -222,6 +222,8 @@ namespace SM3E
     public LevelData MyLevelData;
     public EnemySet MyEnemySet;
     public EnemyGfx MyEnemyGfx;
+    public Asm MySetupAsm;
+    public Asm MyMainAsm;
     public Room MyRoom;
 
     public override int Size
@@ -360,7 +362,9 @@ namespace SM3E
                          List <Data> Fxs,
                          List <Data> LevelDatas,
                          List <Data> EnemySets,
-                         List <Data> EnemyGfxs)
+                         List <Data> EnemyGfxs,
+                         List <Data> SetupAsms,
+                         List <Data> MainAsms)
     {
       bool success = true;
       if (PlmSetPtr >= 0x8F8000) {
@@ -388,6 +392,22 @@ namespace SM3E
         MyFx = (Fx) Fxs.Find (x => x.StartAddressLR == FxPtr);
         if (MyFx != null)
           MyFx.MyRoomStates.Add (this);
+        else
+          success = false;
+      }
+      if (SetupAsmPtr >= 0x8F8000)
+      {
+        MySetupAsm = (Asm) SetupAsms.Find (x => x.StartAddressLR == SetupAsmPtr);
+        if (MySetupAsm != null)
+          MySetupAsm.MyReferringData.Add (this);
+        else
+          success = false;
+      }
+      if (MainAsmPtr >= 0x8F8000)
+      {
+        MyMainAsm = (Asm) MainAsms.Find (x => x.StartAddressLR == MainAsmPtr);
+        if (MyMainAsm != null)
+          MyMainAsm.MyReferringData.Add (this);
         else
           success = false;
       }

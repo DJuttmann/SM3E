@@ -14,11 +14,13 @@ namespace SM3E
 //========================================================================================
 
 
-  class Background: Data
+  class Background: Data, IReusable
   {
     public const int TerminatorSize = 2;
 
     public List <byte> Bytes;
+
+    public BackgroundTiles MyBackgroundTiles;
 
     public HashSet <RoomState> MyRoomStates;
 
@@ -26,6 +28,8 @@ namespace SM3E
     {
       get {return Bytes.Count + TerminatorSize;}
     }
+
+    public int ReferenceCount {get {return MyRoomStates.Count;}}
 
 
     // Constructor.
@@ -39,6 +43,7 @@ namespace SM3E
     // Read data from ROM at given PC address.
     public override bool ReadFromROM (Rom rom, int addressPC)
     {
+      int TilesPtr = 0;
       byte [] b = new byte [11];
       rom.Seek (addressPC);
       if (!rom.Read (b, 0, 2))
@@ -75,9 +80,16 @@ namespace SM3E
           return false;
         for (int i = 0; i < blockSize; i++)
           Bytes.Add (b [i]);
+        if (blockSize == 7)
+          TilesPtr = Tools.ConcatBytes (b [2], b [3], b [4]);
         totalSize += blockSize;
         if (!rom.Read (b, 0, 2))
           return false;
+      }
+      if (TilesPtr != 0)
+      {
+        MyBackgroundTiles = new BackgroundTiles ();
+        MyBackgroundTiles.ReadFromROM (rom, Tools.LRtoPC (TilesPtr));
       }
       startAddressPC = addressPC;
       return true;
@@ -108,11 +120,105 @@ namespace SM3E
 
 
 //========================================================================================
+// CLASS BACKGROUND TILES
+//========================================================================================
+
+
+  class BackgroundTiles: RawData
+  {
+    protected List <byte> CompressedData;
+    protected bool CompressionUpToDate = false;
+    
+
+    // Constructor.
+    public BackgroundTiles (): base ()
+    {
+      CompressedData = new List <byte> ();
+      startAddressPC = 0;
+    }
+
+
+    // Read data from ROM at given PC address.
+    public override bool ReadFromROM (Rom rom, int addressPC)
+    {
+
+      rom.Seek (addressPC);
+      int compressedSize = rom.Decompress (out Bytes);
+      CompressedData.Clear ();
+      rom.Seek (addressPC);
+      rom.Read (CompressedData, compressedSize);
+      CompressionUpToDate = true;
+
+      return true;
+    }
+
+//----------------------------------------------------------------------------------------
+
+    public int GetTile (int x, int y)
+    {
+      int index = 32 * y + x;
+      index *= 2;
+      if (index < Bytes.Count)
+        return (Bytes [index] + Bytes [index + 1] * 256) & 1023;
+      return 0;
+    }
+
+
+    public void GetData (int x, int y, out int tile, out int paletteRow,
+                                      out bool hFlip, out bool vFlip)
+    {
+      int index = 64 * y + 2 * x;
+      if (index < Bytes.Count)
+      {
+        int value = Tools.ConcatBytes (Bytes [index], Bytes [index + 1]);
+        tile = value & 1023;
+        paletteRow = (value >> 10) & 0xF;
+        hFlip = (value & 0x4000) > 0;
+        vFlip = (value & 0x8000) > 0;
+      }
+      else
+      {
+        tile = 0;
+        paletteRow = 0;
+        hFlip = false;
+        vFlip = false;
+      }
+    }
+
+
+    public byte [] Render (TileSet activeTileSet)
+    {
+      TileSheet cre = activeTileSet.MyCreSheet;
+      TileSheet sce = activeTileSet.MySceSheet;
+      Palette p = activeTileSet.MyPalette;
+      int firstCreTileIndex = 0x280;
+
+      byte [] image = new byte [256 * 256 * 4];
+      for (int y = 0; y < 32; y++)
+      {
+        for (int x = 0; x < 32; x++)
+        {
+          GetData (x, y, out int tile, out int row, out bool hFlip, out bool vFlip);
+          // int tile = GetTile (x, y);
+          if (tile < firstCreTileIndex)
+            sce.DrawTile (image, 256, 256, p, row, 8 * x, 8 * y,
+                          tile, hFlip, vFlip);
+          else
+            cre.DrawTile (image, 256, 256, p, row, 8 * x, 8 * y,
+                          tile - firstCreTileIndex, hFlip, vFlip);
+        }
+      }
+      return image;
+    }
+  }
+
+
+//========================================================================================
 // CLASS FX 
 //========================================================================================
 
 
-  class Fx: Data, IRepointable
+  class Fx: Data, IRepointable, IReusable
   {
     public const int DefaultSize = 16;
     public const int NullSize = 2;
@@ -139,6 +245,8 @@ namespace SM3E
     {
       get {return NotNull ? DefaultSize : NullSize;}
     }
+    
+    public int ReferenceCount {get {return MyRoomStates.Count;}}
 
 
     // Constructor.

@@ -140,7 +140,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class PlmSet: Data, IRepointable
+  class PlmSet: Data, IRepointable, IReusable
   {
     public const int TerminatorSize = 2;
     private const int Terminator = 0;
@@ -157,6 +157,8 @@ namespace SM3E
     {
       get {return Plms.Count;}
     }
+
+    public int ReferenceCount {get {return MyRoomStates.Count;}}
 
 
     // Constructor.

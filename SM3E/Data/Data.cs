@@ -70,10 +70,17 @@ namespace SM3E
   }
 
 
-  // Interface fro data classes that are stored in compressed format on the rom.
+  // Interface for data classes that are stored in compressed format on the rom.
   interface ICompressed
   {
     bool Compress ();
+  }
+
+
+  // Interface for data classes that may be referenced by multiple other data classes.
+  interface IReusable
+  {
+    int ReferenceCount {get;}
   }
 
 

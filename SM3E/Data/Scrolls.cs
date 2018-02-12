@@ -30,7 +30,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class ScrollSet: RawData, IScrollData
+  class ScrollSet: RawData, IScrollData, IReusable
   {
     public const int AllBlue = 0x8F0000;
     public const int AllGreen = 0x8F0001;
@@ -56,6 +56,8 @@ namespace SM3E
         }
       }
     }
+
+    public int ReferenceCount {get {return MyRoomStates.Count;}}
 
 
     // Constructor

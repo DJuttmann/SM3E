@@ -51,6 +51,11 @@ namespace SM3E
       get {return AreaIndex != IndexNone ? (AreaMap) AreaMaps [AreaIndex] : null;}
     }
 
+    private Background ActiveBackground
+    {
+      get {return ActiveRoomState?.MyBackground;}
+    }
+
 
     // Indices of selected items.
     public int AreaIndex {get; private set;} = IndexNone;
@@ -90,6 +95,7 @@ namespace SM3E
       public EnemyType ActiveEnemyType;
       public IScrollData ActiveScrollData;
       public ScrollColor ActiveScrollColor;
+      public Background ActiveBackground;
 
       public ActiveItems (Project p)
       {
@@ -106,6 +112,7 @@ namespace SM3E
         ActiveEnemyType = p.ActiveEnemyType;
         ActiveScrollData = p.ActiveScrollData;
         ActiveScrollColor = p.ActiveScrollColor;
+        ActiveBackground = p.ActiveBackground;
       }
     }
 
@@ -277,6 +284,8 @@ namespace SM3E
     // [wip] Order the statements according to call hierarchy?
     private void RaiseChangeEvents (ActiveItems a)
     {
+      if (a.ActiveTileSet != ActiveTileSet || a.ActiveBackground != ActiveBackground)
+        LoadBackground ();
       if (a.ActiveTileSet != ActiveTileSet)
       {
         LoadRoomTiles (TileSetIndex);

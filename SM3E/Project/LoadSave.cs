@@ -310,7 +310,8 @@ namespace SM3E
         ((Door) Doors [n]).Connect (AllRooms, ScrollAsms);
       for (int n = 0; n < RoomStates.Count; n++)
         ((RoomState) RoomStates [n]).Connect (PlmSets, ScrollSets, Backgrounds, Fxs, 
-                                LevelDatas, EnemySets, EnemyGfxs);
+                                              LevelDatas, EnemySets, EnemyGfxs,
+                                              SetupAsms, MainAsms);
       for (int n = 0; n < PlmSets.Count; n++)
         ((PlmSet) PlmSets [n]).Connect (ScrollPlmDatas, PlmTypes);
       for (int n = 0; n < Fxs.Count; n++)

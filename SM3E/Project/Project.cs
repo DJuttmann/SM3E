@@ -665,20 +665,6 @@ namespace SM3E
             break;
           }
         }
-        /*
-        if (ActivePlmSet != null)
-        {
-          foreach (Plm p in ActivePlmSet.Plms)
-            if (p.MyScrollPlmData != null)
-              names.Add ("PLM (" + p.PosX + "," + p.PosY + ")");
-        }
-
-        if (ActiveRoom != null)
-        {
-          foreach (Door d in ActiveRoom.MyIncomingDoors)
-            if (d.MyScrollAsm != null)
-              names.Add ("ASM (" + d.ScreenX + "," + d.ScreenY + ")");
-        }*/
         return names;
       }
     }
@@ -689,6 +675,89 @@ namespace SM3E
       get
       {
         return new List <string> (new [] {"Red", "Green", "Blue", "Unchanged"});
+      }
+    }
+
+
+    // List of Room state pointer names
+    public List <string> PointerNames
+    {
+      get
+      {
+        List <string> names = new List <string> ();
+
+        if (ActiveRoomState?.MyLevelData != null)
+          names.Add ("Data $" + Tools.IntToHex (LevelDataPtr));
+        else
+          names.Add (String.Empty);
+
+        if (ActiveRoomState?.MyScrollSet != null)
+          names.Add ("Data $" + Tools.IntToHex (RoomScrollsPtr));
+        else if (RoomScrollsPtr == ScrollSet.AllBlue)
+          names.Add ("All blue");
+        else if (RoomScrollsPtr == ScrollSet.AllGreen)
+          names.Add ("All green");
+        else
+          names.Add ("[unknown]");
+
+        if (ActiveRoomState?.MyPlmSet != null)
+          names.Add ("Data $" + Tools.IntToHex (PlmSetPtr));
+        else
+          names.Add (String.Empty);
+
+        if (ActiveRoomState?.MyEnemySet != null)
+          names.Add ("Data $" + Tools.IntToHex (EnemySetPtr));
+        else
+          names.Add (String.Empty);
+
+        if (ActiveRoomState?.MyEnemyGfx != null)
+          names.Add ("Data $" + Tools.IntToHex (EnemyGfxPtr));
+        else
+          names.Add (String.Empty);
+
+        if (ActiveRoomState?.MyBackground != null)
+          names.Add (Tools.IntToHex (ActiveRoomState.MyBackground.StartAddressPC));
+        else if (ActiveRoomState?.MyLevelData?.HasLayer2 ?? false)
+          names.Add ("Layer 2");
+        else
+          names.Add (String.Empty);
+
+        if (ActiveRoomState?.MyFx != null)
+          names.Add ("Data $" + Tools.IntToHex (FxPtr));
+        else
+          names.Add (String.Empty);
+
+        if (ActiveRoomState?.MySetupAsm != null)
+          names.Add (ActiveRoomState.MySetupAsm.Name);
+        else
+          names.Add (String.Empty);
+
+        if (ActiveRoomState?.MyMainAsm != null)
+          names.Add (ActiveRoomState.MyMainAsm.Name);
+        else
+          names.Add (String.Empty);
+
+        return names;
+      }
+    }
+
+
+    // List of Room state pointer reference counts
+    public int [] PointerReferenceCounts
+    {
+      get
+      {
+        return new int [] { 
+          ActiveLevelData?.ReferenceCount ?? 0,
+          ActiveRoomState?.MyScrollSet?.ReferenceCount ?? 0,
+          ActivePlmSet?.ReferenceCount ?? 0,
+          ActiveEnemySet?.ReferenceCount ?? 0,
+          ActiveRoomState?.MyEnemyGfx?.ReferenceCount ?? 0,
+          ActiveRoomState?.MyBackground?.ReferenceCount ?? 0,
+          ActiveRoomState?.MyFx?.ReferenceCount ?? 0,
+          ActiveRoomState?.MySetupAsm?.ReferenceCount ?? 0,
+          ActiveRoomState?.MyMainAsm?.ReferenceCount ?? 0,
+          };
       }
     }
 

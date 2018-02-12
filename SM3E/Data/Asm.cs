@@ -14,9 +14,13 @@ namespace SM3E
 //========================================================================================
 
 
-  class Asm: RawData
+  class Asm: RawData, IReusable
   {
     public string Name;
+
+    public HashSet <Data> MyReferringData;
+    
+    public int ReferenceCount {get {return MyReferringData.Count;}}
 
 
     public int EndAddressPC
@@ -29,6 +33,11 @@ namespace SM3E
       }
     }
 
+
+    public Asm ()
+    {
+      MyReferringData = new HashSet <Data> ();
+    }
   } // class Asm
 
 }

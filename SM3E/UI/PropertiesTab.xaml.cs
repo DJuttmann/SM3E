@@ -95,6 +95,29 @@ namespace SM3E.UI
       StatePlayIndexInput.Text = Tools.IntToHex (MainProject.PlayIndex, 2);
       StateBgScrollingInput.Text = Tools.IntToHex (MainProject.BackgroundScrolling, 4);
 
+      List <string> names = MainProject.PointerNames;
+      LavelDataPtrInput.Text = names [0];
+      ScrollsPtrInput.Text = names [1];
+      PlmSetPtrInput.Text = names [2];
+      EnemySetPtrInput.Text = names [3];
+      EnemyGfxPtrInput.Text = names [4];
+      BackgroundInput.Text = names [5];
+      FxPtrInput.Text = names [6];
+      SetupAsmPtrInput.Text = names [7];
+      MainAsmPtrInput.Text = names [8];
+
+      int [] refCounts = MainProject.PointerReferenceCounts;
+      LavelDataRefCount.Content = refCounts [0];
+      ScrollsRefCount.Content = refCounts [1];
+      PlmSetRefCount.Content = refCounts [2];
+      EnemySetRefCount.Content = refCounts [3];
+      EnemyGfxRefCount.Content = refCounts [4];
+      BackgroundRefCount.Content = refCounts [5];
+      FxRefCount.Content = refCounts [6];
+      SetupAsmRefCount.Content = refCounts [7];
+      MainAsmRefCount.Content = refCounts [8];
+
+      /*
       LavelDataPtrInput.Text = Tools.IntToHex (MainProject.LevelDataPtr, 6);
       ScrollsPtrInput.Text = Tools.IntToHex (MainProject.RoomScrollsPtr, 6);
       PlmSetPtrInput.Text = Tools.IntToHex (MainProject.PlmSetPtr, 6);
@@ -104,6 +127,7 @@ namespace SM3E.UI
       FxPtrInput.Text = Tools.IntToHex (MainProject.FxPtr, 6);
       SetupAsmPtrInput.Text = Tools.IntToHex (MainProject.SetupAsmPtr, 6);
       MainAsmPtrInput.Text = Tools.IntToHex (MainProject.MainAsmPtr, 6);
+      */
     }
 
 

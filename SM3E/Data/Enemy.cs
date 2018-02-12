@@ -126,7 +126,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class EnemySet: Data
+  class EnemySet: Data, IReusable
   {
     public const int TerminatorSize = 3;
     public const byte TerminatorByte = 0xFF;
@@ -145,6 +145,8 @@ namespace SM3E
     {
       get {return Enemies.Count;}
     }
+
+    public int ReferenceCount {get {return MyRoomStates.Count;}}
 
 
     // Constructor.
@@ -246,7 +248,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class EnemyGfx: Data
+  class EnemyGfx: Data, IReusable
   {
     public const int BlockSize = 4;
     public const int TerminatorSize = 2;
@@ -267,6 +269,8 @@ namespace SM3E
     {
       get {return EnemyIDs.Count;}
     }
+
+    public int ReferenceCount {get {return MyRoomStates.Count;}}
 
 
     // Constructor.
