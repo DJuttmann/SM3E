@@ -27,6 +27,7 @@ namespace SM3E
     public event ListLoadEventHandler EnemyTypeListChanged;
     public event ListLoadEventHandler ScrollDataListChanged;
     public event ListLoadEventHandler ScrollColorListChanged;
+    public event ListLoadEventHandler TileSetListChanged;
     
     // New active area/room/state/... selected.
     public event EventHandler AreaSelected;

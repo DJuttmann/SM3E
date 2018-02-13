@@ -41,6 +41,7 @@ namespace SM3E.UI
       MainProject = p;
 
       MainProject.AreaListChanged += LoadRoomAreaSelect;
+      MainProject.TileSetListChanged += LoadTileSetSelect;
       MainProject.AreaSelected += UpdateRoomSizeEditor;
       MainProject.RoomSelected += LoadRoomData;
       MainProject.RoomStateSelected += LoadRoomStateData;
@@ -94,6 +95,7 @@ namespace SM3E.UI
       StateSongeSetInput.Text = Tools.IntToHex (MainProject.SongSet, 2);
       StatePlayIndexInput.Text = Tools.IntToHex (MainProject.PlayIndex, 2);
       StateBgScrollingInput.Text = Tools.IntToHex (MainProject.BackgroundScrolling, 4);
+      StateTileSetInput.SelectedIndex = MainProject.TileSetIndex;
 
       List <string> names = MainProject.PointerNames;
       LavelDataPtrInput.Text = names [0];
@@ -137,6 +139,15 @@ namespace SM3E.UI
       for (int n = 0; n < 8; n++)
         RoomAreaSelect.Items [n] = names [n];
     }
+
+
+
+    private void LoadTileSetSelect (object sender, ListLoadEventArgs e)
+    {
+      List <string> names = MainProject.TileSetNames;
+      StateTileSetInput.ItemsSource = names;
+    }
+
 
 
 //========================================================================================
@@ -194,6 +205,12 @@ namespace SM3E.UI
     private void StateBgScrollingInput_Update (object sender, RoutedEventArgs e)
     {
       MainProject.BackgroundScrolling = Tools.HexToInt (StateBgScrollingInput.Text);
+    }
+
+
+    private void StateTileSetInput_Update (object sender, SelectionChangedEventArgs e)
+    {
+      MainProject.RoomStateTileSet = StateTileSetInput.SelectedIndex;
     }
 
 //----------------------------------------------------------------------------------------

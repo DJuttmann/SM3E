@@ -79,7 +79,7 @@
       <Label Grid.Row="9" Margin="0,-3,0,-3" Content="Bg Scrolling" HorizontalAlignment="Left"/>
       <TextBox x:Name="StateBgScrollingInput" Grid.Row="9" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$0000" LostFocus="StateBgScrollingInput_Update"/>
       <Label Grid.Row="9" Grid.Column="2" Margin="0,-3,0,-3" Content="Tileset" HorizontalAlignment="Left"/>
-      <ComboBox x:Name="StateTileSetInput" Grid.Row="9" Grid.Column="2" Margin="75,1,0,1" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$0000"/>
+      <ComboBox x:Name="StateTileSetInput" Grid.Row="9" Grid.Column="2" Margin="75,1,0,1" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$0000" SelectionChanged="StateTileSetInput_Update"/>
     </Grid>
     
     <!-- POINTERS -->

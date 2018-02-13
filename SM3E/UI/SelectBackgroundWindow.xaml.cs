@@ -41,6 +41,7 @@ namespace SM3E.UI
       else
       {
         BackgroundSelect.SelectedIndex = MyProject.BackgroundIndex;
+        BackgroundSelect.ScrollIntoView (BackgroundSelect.SelectedItem);
       }
     }
 

@@ -1,0 +1,28 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:SM3E.UI">
+  <Style TargetType="ListBoxItem">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate>
+          <Grid HorizontalAlignment="Stretch" Height="18" Background="Transparent">
+            <ContentPresenter Content="{Binding}" Margin="4,0,4,0"/>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+    <Style.Triggers>
+      <Trigger Property="IsSelected" Value="True">
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate>
+              <Grid HorizontalAlignment="Stretch" Height="18" Background="#40C0C0">
+                <ContentPresenter Content="{Binding}" Margin="4,0,4,0"/>
+              </Grid>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+</ResourceDictionary>

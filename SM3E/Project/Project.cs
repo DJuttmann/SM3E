@@ -415,6 +415,29 @@ namespace SM3E
       }
     }
 
+    public int RoomStateTileSet
+    {
+      set
+      {
+        if (ActiveRoomState != null && value >= 0 && value < TileSets.Count &&
+            value != TileSetIndex)
+        {
+          ActiveRoomState.TileSet = (byte) value;
+          LoadRoomTiles (value);
+          LoadBackground ();
+          RoomStateDataModified?.Invoke (this, null);
+          var e = new LevelDataEventArgs ()
+          {
+            ScreenXmin = 0,
+            ScreenXmax = RoomWidthInScreens - 1,
+            ScreenYmin = 0,
+            ScreenYmax = RoomHeightInScreens - 1
+          };
+          LevelDataModified?.Invoke (this, e);
+        }
+      }
+    }
+
     // Pointers
     public int LevelDataPtr
     {
@@ -679,7 +702,7 @@ namespace SM3E
     }
 
 
-    // List of background names
+    // List of background names.
     public List <string> BackgroundNames
     {
       get
@@ -687,6 +710,19 @@ namespace SM3E
         var names = new List <string> ();
         foreach (Background b in Backgrounds)
           names.Add (Tools.IntToHex (b.StartAddressPC));
+        return names;
+      }
+    }
+
+
+    // List of tileset names.
+    public List <string> TileSetNames
+    {
+      get
+      {
+        var names = new List <string> ();
+        for (int i = 0; i < TileSets.Count; i++)
+          names.Add (Tools.IntToHex (i, 2));
         return names;
       }
     }

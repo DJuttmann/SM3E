@@ -199,7 +199,7 @@ namespace SM3E
     }
 
 
-    // Render background for current room
+    // Render background for current room.
     private void LoadBackground ()
     {
       if (ActiveBackground?.MyBackgroundTiles != null)
@@ -212,6 +212,7 @@ namespace SM3E
     }
 
 
+    // Draw the background and return it as blitimage.
     public BlitImage RenderBackground (int index)
     {
       if (index >= 0 && index < Backgrounds.Count)

@@ -72,6 +72,7 @@ namespace SM3E
       LoadRoomTiles (0); //
 
       // Raise events.
+      TileSetListChanged?.Invoke (this, new ListLoadEventArgs (-1));
       AreaListChanged?.Invoke (this, new ListLoadEventArgs (0));
       SelectArea (0);
       PlmTypeListChanged?.Invoke (this, new ListLoadEventArgs (0));
