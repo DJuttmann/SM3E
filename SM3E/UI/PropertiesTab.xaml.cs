@@ -196,5 +196,15 @@ namespace SM3E.UI
       MainProject.BackgroundScrolling = Tools.HexToInt (StateBgScrollingInput.Text);
     }
 
+//----------------------------------------------------------------------------------------
+
+    private void Background_Click (object sender, RoutedEventArgs e)
+    {
+      var window = new UI.SelectBackgroundWindow (MainProject);
+      window.Owner = Window.GetWindow (this);
+      window.ShowDialog ();
+    }
+
   }
+
 }

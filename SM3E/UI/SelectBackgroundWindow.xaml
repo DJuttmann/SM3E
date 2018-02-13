@@ -1,0 +1,42 @@
+﻿<Window x:Class="SM3E.UI.SelectBackgroundWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SM3E.UI"
+        mc:Ignorable="d"
+        Title="Select Background" Height="300" Width="500">
+  <Grid Background="#C0C0C0">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="1*"/>
+      <ColumnDefinition Width="Auto"/>
+    </Grid.ColumnDefinitions>
+    
+    <!-- SELECT -->
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="8"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="1*"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="8"/>
+      </Grid.RowDefinitions>
+      <CheckBox Grid.Row="1" x:Name="DefaultBgCheck" Content="Use default BG." Margin="8,0,8,0" Click="DefaultBgCheck_Click"/>
+      <ListBox Grid.Row="2" x:Name="BackgroundSelect" Margin="8,0,8,8" SelectionChanged="BackgroundSelect_SelectionChanged"/>
+      <CheckBox Grid.Row="3" x:Name="Layer2Check" Content="Has Layer 2" Margin="8,0,8,0"/>
+      <Grid Grid.Row="4">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="1*"/>
+          <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Button Grid.Column="0" Margin="8,0,4,0" Content="Cancel" Click="Cancel_Click"/>
+        <Button Grid.Column="1" Margin="4,0,8,0" Content="Save" Click="Save_Click"/>
+      </Grid>
+    </Grid>
+
+    <!-- PREVIEW -->
+    <Image x:Name="BackgroundImage" Grid.Column="1" Width="256" Height="256" Margin="8,8,8,8"/>
+  </Grid>
+    
+</Window>

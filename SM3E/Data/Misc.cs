@@ -19,6 +19,7 @@ namespace SM3E
     public const int TerminatorSize = 2;
 
     public List <byte> Bytes;
+    public string Name;
 
     public BackgroundTiles MyBackgroundTiles;
 
@@ -80,7 +81,7 @@ namespace SM3E
           return false;
         for (int i = 0; i < blockSize; i++)
           Bytes.Add (b [i]);
-        if (blockSize == 7)
+        if (blockSize == 7 && addressPC != 0x07B815) // [wip] skip Kraid bg for now
           TilesPtr = Tools.ConcatBytes (b [2], b [3], b [4]);
         totalSize += blockSize;
         if (!rom.Read (b, 0, 2))

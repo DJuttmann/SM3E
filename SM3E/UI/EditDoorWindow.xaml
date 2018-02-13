@@ -8,7 +8,7 @@
         Title="Edit Door" Height="500" Width="550" WindowStartupLocation="CenterOwner">
   
   <!-- MAIN GRID -->
-  <Grid Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Width="Auto" Height="Auto">
+  <Grid Background="#C0C0C0" Width="Auto" Height="Auto">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="1*"/>
       <ColumnDefinition Width="Auto"/>

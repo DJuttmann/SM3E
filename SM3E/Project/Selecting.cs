@@ -73,6 +73,10 @@ namespace SM3E
     {
       get {return ActiveRoomState?.TileSet ?? -1;}
     }
+    public int BackgroundIndex
+    {
+      get {return Backgrounds.FindIndex (x => x == ActiveRoomState?.MyBackground);}
+    }
 
 
 //========================================================================================

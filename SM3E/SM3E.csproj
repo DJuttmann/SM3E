@@ -123,6 +123,9 @@
     <Compile Include="UI\ScrollLayerTab.xaml.cs">
       <DependentUpon>ScrollLayerTab.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\SelectBackgroundWindow.xaml.cs">
+      <DependentUpon>SelectBackgroundWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\TileLayersTab.xaml.cs">
       <DependentUpon>TileLayersTab.xaml</DependentUpon>
     </Compile>
@@ -182,6 +185,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\ScrollLayerTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\SelectBackgroundWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -11,7 +11,7 @@
 
 
   <!-- MAIN GRID -->
-  <Grid Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}">
+  <Grid Background="#C0C0C0">
     <Grid.RowDefinitions>
       <RowDefinition Height="17"/>
       <RowDefinition Height="1*"/>

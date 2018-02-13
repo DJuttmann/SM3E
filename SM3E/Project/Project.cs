@@ -679,6 +679,19 @@ namespace SM3E
     }
 
 
+    // List of background names
+    public List <string> BackgroundNames
+    {
+      get
+      {
+        var names = new List <string> ();
+        foreach (Background b in Backgrounds)
+          names.Add (Tools.IntToHex (b.StartAddressPC));
+        return names;
+      }
+    }
+
+
     // List of Room state pointer names
     public List <string> PointerNames
     {
@@ -1379,6 +1392,52 @@ namespace SM3E
       }
       MapDataModified?.Invoke (this, null);
     }
+
+
+//========================================================================================
+// Background
+
+
+    public void GetBackgroundStatus (out bool HasBackground, out bool HasLayer2)
+    {
+      HasBackground = ActiveRoomState?.MyBackground != null;
+      HasLayer2 = ActiveLevelData?.HasLayer2 ?? false;
+    }
+
+
+    public void SetBackgroundStatus (int backgroundIndex, bool HasLayer2)
+    {
+      if (ActiveRoomState == null)
+        return;
+
+      Background oldBg = ActiveRoomState.MyBackground;
+      if (backgroundIndex >= 0 && backgroundIndex < Backgrounds.Count)
+        ActiveRoomState.MyBackground = (Background) Backgrounds [backgroundIndex];
+      else
+        ActiveRoomState.MyBackground = null;
+      bool backgroundChanged = ActiveRoomState.MyBackground != oldBg;
+      
+      if (HasLayer2 != ActiveLevelData.HasLayer2)
+      {
+        ActiveLevelData.HasLayer2 = HasLayer2;
+        backgroundChanged = true;
+      }
+
+      if (backgroundChanged)
+      {
+        LoadBackground ();
+        var e = new LevelDataEventArgs ()
+        {
+          ScreenXmin = 0,
+          ScreenXmax = RoomWidthInScreens - 1,
+          ScreenYmin = 0,
+          ScreenYmax = RoomHeightInScreens - 1
+        };
+        LevelDataModified?.Invoke (this, e);
+        RoomStateDataModified?.Invoke (this, null);
+      }
+    }
+
 
   } // class Project
 

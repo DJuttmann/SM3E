@@ -212,6 +212,23 @@ namespace SM3E
     }
 
 
+    public BlitImage RenderBackground (int index)
+    {
+      if (index >= 0 && index < Backgrounds.Count)
+      {
+        BackgroundTiles tiles = ((Background) Backgrounds [index]).MyBackgroundTiles;
+        if (tiles != null)
+        {
+          byte [] b = tiles.Render (ActiveTileSet);
+          return new BlitImage (b, 256);
+        }
+      }
+      var image = new BlitImage (256, 256);
+      image.Black ();
+      return image;
+    }
+
+
 //----------------------------------------------------------------------------------------
 
     

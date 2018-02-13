@@ -130,7 +130,7 @@
 
         <Label Grid.Row="5" Margin="0,-3,0,-3" Content="Background" HorizontalAlignment="Left"/>
         <TextBox Grid.Row="5" x:Name="BackgroundInput" Grid.Column="1" Margin="0,2,0,2" HorizontalAlignment="Stretch" Text="$000000" IsReadOnly="True" Background="#FFDFDFDF"/>
-        <Button Grid.Row="5" Grid.Column="2" Content="&#x270F;" HorizontalAlignment="Right" Height="20" Margin="0,0,0,0" VerticalAlignment="Top" Width="20"/>
+        <Button Grid.Row="5" Grid.Column="2" Content="&#x270F;" HorizontalAlignment="Right" Height="20" Margin="0,0,0,0" VerticalAlignment="Top" Width="20" Click="Background_Click"/>
         <Label Grid.Row="5" x:Name="BackgroundRefCount" Grid.Column="3" Margin="0,-3,0,-3" Content="0" HorizontalAlignment="Left"/>
 
         <Label Grid.Row="6" Margin="0,-3,0,-3" Content="Effects" HorizontalAlignment="Left"/>

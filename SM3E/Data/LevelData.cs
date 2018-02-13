@@ -39,6 +39,18 @@ namespace SM3E
     public bool HasLayer2
     {
       get {return Layer2.Count > 0;}
+      set
+      {
+        if (value == false)
+          Layer2.Clear ();
+        else
+        {
+          Layer2 = new List <ushort> ();
+          Layer2.Capacity = Layer1.Count;
+          for (int i = 0; i < Layer1.Count; i++)
+            Layer2.Add (0x80);
+        }
+      }
     }
 
     public int ReferenceCount {get {return MyRoomStates.Count;}}
