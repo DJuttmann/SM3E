@@ -347,9 +347,12 @@ namespace SM3E.UI
 
     private void LevelDataModified (object sender, LevelDataEventArgs e)
     {
-      for (int x = e.ScreenXmin; x <= e.ScreenXmax; x++)
-        for (int y = e.ScreenYmin; y <= e.ScreenYmax; y++)
-          MainRenderer.InvalidateScreen (x, y);
+      if (e.AllScreens)
+        MainRenderer.InvalidateAll ();
+      else
+        for (int x = e.ScreenXmin; x <= e.ScreenXmax; x++)
+          for (int y = e.ScreenYmin; y <= e.ScreenYmax; y++)
+            MainRenderer.InvalidateScreen (x, y);
       LevelData.ReloadVisibleTiles ();
     }
 

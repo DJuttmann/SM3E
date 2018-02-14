@@ -77,6 +77,14 @@ namespace SM3E
     {
       get {return Backgrounds.FindIndex (x => x == ActiveRoomState?.MyBackground);}
     }
+    public int SetupAsmIndex
+    {
+      get {return SetupAsms.FindIndex (x => x == ActiveRoomState?.MySetupAsm);}
+    }
+    public int MainAsmIndex
+    {
+      get {return MainAsms.FindIndex (x => x == ActiveRoomState?.MyMainAsm);}
+    }
 
 
 //========================================================================================
@@ -424,7 +432,7 @@ namespace SM3E
 
     private void ForceSelectPlm (int index)
     {
-      if (ActiveRoomState != null && index >= 0 &&
+      if (ActiveRoomState?.MyPlmSet != null && index >= 0 &&
           index < ActiveRoomState.MyPlmSet.PlmCount)
       {
         PlmIndex = index;
@@ -457,7 +465,7 @@ namespace SM3E
 
     private void ForceSelectEnemy (int index)
     {
-      if (ActiveRoomState != null && index >= 0 &&
+      if (ActiveRoomState?.MyEnemySet != null && index >= 0 &&
           index < ActiveRoomState.MyEnemySet.EnemyCount)
       {
         EnemyIndex = index;
@@ -475,7 +483,7 @@ namespace SM3E
 
     private void ForceSelectEnemyGfx (int index)
     {
-      if (ActiveRoomState != null && index >= 0 &&
+      if (ActiveRoomState?.MyEnemyGfx != null && index >= 0 &&
           index < ActiveRoomState.MyEnemyGfx.EnemyGfxCount)
       {
         EnemyGfxIndex = index;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace SM3E
 {
@@ -416,6 +419,70 @@ namespace SM3E
     public int PosTileY;
 
     public TileViewerMouseEventArgs () {}
+  }
+
+
+//========================================================================================
+// CLASS LISTDATA
+//========================================================================================
+
+
+  class ListData: INotifyPropertyChanged
+  {
+    private ObservableCollection <object> data;
+    private int selectedIndex;
+
+    public ObservableCollection <object> Data
+    {
+      get {return data;}
+    }
+
+    public int SelectedIndex
+    {
+      get {return selectedIndex;}
+      set
+      {
+        if (value >= -1 && value < Data.Count)
+        {
+          selectedIndex = value;
+          PropertyChanged?.Invoke (this, new PropertyChangedEventArgs ("SelectedIndex"));
+        }
+      }
+    }
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+
+    // Constructor.
+    public ListData ()
+    {
+      data = new ObservableCollection <object> ();
+      selectedIndex = -1;
+    }
+    
+
+    // Constructor.
+    public ListData (IEnumerable newData, int index)
+    {
+      data = new ObservableCollection <object> ();
+      SetData (newData, index);
+      
+    }
+
+
+    // Set data list.
+    public void SetData (IEnumerable newData, int index)
+    {
+      data.Clear ();
+      foreach (object o in newData)
+        data.Add (o);
+      if (index >= -1 && index < Data.Count)
+        selectedIndex = index;
+      else
+        selectedIndex = -1;
+      PropertyChanged?.Invoke (this, new PropertyChangedEventArgs ("Data"));
+      PropertyChanged?.Invoke (this, new PropertyChangedEventArgs ("SelectedIndex"));
+    }
   }
 
 }

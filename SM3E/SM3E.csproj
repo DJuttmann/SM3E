@@ -99,6 +99,9 @@
     <Compile Include="Tools\Compression.cs" />
     <Compile Include="Tools\BtsConvert.cs" />
     <Compile Include="Tools\Rom.cs" />
+    <Compile Include="UI\SelectAsmWindow.xaml.cs">
+      <DependentUpon>SelectAsmWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\EditDoorWindow.xaml.cs">
       <DependentUpon>EditDoorWindow.xaml</DependentUpon>
     </Compile>
@@ -125,6 +128,9 @@
     </Compile>
     <Compile Include="UI\SelectBackgroundWindow.xaml.cs">
       <DependentUpon>SelectBackgroundWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\SelectDataWindow.xaml.cs">
+      <DependentUpon>SelectDataWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\TileLayersTab.xaml.cs">
       <DependentUpon>TileLayersTab.xaml</DependentUpon>
@@ -156,6 +162,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="UI\SelectAsmWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\EditDoorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -193,6 +203,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\SelectBackgroundWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\SelectDataWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -215,6 +215,54 @@ namespace SM3E.UI
 
 //----------------------------------------------------------------------------------------
 
+    private void LevelData_Click (object sender, RoutedEventArgs e)
+    {
+      var window = new UI.SelectDataWindow (MainProject, "level data");
+      window.Owner = Window.GetWindow (this);
+      window.ShowDialog ();
+    }
+
+
+    private void ScrollSet_Click (object sender, RoutedEventArgs e)
+    {
+      var window = new UI.SelectDataWindow (MainProject, "scroll set");
+      window.Owner = Window.GetWindow (this);
+      window.ShowDialog ();
+    }
+
+
+    private void PlmSet_Click (object sender, RoutedEventArgs e)
+    {
+      var window = new UI.SelectDataWindow (MainProject, "plm set");
+      window.Owner = Window.GetWindow (this);
+      window.ShowDialog ();
+    }
+
+
+    private void EnemySet_Click (object sender, RoutedEventArgs e)
+    {
+      var window = new UI.SelectDataWindow (MainProject, "enemy set");
+      window.Owner = Window.GetWindow (this);
+      window.ShowDialog ();
+    }
+
+
+    private void EnemyGfx_Click (object sender, RoutedEventArgs e)
+    {
+      var window = new UI.SelectDataWindow (MainProject, "enemy gfx");
+      window.Owner = Window.GetWindow (this);
+      window.ShowDialog ();
+    }
+
+
+    private void Fx_Click (object sender, RoutedEventArgs e)
+    {
+      var window = new UI.SelectDataWindow (MainProject, "effects");
+      window.Owner = Window.GetWindow (this);
+      window.ShowDialog ();
+    }
+
+
     private void Background_Click (object sender, RoutedEventArgs e)
     {
       var window = new UI.SelectBackgroundWindow (MainProject);
@@ -222,6 +270,22 @@ namespace SM3E.UI
       window.ShowDialog ();
     }
 
-  }
+
+    private void SetupAsm_Click (object sender, RoutedEventArgs e)
+    {
+      var window = new UI.SelectAsmWindow (MainProject, "setup");
+      window.Owner = Window.GetWindow (this);
+      window.ShowDialog ();
+    }
+
+
+    private void MainAsm_Click (object sender, RoutedEventArgs e)
+    {
+      var window = new UI.SelectAsmWindow (MainProject, "main");
+      window.Owner = Window.GetWindow (this);
+      window.ShowDialog ();
+    }
+
+  } // class PropertiesTab
 
 }

@@ -31,7 +31,10 @@ namespace SM3E.UI
 
       MyProject.GetBackgroundStatus (out bool HasBackground, out bool HasLayer2);
       DefaultBgCheck.IsChecked = HasBackground;
-      Layer2Check.IsChecked = HasLayer2;
+      if (MyProject.LevelDataPtr == 0)
+        Layer2Check.IsEnabled = false;
+      else
+        Layer2Check.IsChecked = HasLayer2;
       BackgroundSelect.ItemsSource = MyProject.BackgroundNames;
       if (!HasBackground)
       {

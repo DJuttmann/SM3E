@@ -441,47 +441,47 @@ namespace SM3E
     // Pointers
     public int LevelDataPtr
     {
-      get {return ActiveRoomState?.LevelDataPtr ?? 0;}
+      get {return ActiveRoomState?.MyLevelData?.StartAddressLR ?? 0;}
     }
 
     public int RoomScrollsPtr
     {
-      get {return ActiveRoomState?.RoomScrollsPtr ?? 0;}
+      get {return ActiveRoomState?.MyScrollSet?.StartAddressLR ?? 0;}
     }
 
     public int PlmSetPtr
     {
-      get {return ActiveRoomState?.PlmSetPtr ?? 0;}
+      get {return ActiveRoomState?.MyPlmSet?.StartAddressLR ?? 0;}
     }
 
     public int EnemySetPtr
     {
-      get {return ActiveRoomState?.EnemySetPtr ?? 0;}
+      get {return ActiveRoomState?.MyEnemySet?.StartAddressLR ?? 0;}
     }
 
     public int EnemyGfxPtr
     {
-      get {return ActiveRoomState?.EnemyGfxPtr ?? 0;}
+      get {return ActiveRoomState?.MyEnemyGfx?.StartAddressLR ?? 0;}
     }
 
     public int BackgroundPtr
     {
-      get {return ActiveRoomState?.BackgroundPtr ?? 0;}
+      get {return ActiveRoomState?.MyBackground?.StartAddressLR ?? 0;}
     }
 
     public int FxPtr
     {
-      get {return ActiveRoomState?.FxPtr ?? 0;}
+      get {return ActiveRoomState?.MyFx?.StartAddressLR ?? 0;}
     }
 
     public int SetupAsmPtr
     {
-      get {return ActiveRoomState?.SetupAsmPtr ?? 0;}
+      get {return ActiveRoomState?.MySetupAsm?.StartAddressLR ?? 0;}
     }
 
     public int MainAsmPtr
     {
-      get {return ActiveRoomState?.MainAsmPtr ?? 0;}
+      get {return ActiveRoomState?.MyMainAsm?.StartAddressLR ?? 0;}
     }
 
     // Plm type
@@ -715,6 +715,32 @@ namespace SM3E
     }
 
 
+    // List of Setup ASM names.
+    public List <string> SetupAsmNames
+    {
+      get
+      {
+        var names = new List <string> ();
+        foreach (Asm a in SetupAsms)
+          names.Add (a.Name);
+        return names;
+      }
+    }
+
+
+    // List of Main ASM names.
+    public List <string> MainAsmNames
+    {
+      get
+      {
+        var names = new List <string> ();
+        foreach (Asm a in MainAsms)
+          names.Add (a.Name);
+        return names;
+      }
+    }
+
+
     // List of tileset names.
     public List <string> TileSetNames
     {
@@ -917,12 +943,24 @@ namespace SM3E
 
     
     // List of room names for an area.
-    public List <string> GetRoomNames (int AreaIndex)
+    public List <string> GetRoomNames (int areaIndex)
     {
       var names = new List <string> ();
-      if (AreaIndex >= 0 && AreaIndex < AreaCount)
-        foreach (Room r in Rooms [AreaIndex])
+      if (areaIndex >= 0 && areaIndex < AreaCount)
+        foreach (Room r in Rooms [areaIndex])
           names.Add (r.Name);
+      return names;
+    }
+
+
+    // List of room state names for given room in area.
+    public List <string> GetRoomStateNames (int areaIndex, int roomIndex)
+    {
+      var names = new List <string> ();
+      if (areaIndex >= 0 && areaIndex < AreaCount &&
+          roomIndex >= 0 && roomIndex < Rooms [areaIndex].Count)
+        foreach (RoomStateHeader h in ((Room) Rooms [areaIndex] [roomIndex]).RoomStateHeaders)
+          names.Add (h.Name);
       return names;
     }
 
@@ -1172,7 +1210,7 @@ namespace SM3E
         return ScrollColor.None;
       if (ActiveRoomState.MyScrollSet == null)
       {
-        switch (ActiveRoomState.RoomScrollsPtr)
+        switch (ActiveRoomState.ScrollSetPtr)
         {
         case ScrollSet.AllBlue:
           return ScrollColor.Blue;
@@ -1431,7 +1469,7 @@ namespace SM3E
 
 
 //========================================================================================
-// Background
+// Room Pointers
 
 
     public void GetBackgroundStatus (out bool HasBackground, out bool HasLayer2)
@@ -1446,14 +1484,19 @@ namespace SM3E
       if (ActiveRoomState == null)
         return;
 
-      Background oldBg = ActiveRoomState.MyBackground;
-      if (backgroundIndex >= 0 && backgroundIndex < Backgrounds.Count)
-        ActiveRoomState.MyBackground = (Background) Backgrounds [backgroundIndex];
-      else
-        ActiveRoomState.MyBackground = null;
-      bool backgroundChanged = ActiveRoomState.MyBackground != oldBg;
+      bool backgroundChanged = false;
+      if (BackgroundIndex != backgroundIndex)
+      {
+        ActiveRoomState.MyBackground?.MyRoomStates.Remove (ActiveRoomState);
+        if (backgroundIndex >= 0 && backgroundIndex < Backgrounds.Count)
+          ActiveRoomState.MyBackground = (Background) Backgrounds [backgroundIndex];
+        else
+          ActiveRoomState.MyBackground = null;
+        backgroundChanged = true;
+        ActiveRoomState.MyBackground?.MyRoomStates.Add (ActiveRoomState);
+      }
       
-      if (HasLayer2 != ActiveLevelData.HasLayer2)
+      if (ActiveLevelData != null && HasLayer2 != ActiveLevelData.HasLayer2)
       {
         ActiveLevelData.HasLayer2 = HasLayer2;
         backgroundChanged = true;
@@ -1474,6 +1517,215 @@ namespace SM3E
       }
     }
 
+
+    public void SetSetupAsm (int index)
+    {
+      if (ActiveRoomState == null || index < -1 || index >= SetupAsms.Count ||
+          index == SetupAsmIndex)
+        return;
+      ActiveRoomState.MySetupAsm?.MyReferringData.Remove (ActiveRoomState);
+      if (index >= 0 && index < SetupAsms.Count)
+        ActiveRoomState.MySetupAsm = (Asm) SetupAsms [index];
+      else
+        ActiveRoomState.MySetupAsm = null;
+      ActiveRoomState.MySetupAsm?.MyReferringData.Add (ActiveRoomState);
+      RoomStateDataModified?.Invoke (this, null);
+    }
+
+
+    public void SetMainAsm (int index)
+    {
+      if (ActiveRoomState == null || index < -1 || index >= MainAsms.Count ||
+          index == MainAsmIndex)
+        return;
+      ActiveRoomState.MyMainAsm?.MyReferringData.Remove (ActiveRoomState);
+      if (index >= 0 && index < MainAsms.Count)
+        ActiveRoomState.MyMainAsm = (Asm) MainAsms [index];
+      else
+        ActiveRoomState.MyMainAsm = null;
+      ActiveRoomState.MyMainAsm?.MyReferringData.Add (ActiveRoomState);
+      RoomStateDataModified?.Invoke (this, null);
+    }
+
+
+    private RoomState IndexToRoomState (int areaIndex, int roomIndex, int roomStateIndex)
+    {
+      if (areaIndex < 0 || areaIndex >= AreaCount ||
+          roomIndex < 0 || roomIndex >= Rooms [areaIndex].Count)
+        return null;
+      Room r = (Room) Rooms [areaIndex] [roomIndex];
+      if (roomStateIndex < 0 || roomStateIndex >= r.RoomStates.Count)
+        return null;
+      return r.RoomStates [roomStateIndex];
+    }
+
+
+    // Get pointer to level data for given room state.
+    public int GetLevelDataPtr (int areaIndex, int roomIndex, int roomStateIndex)
+    {
+      RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
+      return s?.MyLevelData?.StartAddressLR ?? 0;
+    }
+
+
+    // Set level data of active room state to level data of given roomstate.
+    public void SetLevelData (int areaIndex, int roomIndex, int roomStateIndex)
+    {
+      if (ActiveRoomState == null)
+        return;
+      RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
+      ActiveRoomState.MyLevelData?.MyRoomStates.Remove (ActiveRoomState);
+      if (ActiveRoomState.MyLevelData?.MyRoomStates.Count == 0)
+        LevelDatas.Remove (ActiveRoomState.MyLevelData);
+      ActiveRoomState.MyLevelData = s?.MyLevelData;
+      ActiveRoomState.MyLevelData?.MyRoomStates.Add (ActiveRoomState);
+
+      RoomStateDataModified?.Invoke (this, null);
+      LevelDataSelected?.Invoke (this, null);
+    }
+
+
+    // Get pointer to scroll set for given room state.
+    public int GetScrollSetPtr (int areaIndex, int roomIndex, int roomStateIndex)
+    {
+      RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
+      return s?.MyScrollSet?.StartAddressLR ?? 0;
+    }
+
+
+    // Set scroll set of active room state to scroll set of given roomstate.
+    public void SetScrollSet (int areaIndex, int roomIndex, int roomStateIndex,
+                              int defaultColor)
+    {
+      if (ActiveRoomState == null)
+        return;
+      RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
+      ActiveRoomState.MyScrollSet?.MyRoomStates.Remove (ActiveRoomState);
+      if (ActiveRoomState.MyScrollSet?.MyRoomStates.Count == 0)
+        ScrollSets.Remove (ActiveRoomState.MyScrollSet);
+      ActiveRoomState.MyScrollSet = s?.MyScrollSet;
+      ActiveRoomState.MyScrollSet?.MyRoomStates.Add (ActiveRoomState);
+      if (ActiveRoomState.MyScrollSet == null)
+        ActiveRoomState.ScrollSetPtr = defaultColor;
+
+      RoomStateDataModified?.Invoke (this, null);
+      LevelDataModified?.Invoke (this, new LevelDataEventArgs () {AllScreens = true});
+      HandlingSelection = true;
+      ForceSelectScrollData (0);
+      ScrollDataListChanged?.Invoke (this, new ListLoadEventArgs (-1));
+      HandlingSelection = false;
+    }
+
+
+    // Get pointer to PLM set for given room state.
+    public int GetPlmSetPtr (int areaIndex, int roomIndex, int roomStateIndex)
+    {
+      RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
+      return s?.MyPlmSet?.StartAddressLR ?? 0;
+    }
+
+
+    // Set PLM set of active room state to PLM set of given roomstate.
+    public void SetPlmSet (int areaIndex, int roomIndex, int roomStateIndex)
+    {
+      if (ActiveRoomState == null)
+        return;
+      RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
+      ActiveRoomState.MyPlmSet?.MyRoomStates.Remove (ActiveRoomState);
+      if (ActiveRoomState.MyPlmSet?.MyRoomStates.Count == 0)
+        PlmSets.Remove (ActiveRoomState.MyPlmSet);
+      ActiveRoomState.MyPlmSet = s?.MyPlmSet;
+      ActiveRoomState.MyPlmSet?.MyRoomStates.Add (ActiveRoomState);
+
+      RoomStateDataModified?.Invoke (this, null);
+      LevelDataModified?.Invoke (this, new LevelDataEventArgs () {AllScreens = true});
+      HandlingSelection = true;
+      ForceSelectPlm (0);
+      PlmListChanged?.Invoke (this, new ListLoadEventArgs (-1));
+      HandlingSelection = false;
+    }
+
+
+    // Get pointer to enemy set for given room state.
+    public int GetEnemySetPtr (int areaIndex, int roomIndex, int roomStateIndex)
+    {
+      RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
+      return s?.MyEnemySet?.StartAddressLR ?? 0;
+    }
+
+
+    // Set enemy set of active room state to enemy set of given roomstate.
+    public void SetEnemySet (int areaIndex, int roomIndex, int roomStateIndex)
+    {
+      if (ActiveRoomState == null)
+        return;
+      RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
+      ActiveRoomState.MyEnemySet?.MyRoomStates.Remove (ActiveRoomState);
+      if (ActiveRoomState.MyEnemySet?.MyRoomStates.Count == 0)
+        EnemySets.Remove (ActiveRoomState.MyEnemySet);
+      ActiveRoomState.MyEnemySet = s?.MyEnemySet;
+      ActiveRoomState.MyEnemySet?.MyRoomStates.Add (ActiveRoomState);
+
+      RoomStateDataModified?.Invoke (this, null);
+      LevelDataModified?.Invoke (this, new LevelDataEventArgs () {AllScreens = true});
+      HandlingSelection = true;
+      ForceSelectEnemy (0);
+      EnemyListChanged?.Invoke (this, new ListLoadEventArgs (-1));
+      HandlingSelection = false;
+    }
+
+
+    // Get pointer to enemy gfx for given room state.
+    public int GetEnemyGfxPtr (int areaIndex, int roomIndex, int roomStateIndex)
+    {
+      RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
+      return s?.MyEnemyGfx?.StartAddressLR ?? 0;
+    }
+
+
+    // Set enemy gfx of active room state to enemy gfx of given roomstate.
+    public void SetEnemyGfx (int areaIndex, int roomIndex, int roomStateIndex)
+    {
+      if (ActiveRoomState == null)
+        return;
+      RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
+      ActiveRoomState.MyEnemyGfx?.MyRoomStates.Remove (ActiveRoomState);
+      if (ActiveRoomState.MyEnemyGfx?.MyRoomStates.Count == 0)
+        EnemyGfxs.Remove (ActiveRoomState.MyEnemyGfx);
+      ActiveRoomState.MyEnemyGfx = s?.MyEnemyGfx;
+      ActiveRoomState.MyEnemyGfx?.MyRoomStates.Add (ActiveRoomState);
+
+      RoomStateDataModified?.Invoke (this, null);
+      HandlingSelection = true;
+      ForceSelectEnemyGfx (0);
+      EnemyGfxListChanged?.Invoke (this, new ListLoadEventArgs (-1));
+      HandlingSelection = false;
+    }
+
+
+    // Get pointer to fx for given room state.
+    public int GetFxPtr (int areaIndex, int roomIndex, int roomStateIndex)
+    {
+      RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
+      return s?.MyFx?.StartAddressLR ?? 0;
+    }
+
+
+    // Set fx of active room state to fx of given roomstate.
+    public void SetFx (int areaIndex, int roomIndex, int roomStateIndex)
+    {
+      if (ActiveRoomState == null)
+        return;
+      RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
+      ActiveRoomState.MyFx?.MyRoomStates.Remove (ActiveRoomState);
+      if (ActiveRoomState.MyFx?.MyRoomStates.Count == 0)
+        Fxs.Remove (ActiveRoomState.MyFx);
+      ActiveRoomState.MyFx = s?.MyFx;
+      ActiveRoomState.MyFx?.MyRoomStates.Add (ActiveRoomState);
+
+      RoomStateDataModified?.Invoke (this, null);
+      LevelDataModified?.Invoke (this, new LevelDataEventArgs () {AllScreens = true});
+    }
 
   } // class Project
 

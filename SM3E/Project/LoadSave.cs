@@ -385,7 +385,7 @@ namespace SM3E
           addressesPC.Clear ();
           for (int i = 0; i < stateCount; i++)
           {
-            int address = Tools.LRtoPC (r.RoomStates [i].RoomScrollsPtr);
+            int address = Tools.LRtoPC (r.RoomStates [i].ScrollSetPtr);
             if (address != 0)
               addressesPC.Add (address);
           }

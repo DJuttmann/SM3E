@@ -208,7 +208,7 @@ namespace SM3E
     public int EnemySetPtr; // LoROM address
     public int EnemyGfxPtr; // LoROM address
     public int BackgroundScrolling;
-    public int RoomScrollsPtr; // LoROM address
+    public int ScrollSetPtr; // LoROM address
     public int UnusedPtr; // LoROM address
     public int MainAsmPtr; // LoROM address
     public int PlmSetPtr; // LoROM address
@@ -243,7 +243,7 @@ namespace SM3E
       EnemySetPtr         = 0;
       EnemyGfxPtr         = 0;
       BackgroundScrolling = 0;
-      RoomScrollsPtr      = 0;
+      ScrollSetPtr      = 0;
       UnusedPtr           = 0;
       MainAsmPtr          = 0;
       PlmSetPtr           = 0;
@@ -276,7 +276,7 @@ namespace SM3E
       EnemySetPtr         = Tools.ConcatBytes (b [8], b [9], 0xA1);
       EnemyGfxPtr         = Tools.ConcatBytes (b [10], b [11], 0xB4);
       BackgroundScrolling = Tools.ConcatBytes (b [12], b [13]);
-      RoomScrollsPtr      = Tools.ConcatBytes (b [14], b [15], 0x8F);
+      ScrollSetPtr      = Tools.ConcatBytes (b [14], b [15], 0x8F);
       UnusedPtr           = Tools.ConcatBytes (b [16], b [17], 0x8F); // almost always null
       MainAsmPtr          = Tools.ConcatBytes (b [18], b [19], 0x8F);
       PlmSetPtr           = Tools.ConcatBytes (b [20], b [21], 0x8F);
@@ -299,7 +299,7 @@ namespace SM3E
       Tools.CopyBytes (EnemySetPtr        , b,  8, 2);
       Tools.CopyBytes (EnemyGfxPtr        , b, 10, 2);
       Tools.CopyBytes (BackgroundScrolling, b, 12, 2);
-      Tools.CopyBytes (RoomScrollsPtr     , b, 14, 2);
+      Tools.CopyBytes (ScrollSetPtr     , b, 14, 2);
       Tools.CopyBytes (UnusedPtr          , b, 16, 2);
       Tools.CopyBytes (MainAsmPtr         , b, 18, 2);
       Tools.CopyBytes (PlmSetPtr          , b, 20, 2);
@@ -321,7 +321,7 @@ namespace SM3E
       EnemySetPtr = 0xA10000;
       EnemyGfxPtr = 0xB40000;
       BackgroundScrolling = 0xC1C1;
-      RoomScrollsPtr = ScrollSet.AllBlue;
+      ScrollSetPtr = ScrollSet.AllBlue;
       UnusedPtr = 0;
       MainAsmPtr = 0x8F0000;
       PlmSetPtr = 0x8F0000;
@@ -346,7 +346,7 @@ namespace SM3E
       Logging.WriteLine ("  EnemySetPtr        : " + Tools.IntToHex (EnemySetPtr, 4));
       Logging.WriteLine ("  EnemyGfxPtr        : " + Tools.IntToHex (EnemyGfxPtr, 4));
       Logging.WriteLine ("  BackgroundScrolling: " + Tools.IntToHex (BackgroundScrolling, 4));
-      Logging.WriteLine ("  RoomScrollsPtr     : " + Tools.IntToHex (RoomScrollsPtr, 4));
+      Logging.WriteLine ("  RoomScrollsPtr     : " + Tools.IntToHex (ScrollSetPtr, 4));
       Logging.WriteLine ("  UnusedPtr          : " + Tools.IntToHex (UnusedPtr, 4));
       Logging.WriteLine ("  MainAsmPtr         : " + Tools.IntToHex (MainAsmPtr, 4));
       Logging.WriteLine ("  PlmSetPtr          : " + Tools.IntToHex (PlmSetPtr, 4));
@@ -374,8 +374,8 @@ namespace SM3E
         else
           success = false;
       }
-      if (RoomScrollsPtr >= 0x8F8000) {
-        MyScrollSet = (ScrollSet) ScrollSets.Find (x => x.StartAddressLR == RoomScrollsPtr);
+      if (ScrollSetPtr >= 0x8F8000) {
+        MyScrollSet = (ScrollSet) ScrollSets.Find (x => x.StartAddressLR == ScrollSetPtr);
         if (MyScrollSet != null)
           MyScrollSet.MyRoomStates.Add (this);
         else
@@ -435,7 +435,7 @@ namespace SM3E
       if (MyPlmSet != null)
         PlmSetPtr = MyPlmSet.StartAddressLR;
       if (MyScrollSet != null)
-        RoomScrollsPtr = MyScrollSet.StartAddressLR;
+        ScrollSetPtr = MyScrollSet.StartAddressLR;
       if (MyBackground != null)
         BackgroundPtr = MyBackground.StartAddressLR;
       if (MyFx != null)

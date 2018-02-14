@@ -89,6 +89,7 @@ namespace SM3E
   // Contains affected screens.
   public class LevelDataEventArgs: EventArgs
   {
+    public bool AllScreens = false;
     public int ScreenXmin;
     public int ScreenXmax;
     public int ScreenYmin;
