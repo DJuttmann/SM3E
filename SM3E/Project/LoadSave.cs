@@ -36,7 +36,8 @@ namespace SM3E
                           out List <string> roomNames,
                           out List <Tuple <int, int, string>> doorAsms,
                           out List <Tuple <int, int, string>> setupAsms,
-                          out List <Tuple <int, int, string>> mainAsms);
+                          out List <Tuple <int, int, string>> mainAsms,
+                          out List <Tuple <int, string>> backgrounds);
 
       // Read uncompressed data from ROM.
       ReadRooms (CurrentRom, roomAddresses, roomNames, roomDoorCounts);
@@ -44,7 +45,7 @@ namespace SM3E
       ReadScrollSets (CurrentRom);
       ReadPlmSets (CurrentRom);
       ReadScrollPlmDatas (CurrentRom);
-      ReadBackgrounds (CurrentRom);
+      ReadBackgrounds (CurrentRom, backgrounds);
       ReadFxs (CurrentRom);
       ReadSaveRooms (CurrentRom);
       ReadEnemySets (CurrentRom);
@@ -170,7 +171,8 @@ namespace SM3E
                                      out List <string> roomNames,
                                      out List <Tuple <int, int, string>> doorAsms,
                                      out List <Tuple <int, int, string>> setupAsms,
-                                     out List <Tuple <int, int, string>> mainAsms)
+                                     out List <Tuple <int, int, string>> mainAsms,
+                                     out List <Tuple <int, string>> backgrounds)
     {
       RomFileName = null;
       roomAddresses = new List <int> ();
@@ -179,6 +181,7 @@ namespace SM3E
       doorAsms  = new List <Tuple <int, int, string>> ();
       setupAsms = new List <Tuple <int, int, string>> ();
       mainAsms  = new List <Tuple <int, int, string>> ();
+      backgrounds = new List <Tuple <int, string>> ();
 
       Stream stream;
       try {stream = new FileStream (ProjectFileName, FileMode.Open, 
@@ -284,6 +287,17 @@ namespace SM3E
                                                          Tools.HexToInt (asmEnd),
                                                          asmName ?? asmAddress));
             }
+          }
+          break;
+
+        case "Backgrounds":
+          foreach (XElement background in x.Elements ("Background"))
+          {
+            string address = background.Attribute ("address")?.Value;
+            string name = background.Attribute ("name")?.Value;
+            if (address != null)
+              backgrounds.Add (new Tuple<int, string> (Tools.HexToInt (address),
+                                                       name ?? address));
           }
           break;
 
@@ -444,8 +458,15 @@ namespace SM3E
 
 
     // Read all backgrounds from ROM.
-    private void ReadBackgrounds (Rom rom)
+    private void ReadBackgrounds (Rom rom, List <Tuple <int, string>> backgrounds)
     {
+      foreach (var b in backgrounds)
+      {
+        Background newBackground = new Background () {Name = b.Item2};
+        newBackground.ReadFromROM (rom, b.Item1);
+        Backgrounds.Add (newBackground);
+      }
+      /*
       List <int> addressesPC = new List <int> ();
       foreach (RoomState r in RoomStates) {
         int address = Tools.LRtoPC (r.BackgroundPtr);
@@ -459,6 +480,7 @@ namespace SM3E
         Backgrounds.Add (new Background ());
         Backgrounds [n].ReadFromROM (rom, addressesPC [n]);
       }
+      */
     }
 
 
@@ -879,12 +901,23 @@ namespace SM3E
         }
       root.Add (roomsElement);
 
-      // Write asm data
+      // Write asm data.
       XElement asmElement = new XElement ("Asms");
       WriteAsmDataXml (asmElement, "DoorAsm", DoorAsms);
       WriteAsmDataXml (asmElement, "SetupAsm", SetupAsms);
       WriteAsmDataXml (asmElement, "MainAsm", MainAsms);
       root.Add (asmElement);
+
+      // Write background data.
+      XElement backgroundsElement = new XElement ("Backgrounds");
+      foreach (Background b in Backgrounds)
+      {
+        XElement background = new XElement ("Background");
+        background.SetAttributeValue ("address", Tools.IntToHex (b.StartAddressPC));
+        background.SetAttributeValue ("name", b.Name);
+        backgroundsElement.Add (background);
+      }
+      root.Add (backgroundsElement);
       
       root.WriteTo (writer);
       writer.Close ();

@@ -709,7 +709,7 @@ namespace SM3E
       {
         var names = new List <string> ();
         foreach (Background b in Backgrounds)
-          names.Add (Tools.IntToHex (b.StartAddressPC));
+          names.Add (b.Name);
         return names;
       }
     }
@@ -791,7 +791,7 @@ namespace SM3E
           names.Add (String.Empty);
 
         if (ActiveRoomState?.MyBackground != null)
-          names.Add (Tools.IntToHex (ActiveRoomState.MyBackground.StartAddressPC));
+          names.Add (ActiveRoomState.MyBackground.Name);
         else if (ActiveRoomState?.MyLevelData?.HasLayer2 ?? false)
           names.Add ("Layer 2");
         else
