@@ -30,7 +30,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class ScrollSet: RawData, IScrollData, IReusable
+  class ScrollSet: RawData, IScrollData, IReusable, IReferenceableBy <RoomState>
   {
     public const int AllBlue = 0x8F0000;
     public const int AllGreen = 0x8F0001;
@@ -84,6 +84,27 @@ namespace SM3E
       Bytes.Add (1);
 
       startAddressPC = -1;
+    }
+
+
+    public bool ReferenceMe (RoomState source)
+    {
+      MyRoomStates.Add (source);
+      return true;
+    }
+
+
+    public int UnreferenceMe (RoomState source)
+    {
+      MyRoomStates.Remove (source);
+      return MyRoomStates.Count;
+    }
+
+
+    public void DetachAllReferences ()
+    {
+      foreach (RoomState r in MyRoomStates)
+        r.SetScrollSet (null, out var ignore);
     }
 
   } // class ScrollSet

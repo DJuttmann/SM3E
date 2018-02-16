@@ -126,7 +126,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class EnemySet: Data, IReusable
+  class EnemySet: Data, IReusable, IReferenceableBy <RoomState>
   {
     public const int TerminatorSize = 3;
     public const byte TerminatorByte = 0xFF;
@@ -232,6 +232,27 @@ namespace SM3E
       }
     }
 
+
+    public bool ReferenceMe (RoomState source)
+    {
+      MyRoomStates.Add (source);
+      return true;
+    }
+
+
+    public int UnreferenceMe (RoomState source)
+    {
+      MyRoomStates.Remove (source);
+      return MyRoomStates.Count;
+    }
+
+
+    public void DetachAllReferences ()
+    {
+      foreach (RoomState r in MyRoomStates)
+        r.SetEnemySet (null, out var ignore);
+    }
+
 //----------------------------------------------------------------------------------------
 
     public void Shift (int dx, int dy)
@@ -248,7 +269,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class EnemyGfx: Data, IReusable
+  class EnemyGfx: Data, IReusable, IReferenceableBy <RoomState>
   {
     public const int BlockSize = 4;
     public const int TerminatorSize = 2;
@@ -341,6 +362,27 @@ namespace SM3E
           success = false;
       }
       return success;
+    }
+
+
+    public bool ReferenceMe (RoomState source)
+    {
+      MyRoomStates.Add (source);
+      return true;
+    }
+
+
+    public int UnreferenceMe (RoomState source)
+    {
+      MyRoomStates.Remove (source);
+      return MyRoomStates.Count;
+    }
+
+
+    public void DetachAllReferences ()
+    {
+      foreach (RoomState r in MyRoomStates)
+        r.SetEnemyGfx (null, out var ignore);
     }
 
   } // class EnemyGfx

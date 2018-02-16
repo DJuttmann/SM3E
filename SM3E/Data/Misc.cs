@@ -14,7 +14,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class Background: Data, IReusable
+  class Background: Data, IReusable, IReferenceableBy <RoomState>
   {
     public const int TerminatorSize = 2;
 
@@ -115,6 +115,27 @@ namespace SM3E
       Bytes.Add (2);
 
       startAddressPC = -1;
+    }
+
+
+    public bool ReferenceMe (RoomState source)
+    {
+      MyRoomStates.Add (source);
+      return true;
+    }
+
+
+    public int UnreferenceMe (RoomState source)
+    {
+      MyRoomStates.Remove (source);
+      return MyRoomStates.Count;
+    }
+
+
+    public void DetachAllReferences ()
+    {
+      foreach (RoomState r in MyRoomStates)
+        r.SetBackground (null, out var ignore);
     }
 
   } // Class Background
@@ -219,7 +240,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class Fx: Data, IRepointable, IReusable
+  class Fx: Data, IRepointable, IReusable, IReferenceableBy <RoomState>
   {
     public const int DefaultSize = 16;
     public const int NullSize = 2;
@@ -372,6 +393,27 @@ namespace SM3E
     {
       if (MyDoor != null)
         DoorPtr = MyDoor.StartAddressLR;
+    }
+
+
+    public bool ReferenceMe (RoomState source)
+    {
+      MyRoomStates.Add (source);
+      return true;
+    }
+
+
+    public int UnreferenceMe (RoomState source)
+    {
+      MyRoomStates.Remove (source);
+      return MyRoomStates.Count;
+    }
+
+
+    public void DetachAllReferences ()
+    {
+      foreach (RoomState r in MyRoomStates)
+        r.SetFx (null, out var ignore);
     }
 
   } // class Fx

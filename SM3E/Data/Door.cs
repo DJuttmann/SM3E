@@ -14,7 +14,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class Door: Data, IRepointable
+  class Door: Data, IRepointable, IReferenceableBy <DoorSet>
   {
     public const int DefaultSize = 12;
     public const int ElevatorPadSize = 2;
@@ -156,6 +156,27 @@ namespace SM3E
         DoorAsmPtr = MyScrollAsm.StartAddressLR;
     }
 
+
+    public bool ReferenceMe (DoorSet source)
+    {
+      MyDoorSets.Add (source);
+      return true;
+    }
+
+
+    public int UnreferenceMe (DoorSet source)
+    {
+      MyDoorSets.Remove (source);
+      return MyDoorSets.Count;
+    }
+
+
+    public void DetachAllReferences ()
+    {
+      foreach (DoorSet d in MyDoorSets)
+        d.RemoveDoor (this);
+    }
+
 //----------------------------------------------------------------------------------------
 
     public bool GetElevatorBit ()
@@ -212,6 +233,15 @@ namespace SM3E
         Direction &= 3;
     }
 
+
+    public void SetDestination (Room target)
+    {
+      MyTargetRoom.UnreferenceMe (this);
+      MyTargetRoom = null;
+      if (target?.ReferenceMe (this) ?? false)
+        MyTargetRoom = target;
+    }
+
   } // Class Door
 
 
@@ -220,7 +250,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class DoorSet: Data, IRepointable
+  class DoorSet: Data, IRepointable, IReferenceableBy <Room>
   {
     public List <int> DoorPtrs; // LoRom Addresses
 
@@ -312,6 +342,29 @@ namespace SM3E
           DoorPtrs. Add (MyDoors [n].StartAddressLR);
     }
 
+
+    public bool ReferenceMe (Room source)
+    {
+      if (MyRoom != null)
+        return false;
+      MyRoom = source;
+      return true;
+    }
+
+
+    public int UnreferenceMe (Room source)
+    {
+      if (MyRoom == source)
+        MyRoom = null;
+      return MyRoom == null ? 0 : 1;
+    }
+
+
+    public void DetachAllReferences ()
+    {
+      MyRoom.SetDoorSet (null);
+    }
+
 //----------------------------------------------------------------------------------------
 
     // Add door and update Doors list
@@ -331,15 +384,15 @@ namespace SM3E
       Doors.Add (newDoor);
     }
 
-
-    // Delete door at index in MyDoors, and update Doors list.
-    void DeleteDoor (List <Door> Doors, int index)
+    
+    // [wip] it may be dangerous to set a pointer in MyDoors to null!
+    // perhaps remove it, as well remove the door in corresponding level data?
+    public void RemoveDoor (Door target)
     {
-      if (index >= 0 && index < MyDoors.Count)
-      {
-        Doors.Remove (MyDoors [index]);
-        MyDoors.Remove (MyDoors [index]);
-      }
+      target.UnreferenceMe (this);
+      int index = MyDoors.FindIndex (x => x == target);
+      if (index > 0)
+        MyDoors [index] = null;
     }
 
   } // class DoorSet

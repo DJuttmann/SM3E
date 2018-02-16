@@ -14,7 +14,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class Asm: RawData, IReusable
+  class Asm: RawData, IReusable, IReferenceableBy <RoomState>
   {
     public string Name;
 
@@ -38,6 +38,38 @@ namespace SM3E
     {
       MyReferringData = new HashSet <Data> ();
     }
+
+
+    public bool ReferenceMe (RoomState source)
+    {
+      MyReferringData.Add (source);
+      return true;
+    }
+
+
+    public int UnreferenceMe (RoomState source)
+    {
+      MyReferringData.Remove (source);
+      return MyReferringData.Count;
+    }
+
+
+    public void DetachAllReferences ()
+    {
+      foreach (Data d in MyReferringData)
+        switch (d)
+        {
+        case RoomState r:
+          if (r.MySetupAsm == this)
+            r.SetSetupAsm (null, out var ignore);
+          if (r.MyMainAsm == this)
+            r.SetMainAsm (null, out var ignore);
+          break;
+        default:
+          break;
+        }
+    }
+
   } // class Asm
 
 }

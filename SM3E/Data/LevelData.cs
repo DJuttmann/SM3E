@@ -14,7 +14,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class LevelData: Data, ICompressed, IReusable
+  class LevelData: Data, ICompressed, IReusable, IReferenceableBy <RoomState>
   {
     int ScreenCount;
 
@@ -227,6 +227,27 @@ namespace SM3E
       }
 
       Logging.WriteLine ("");
+    }
+
+
+    public bool ReferenceMe (RoomState source)
+    {
+      MyRoomStates.Add (source);
+      return true;
+    }
+
+
+    public int UnreferenceMe (RoomState source)
+    {
+      MyRoomStates.Remove (source);
+      return MyRoomStates.Count;
+    }
+
+
+    public void DetachAllReferences ()
+    {
+      foreach (RoomState r in MyRoomStates)
+        r.SetLevelData (null, out var ignore);
     }
 
 //----------------------------------------------------------------------------------------

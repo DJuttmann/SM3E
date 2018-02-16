@@ -140,7 +140,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class PlmSet: Data, IRepointable, IReusable
+  class PlmSet: Data, IRepointable, IReusable, IReferenceableBy <RoomState>
   {
     public const int TerminatorSize = 2;
     private const int Terminator = 0;
@@ -243,6 +243,27 @@ namespace SM3E
     {
       for (int n = 0; n < Plms.Count; n++)
         Plms [n].Repoint ();
+    }
+
+
+    public bool ReferenceMe (RoomState source)
+    {
+      MyRoomStates.Add (source);
+      return true;
+    }
+
+
+    public int UnreferenceMe (RoomState source)
+    {
+      MyRoomStates.Remove (source);
+      return MyRoomStates.Count;
+    }
+
+
+    public void DetachAllReferences ()
+    {
+      foreach (RoomState r in MyRoomStates)
+        r.SetPlmSet (null, out var ignore);
     }
 
   } // Class PlmSet

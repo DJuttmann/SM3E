@@ -196,7 +196,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class RoomState: Data, IRepointable
+  class RoomState: Data, IRepointable, IReferenceableBy <Room>
   {
     public const int DefaultSize = 26;
     
@@ -449,6 +449,94 @@ namespace SM3E
     }
 
 
+    public bool ReferenceMe (Room source)
+    {
+      if (MyRoom != null)
+        return false;
+      MyRoom = source;
+      return true;
+    }
+
+
+    public int UnreferenceMe (Room source)
+    {
+      if (MyRoom == source)
+        MyRoom = null;
+      return MyRoom == null ? 0 : 1;
+    }
+
+
+    public void DetachAllReferences ()
+    {
+      // [wip] Remove this room state from parent room...
+    }
+
+//----------------------------------------------------------------------------------------
+
+    // Set reference to a data object. Returns previous object if left unreferenced.
+    private void SetReference <T> (ref T field, T target, out T deleteData) 
+      where T: Data, IReferenceableBy <RoomState>
+    {
+      deleteData = target?.UnreferenceMe (this) == 0 ? field : null;
+      field = null;
+      if (target?.ReferenceMe (this) ?? false)
+        field = target;
+    }
+
+
+    public void SetLevelData (LevelData target, out LevelData deleteLevelData)
+    {
+      SetReference (ref MyLevelData, target, out deleteLevelData);
+    }
+
+
+    public void SetScrollSet (ScrollSet target, out ScrollSet deleteScrollSet)
+    {
+      SetReference (ref MyScrollSet, target, out deleteScrollSet);
+    }
+
+
+    public void SetPlmSet (PlmSet target, out PlmSet deletePlmSet)
+    {
+      SetReference (ref MyPlmSet, target, out deletePlmSet);
+    }
+
+
+    public void SetEnemySet (EnemySet target, out EnemySet deleteEnemySet)
+    {
+      SetReference (ref MyEnemySet, target, out deleteEnemySet);
+    }
+
+
+    public void SetEnemyGfx (EnemyGfx target, out EnemyGfx deleteEnemyGfx)
+    {
+      SetReference (ref MyEnemyGfx, target, out deleteEnemyGfx);
+    }
+
+
+    public void SetFx (Fx target, out Fx deleteFx)
+    {
+      SetReference (ref MyFx, target, out deleteFx);
+    }
+
+
+    public void SetBackground (Background target, out Background deleteBackground)
+    {
+      SetReference (ref MyBackground, target, out deleteBackground);
+    }
+
+
+    public void SetSetupAsm (Asm target, out Asm deleteAsm)
+    {
+      SetReference (ref MySetupAsm, target, out deleteAsm);
+    }
+
+
+    public void SetMainAsm (Asm target, out Asm deleteAsm)
+    {
+      SetReference (ref MyMainAsm, target, out deleteAsm);
+    }
+
   } // class RoomState
 
 //========================================================================================
@@ -456,7 +544,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class Room: Data, IRepointable
+  class Room: Data, IRepointable, IReferenceableBy <Door>
   {
     public const int HeaderSize = 11;
 
@@ -679,6 +767,37 @@ namespace SM3E
         RoomStateHeaders [n].RoomStatePtr = RoomStates [n].StartAddressLR;
         RoomStates [n].Repoint ();
       }
+    }
+
+
+    public bool ReferenceMe (Door source)
+    {
+      MyIncomingDoors.Add (source);
+      return true;
+    }
+
+
+    public int UnreferenceMe (Door source)
+    {
+      MyIncomingDoors.Remove (source);
+      return MyIncomingDoors.Count;
+    }
+
+
+    public void DetachAllReferences ()
+    {
+      foreach (Door d in MyIncomingDoors)
+        d.SetDestination (null);
+    }
+
+//----------------------------------------------------------------------------------------
+
+    public void SetDoorSet (DoorSet target)
+    {
+      MyDoorSet.UnreferenceMe (this);
+      MyDoorSet = null;
+      if (target?.ReferenceMe (this) ?? false)
+        MyDoorSet = target;
     }
 
   } // class Room

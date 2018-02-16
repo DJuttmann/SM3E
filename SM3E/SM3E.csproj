@@ -93,6 +93,7 @@
     </ApplicationDefinition>
     <Compile Include="Data\Asm.cs" />
     <Compile Include="Data\Scrolls.cs" />
+    <Compile Include="Project\GetSet.cs" />
     <Compile Include="Project\ObjectManagement.cs" />
     <Compile Include="Project\ProjectEvents.cs" />
     <Compile Include="Project\Selecting.cs" />
