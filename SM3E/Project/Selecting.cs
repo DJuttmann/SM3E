@@ -344,13 +344,7 @@ namespace SM3E
       if (a.ActiveScrollData != ActiveScrollData)
       {
         ScrollDataSelected?.Invoke (this, null);
-        var e = new LevelDataEventArgs ()
-        {
-          ScreenXmin = 0,
-          ScreenXmax = RoomWidthInScreens - 1,
-          ScreenYmin = 0,
-          ScreenYmax = RoomHeightInScreens - 1,
-        };
+        var e = new LevelDataEventArgs () {AllScreens = true};
         LevelDataModified?.Invoke (this, e);
       }
     }

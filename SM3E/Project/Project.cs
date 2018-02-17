@@ -692,12 +692,13 @@ namespace SM3E
       }
     }
 
+
     // List of scroll color names
     public List <string> ScrollColorNames
     {
       get
       {
-        return new List <string> (new [] {"Red", "Green", "Blue", "Unchanged"});
+        return new List <string> (new [] {"Red", "Blue", "Green", "Unchanged"});
       }
     }
 

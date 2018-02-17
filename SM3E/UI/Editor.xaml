@@ -66,54 +66,25 @@
       <ScrollViewer x:Name="LevelDataViewer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Visible" Margin="8,8,8,8"/>
     </Grid>
 
+    <Grid Grid.Row="2" Grid.ColumnSpan="3">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="125"/>
+        <ColumnDefinition Width="3"/>
+        <ColumnDefinition Width="1*"/>
+      </Grid.ColumnDefinitions>
+      
+      <!-- LAYER SELECTOR -->
+      <ListBox x:Name="LayerSelect" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,8,8,8" SelectedIndex="0" SelectionChanged="LayerSelect_SelectionChanged" />
+      <Rectangle Grid.Column="1" Fill="#FFF0F0F0" HorizontalAlignment="Stretch" Stroke="#00000000" VerticalAlignment="Stretch" Margin="0,-1,0,-1" Grid.RowSpan="2"/>
 
-    <!-- TOOLS -->
-    <TabControl x:Name="EditorTabs" TabStripPlacement="Left" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="2" Background="Transparent" SelectionChanged="EditorTabs_SelectionChanged">
-
-      <!-- NAVIGATOR / DOOR EDITOR -->
-      <TabItem x:Name="NavigateTab" Header="Navigate" Width="130">
-        <ui:NavigateTab x:Name="NavigateView"/>
-      </TabItem>
-
-
-      <!-- LEVEL DATA EDITOR -->
-      <TabItem x:Name="EditTab" Header="Edit">
-        <Grid>
-          
-          <!-- TILE LAYERS -->
-          <ui:TileLayersTab x:Name="TileLayersEditor" Visibility="Visible"/>
-
-          <!-- PLM LAYER -->
-          <ui:PlmLayerTab x:Name="PlmLayerEditor" Visibility="Hidden"/>
-
-          <!-- ENEMY LAYER -->
-          <ui:EnemyLayer x:Name="EnemyLayerEditor" Visibility="Hidden"/>
-
-          <!-- SCROLL LAYER -->
-          <ui:ScrollLayerTab x:Name="ScrollLayerEditor" Visibility="Hidden"/>
-
-          <!-- EFFECTS LAYER -->
-          <Grid x:Name="GfxLayerEditor" Visibility="Hidden">
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="175"/>
-              <ColumnDefinition Width="1*"/>
-            </Grid.ColumnDefinitions>
-          </Grid>
-          
-        </Grid>
-      </TabItem>
-
-
-      <!-- ROOM / STATE PROPERTIES -->
-      <TabItem x:Name="PropertiesTab" Header="Properties">
-        <ui:PropertiesTab x:Name="PropertiesView"/>
-      </TabItem>
-
-    </TabControl>
-
-
-    <!-- LAYER SELECTOR -->
-    <ListBox x:Name="LayerSelect" Height="135" Width="110" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,9.8" Grid.ColumnSpan="3" SelectedIndex="0" SelectionChanged="LayerSelect_SelectionChanged" />
+      <ui:NavigateTab Grid.Column="2" x:Name="NavigateView" Visibility="Visible"/>
+      <ui:PropertiesTab Grid.Column="2" x:Name="PropertiesView" Visibility="Hidden"/>
+      <ui:TileLayersTab Grid.Column="2" x:Name="TileLayersEditor" Visibility="Hidden"/>
+      <ui:PlmLayerTab Grid.Column="2" x:Name="PlmLayerEditor" Visibility="Hidden"/>
+      <ui:EnemyLayer Grid.Column="2" x:Name="EnemyLayerEditor" Visibility="Hidden"/>
+      <ui:ScrollLayerTab Grid.Column="2" x:Name="ScrollLayerEditor" Visibility="Hidden"/>
+      <Grid Grid.Column="2" x:Name="FxLayerEditor" Visibility="Hidden"/>
+    </Grid>
 
   </Grid>
 </UserControl>

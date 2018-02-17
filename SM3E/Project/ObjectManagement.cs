@@ -245,6 +245,7 @@ namespace SM3E
       if (ForceAddPlm (col, row))
       {
         HandlingSelection = true;
+        var a = new ActiveItems (this);
         ForceSelectPlm (ActivePlmSet.PlmCount - 1);
         PlmListChanged?.Invoke (this, new ListLoadEventArgs (PlmIndex));
         var e = new LevelDataEventArgs ()
@@ -255,6 +256,7 @@ namespace SM3E
           ScreenYmax = RoomHeightInScreens - 1
         };
         LevelDataModified?.Invoke (this, e);
+        RaiseChangeEvents (a);
         HandlingSelection = false;
       }
     }
@@ -361,6 +363,7 @@ namespace SM3E
       if (ForceAddEnemy (x, y))
       {
         HandlingSelection = true;
+        var a = new ActiveItems (this);
         ForceSelectEnemy (ActiveEnemySet.EnemyCount - 1);
         EnemyListChanged?.Invoke (this, new ListLoadEventArgs (EnemyIndex));
         var e = new LevelDataEventArgs ()
@@ -371,6 +374,7 @@ namespace SM3E
           ScreenYmax = RoomHeightInScreens - 1
         };
         LevelDataModified?.Invoke (this, e);
+        RaiseChangeEvents (a);
         HandlingSelection = false;
       }
     }

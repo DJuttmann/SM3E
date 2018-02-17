@@ -56,6 +56,8 @@ namespace SM3E.UI
       MainProject.DoorSelected += LoadDoorData;
       MainProject.LevelDataSelected += NewLevelData;
       MainProject.LevelDataModified += LevelDataModified;
+      MainProject.PlmSelected += PlmEnemySelected;
+      MainProject.EnemySelected += PlmEnemySelected;
 
       NavigateView.ScreenSelected += LevelDataScrollToScreen;
 
@@ -75,6 +77,8 @@ namespace SM3E.UI
     private void SetupLayerSelect ()
     {
       LayerSelect.Items.Clear ();
+      LayerSelect.Items.Add ("Navigate");
+      LayerSelect.Items.Add ("Properties");
       LayerSelect.Items.Add (CreateLayerItem ("Foreground", LayerForegroundCheckBox_Click));
       LayerSelect.Items.Add (CreateLayerItem ("BTS", LayerBtsCheckBox_Click));
       LayerSelect.Items.Add (CreateLayerItem ("Background", LayerBackgroundCheckBox_Click));
@@ -127,15 +131,14 @@ namespace SM3E.UI
     {
       if (LevelData == null)
         return;
-      bool editing = (EditorTabs.SelectedIndex == 1);
-      if (editing && LayerSelect.SelectedIndex == 3) // Plm layer
+      if (LayerSelect.SelectedIndex == 5) // Plm layer
       {
         MainProject.GetPlmPosition (out int x, out int y,
                                     out int width, out int height);
         LevelData.SetMarker (x, y, width, height);
         LevelData.MarkerVisible = true;
       }
-      else if (editing && LayerSelect.SelectedIndex == 4) // Enemy layer
+      else if (LayerSelect.SelectedIndex == 6) // Enemy layer
       {
         MainProject.GetEnemyPosition (out double x, out double y,
                                       out double width, out double height);
@@ -221,6 +224,11 @@ namespace SM3E.UI
     }
 
 
+    private void PlmEnemySelected (object sender, EventArgs e)
+    {
+      UpdateLevelDataMarker ();
+    }
+
 //========================================================================================
 // Event handlers
 
@@ -261,12 +269,6 @@ namespace SM3E.UI
     }
 
 
-    private void EditorTabs_SelectionChanged (object sender, SelectionChangedEventArgs e)
-    {
-      UpdateLevelDataMarker ();
-    }
-
-
     private void LayerSelect_SelectionChanged (object sender, SelectionChangedEventArgs e)
     {
       if (LayerSelect.SelectedItem == null)
@@ -281,29 +283,37 @@ namespace SM3E.UI
 
       UpdateLevelDataMarker ();
 
+      NavigateView.Visibility = Visibility.Hidden;
+      PropertiesView.Visibility = Visibility.Hidden;
       TileLayersEditor.Visibility = Visibility.Hidden;
       PlmLayerEditor.Visibility = Visibility.Hidden;
       EnemyLayerEditor.Visibility = Visibility.Hidden;
       ScrollLayerEditor.Visibility = Visibility.Hidden;
-      GfxLayerEditor.Visibility = Visibility.Hidden;
+      FxLayerEditor.Visibility = Visibility.Hidden;
       switch (LayerSelect.SelectedIndex)
       {
       case 0:
+        NavigateView.Visibility = Visibility.Visible;
+        break;
       case 1:
+        PropertiesView.Visibility = Visibility.Visible;
+        break;
       case 2:
+      case 3:
+      case 4:
         TileLayersEditor.Visibility = Visibility.Visible;
         break;
-      case 3:
+      case 5:
         PlmLayerEditor.Visibility = Visibility.Visible;
         break;
-      case 4:
+      case 6:
         EnemyLayerEditor.Visibility = Visibility.Visible;
         break;
-      case 5:
+      case 7:
         ScrollLayerEditor.Visibility = Visibility.Visible;
         break;
-      case 6:
-        GfxLayerEditor.Visibility = Visibility.Visible;
+      case 8:
+        FxLayerEditor.Visibility = Visibility.Visible;
         break;
       }
     }
@@ -418,45 +428,39 @@ namespace SM3E.UI
     // Mouse down.
     private void LevelViewer_MouseDown (object sender, TileViewerMouseEventArgs e)
     {
-      switch (EditorTabs.SelectedIndex)
+      switch (LayerSelect.SelectedIndex)
       {
       case 0: // Navigate
         // LevelViewerNavigate_MouseDown (e);
         break;
 
-      case 1: // Edit
-        if (LayerSelect.SelectedIndex == 3) // Plm layer
+      case 5: // PLM layer
+        DraggingPlm = false;
+        if (e.Button == MouseButton.Right)
+          MainProject.SelectPlmAt (e.TileClickX, e.TileClickY);
+        if (e.Button == MouseButton.Left)
         {
-          DraggingPlm = false;
-          if (e.Button == MouseButton.Right &&
-              MainProject.SelectPlmAt (e.TileClickX, e.TileClickY))
-            UpdateLevelDataMarker ();
-          if (e.Button == MouseButton.Left)
-          {
-            MainProject.GetPlmPosition (out int x, out int y, 
-                                        out int width, out int height);
-            if (e.TileClickX >= x && e.TileClickX < x + width &&
-                e.TileClickY >= y && e.TileClickY < y + height)
-              DraggingPlm = true;
-          }
+          MainProject.GetPlmPosition (out int x, out int y, 
+                                      out int width, out int height);
+          if (e.TileClickX >= x && e.TileClickX < x + width &&
+              e.TileClickY >= y && e.TileClickY < y + height)
+            DraggingPlm = true;
         }
-        
-        else if (LayerSelect.SelectedIndex == 4) // Enemy layer
+        break;
+
+      case 6: // Enemy layer
+        DraggingEnemy = false;
+        if (e.Button == MouseButton.Right)
+          MainProject.SelectEnemyAt (e.ClickX * 16, e.ClickY * 16);
+        if (e.Button == MouseButton.Left)
         {
-          DraggingEnemy = false;
-          if (e.Button == MouseButton.Right &&
-              MainProject.SelectEnemyAt (e.ClickX * 16, e.ClickY * 16))
-            UpdateLevelDataMarker ();
-          if (e.Button == MouseButton.Left)
-          {
-            MainProject.GetEnemyPosition (out double x, out double y, 
-                                          out double width, out double height);
-            width /= 2;
-            height /= 2;
-            if (e.ClickX >= x - width && e.ClickX < x + width &&
-                e.ClickY >= y - height && e.ClickY < y + height)
-              DraggingEnemy = true;
-          }
+          MainProject.GetEnemyPosition (out double x, out double y, 
+                                        out double width, out double height);
+          width /= 2;
+          height /= 2;
+          if (e.ClickX >= x - width && e.ClickX < x + width &&
+              e.ClickY >= y - height && e.ClickY < y + height)
+            DraggingEnemy = true;
         }
 
         break;
@@ -493,34 +497,31 @@ namespace SM3E.UI
     // Mouse drag.
     private void LevelViewer_MouseDrag (object sender, TileViewerMouseEventArgs e)
     {
-      switch (EditorTabs.SelectedIndex)
+      switch (LayerSelect.SelectedIndex)
       {
       case 0: // Navigate
         // LevelViewerNavigate_MouseDown (e);
         break;
 
-      case 1: // Edit
-        if (LayerSelect.SelectedIndex == 3) // Plm layer
+      case 5: // Plm layer
+        if (LevelData.MarkerVisible == true && DraggingPlm)
         {
-          if (LevelData.MarkerVisible == true && DraggingPlm)
-          {
-            MainProject.GetPlmPosition (out int x, out int y,
-                                        out int width, out int height);
-            LevelData.SetMarker (x + e.PosTileX - e.TileClickX,
-                                 y + e.PosTileY - e.TileClickY,
-                                 width, height);
-          }
+          MainProject.GetPlmPosition (out int x, out int y,
+                                      out int width, out int height);
+          LevelData.SetMarker (x + e.PosTileX - e.TileClickX,
+                                y + e.PosTileY - e.TileClickY,
+                                width, height);
         }
-        else if (LayerSelect.SelectedIndex == 4) // Enemy layer
+        break;
+
+      case 6: // Enemy layer
+        if (LevelData.MarkerVisible == true && DraggingEnemy)
         {
-          if (LevelData.MarkerVisible == true && DraggingEnemy)
-          {
-            MainProject.GetEnemyPosition (out double x, out double y,
-                                          out double width, out double height);
-            LevelData.SetMarker (x + e.PosX - e.ClickX - width / 2,
-                                 y + e.PosY - e.ClickY - height / 2,
-                                 width, height);
-          }
+          MainProject.GetEnemyPosition (out double x, out double y,
+                                        out double width, out double height);
+          LevelData.SetMarker (x + e.PosX - e.ClickX - width / 2,
+                                y + e.PosY - e.ClickY - height / 2,
+                                width, height);
         }
         break;
       }
@@ -530,20 +531,17 @@ namespace SM3E.UI
     // Mouse Up.
     private void LevelViewer_MouseUp (object sender, TileViewerMouseEventArgs e)
     {
-      switch (EditorTabs.SelectedIndex)
+      switch (LayerSelect.SelectedIndex)
       {
       case 0: // Navigate
         LevelViewerNavigate_MouseDown (e);
         break;
 
-      case 1: // Edit
+      case 1: // Properties
+        break;
+
+      default: // Edit
         LevelViewerEdit_MouseUp (e);
-        break;
-
-      case 2: // Properties
-        break;
-
-      default:
         break;
       }
       DraggingPlm = false;
@@ -559,25 +557,25 @@ namespace SM3E.UI
         // Place tiles in selected area.
         switch (LayerSelect.SelectedIndex)
         {
-        case 0: // Layer 1
+        case 2: // Layer 1
           MainProject.SetLayer1 (e.PosTileY, e.PosTileX, e.TileClickY, e.TileClickX);
           break;
-        case 1: // Bts
+        case 3: // Bts
           MainProject.SetBts (e.PosTileY, e.PosTileX, e.TileClickY, e.TileClickX);
           break;
-        case 2: // Layer 2
+        case 4: // Layer 2
           MainProject.SetLayer2 (e.PosTileY, e.PosTileX, e.TileClickY, e.TileClickX);
           break;
-        case 3: // PLMs
+        case 5: // PLMs
           if (DraggingPlm)
             MainProject.SetPlmPositionRelative (e.PosTileX - e.TileClickX,
                                                 e.PosTileY - e.TileClickY);
           break;
-        case 4: // Enemies
+        case 6: // Enemies
           if (DraggingEnemy)
             MainProject.SetEnemyPositionRelative (e.PosX - e.ClickX, e.PosY - e.ClickY);
           break;
-        case 5: // Scrolls
+        case 7: // Scrolls
           MainProject.SetScroll (e.PosTileX / 16, e.PosTileY / 16,
                                  e.TileClickX / 16, e.TileClickY / 16);
           break;
