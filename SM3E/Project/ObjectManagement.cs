@@ -36,12 +36,13 @@ namespace SM3E
     {
       if (AreaIndex == IndexNone)
         return;
+      var a = new ActiveItems (this);
       if (ForceAddRoom (1, 1, 1, 1, "(new room)"))
       {
         HandlingSelection = true;
-        var a = new ActiveItems (this);
         ForceSelectRoom (Rooms [AreaIndex].Count - 1);
         RoomListChanged?.Invoke (this, new ListLoadEventArgs (RoomIndex));
+        //RoomStateListChanged?.Invoke (this, new ListLoadEventArgs (RoomStateIndex));
         RaiseChangeEvents (a);
         HandlingSelection = false;
       }
@@ -52,10 +53,10 @@ namespace SM3E
     {
       if (AreaIndex == IndexNone)
         return;
+      var a = new ActiveItems (this);
       if (ForceDeleteRoom ())
       {
         HandlingSelection = true;
-        var a = new ActiveItems (this);
         ForceSelectRoom (Math.Min (RoomIndex, Rooms [AreaIndex].Count - 1));
         RoomListChanged?.Invoke (this, new ListLoadEventArgs (RoomIndex));
         RaiseChangeEvents (a);
@@ -68,10 +69,10 @@ namespace SM3E
     {
       if (ActiveRoom?.MyDoorSet == null)
         return;
+      var a = new ActiveItems (this);
       if (ForceAddDoor ())
       {
         HandlingSelection = true;
-        var a = new ActiveItems (this);
         ForceSelectDoor (ActiveRoom.MyDoorSet.DoorCount - 1);
         DoorListChanged?.Invoke (this, new ListLoadEventArgs (DoorIndex));
         RaiseChangeEvents (a);
@@ -84,10 +85,10 @@ namespace SM3E
     {
       if (ActiveRoom?.MyDoorSet == null || ActiveDoor == null)
         return;
+      var a = new ActiveItems (this);
       if (ForceRemoveDoor ())
       {
         HandlingSelection = true;
-        var a = new ActiveItems (this);
         ForceSelectDoor (Math.Max (DoorIndex, ActiveRoom.MyDoorSet.DoorCount - 1));
         DoorListChanged?.Invoke (this, new ListLoadEventArgs (DoorIndex));
         RaiseChangeEvents (a);
@@ -151,10 +152,10 @@ namespace SM3E
     {
       if (ActiveRoom == null)
         return;
+      var a = new ActiveItems (this);
       if (ForceAddRoomState (StateType.Events))
       {
         HandlingSelection = true;
-        var a = new ActiveItems (this);
         ForceSelectRoomState (0);
         RoomStateListChanged?.Invoke (this, new ListLoadEventArgs (RoomStateIndex));
         var e = new LevelDataEventArgs ()
@@ -177,10 +178,10 @@ namespace SM3E
       if (ActiveRoom == null || ActiveRoomState == null ||
           RoomStateIndex == ActiveRoom.RoomStates.Count - 1)
         return;
+      var a = new ActiveItems (this);
       if (ForceDeleteRoomState ())
       {
         HandlingSelection = true;
-        var a = new ActiveItems (this);
         ForceSelectRoomState (RoomStateIndex);
         RoomStateListChanged?.Invoke (this, new ListLoadEventArgs (RoomStateIndex));
         var e = new LevelDataEventArgs ()
@@ -596,23 +597,29 @@ namespace SM3E
       newHeader.SetDefault ();
       newHeader.HeaderType = type;
 
-      RoomState newState = new RoomState ();
-      newState.SetDefault ();
-      newState.MyLevelData = new LevelData (RoomWidthInScreens, RoomHeightInScreens);
-      newState.MyScrollSet = null;
-      newState.MyPlmSet = new PlmSet ();
-      newState.MyEnemySet = new EnemySet ();
-      newState.MyEnemyGfx = new EnemyGfx ();
-      newState.MyFx = new Fx ();
-      newState.MyBackground = null;
-      // newState.MySetupAsm = null; // [wip]
-      // newState.MyMainAsm = null;
+      var newState = new RoomState ();
+      var newLevelData = new LevelData (RoomWidthInScreens, RoomHeightInScreens);
+      var newPlmSet = new PlmSet ();
+      var newEnemySet = new EnemySet ();
+      var newEnemyGfx = new EnemyGfx ();
+      var newFx = new Fx ();
 
-      newState.MyLevelData.MyRoomStates.Add (newState);
-      newState.MyPlmSet.MyRoomStates.Add (newState);
-      newState.MyEnemySet.MyRoomStates.Add (newState);
-      newState.MyEnemyGfx.MyRoomStates.Add (newState);
-      newState.MyFx.MyRoomStates.Add (newState);
+      newState.SetDefault ();
+      newLevelData.SetDefault ();
+      newPlmSet.SetDefault ();
+      newEnemySet.SetDefault (); 
+      newEnemyGfx.SetDefault (); 
+      newFx.SetDefault ();
+
+      newState.SetLevelData (newLevelData, out var ignore1);
+      newState.SetScrollSet (null, out var ignore2);
+      newState.SetPlmSet (newPlmSet, out var ignore3);
+      newState.SetEnemySet (newEnemySet, out var ignore4);
+      newState.SetEnemyGfx (newEnemyGfx, out var ignore5);
+      newState.SetFx (newFx, out var ignore6);
+      newState.SetBackground (null, out var ignore7);
+      newState.SetSetupAsm (null, out var ignore8);
+      newState.SetMainAsm (null, out var ignore9);
 
       ActiveRoom.RoomStateHeaders.Insert (0, newHeader);
       ActiveRoom.RoomStates.Insert (0, newState);

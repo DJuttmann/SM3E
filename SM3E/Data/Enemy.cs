@@ -51,6 +51,22 @@ namespace SM3E
     }
 
 
+    // Constructor, copy from existing enemy.
+    public Enemy (Enemy source): base ()
+    {
+      EnemyID  = source.EnemyID;
+      PosX     = source.PosX;
+      PosY     = source.PosY;
+      Tilemaps = source.Tilemaps;
+      Special  = source.Special;
+      Graphics = source.Graphics;
+      Speed    = source.Speed;
+      Speed2   = source.Speed2;
+
+      MyEnemyType = source.MyEnemyType;
+    }
+
+
     // Read data from ROM at given PC address.
     public override bool ReadFromROM (Rom rom, int addressPC)
     {
@@ -101,7 +117,7 @@ namespace SM3E
       Speed    = 0;
       Speed2   = 0;
 
-      startAddressPC = -1;
+      startAddressPC = DefaultStartAddress;
     }
 
 
@@ -153,8 +169,19 @@ namespace SM3E
     public EnemySet (): base ()
     {
       Enemies = new List <Enemy> ();
-      RequiredToKill = 0;
       MyRoomStates = new List <RoomState> ();
+      RequiredToKill = 0;
+    }
+
+    
+    // Constructor, copy from exsisting enemy set.
+    public EnemySet (EnemySet source): base ()
+    {
+      Enemies = new List <Enemy> ();
+      MyRoomStates = new List <RoomState> ();
+      RequiredToKill = source.RequiredToKill;
+      foreach (Enemy e in source.Enemies)
+        Enemies.Add (new Enemy (e));
     }
 
 
@@ -208,7 +235,7 @@ namespace SM3E
       Enemies.Clear ();
       RequiredToKill = 0;
 
-      startAddressPC = -1;
+      startAddressPC = DefaultStartAddress;
     }
 
 
@@ -303,6 +330,22 @@ namespace SM3E
       MyRoomStates = new HashSet <RoomState> ();
     }
 
+    
+    // Constructor, copy from existing enemy gfx.
+    public EnemyGfx (EnemyGfx source): base ()
+    {
+      EnemyIDs = new List <int> ();
+      Palettes = new List <int> ();
+      MyEnemyTypes = new List <EnemyType> ();
+      MyRoomStates = new HashSet <RoomState> ();
+      for (int i = 0; i < source.EnemyIDs.Count; i++)
+      {
+        EnemyIDs.Add (source.EnemyIDs [i]);
+        Palettes.Add (source.Palettes [i]);
+        MyEnemyTypes.Add (source.MyEnemyTypes [i]);
+      }
+    }
+
 
     // Read data from ROM at given PC address.
     public override bool ReadFromROM (Rom rom, int addressPC)
@@ -349,7 +392,7 @@ namespace SM3E
       EnemyIDs.Clear ();
       Palettes.Clear ();
 
-      startAddressPC = -1;
+      startAddressPC = DefaultStartAddress;
     }
 
 

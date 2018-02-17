@@ -67,11 +67,10 @@ namespace SM3E
 
       MyRoomStates = new List <RoomState> ();
       CompressedData = new List <byte> ();
-
-      startAddressPC = 0;
     }
 
 
+    // Constructor, given width and height.
     public LevelData (int width, int height): base ()
     {
       ScreenCount = width * height;
@@ -86,9 +85,22 @@ namespace SM3E
 
       MyRoomStates = new List <RoomState> ();
       CompressedData = new List <byte> ();
-
-      startAddressPC = 0;
     }
+
+
+    // Constructor, copy from exisiting level data.
+    public LevelData (LevelData source): base ()
+    {
+      ScreenCount = 0;
+
+      Layer1 = new List <UInt16> (source.Layer1);
+      Layer2 = new List <UInt16> (source.Layer2);
+      BTS = new List <byte> (source.BTS);
+
+      MyRoomStates = new List <RoomState> ();
+      CompressedData = new List <byte> ();
+    }
+
 
 
     // Read data from ROM at given PC address.
@@ -187,7 +199,7 @@ namespace SM3E
         BTS.Add (0);
       }
 
-      startAddressPC = -1;
+      startAddressPC = DefaultStartAddress;
       Compress ();
     }
 

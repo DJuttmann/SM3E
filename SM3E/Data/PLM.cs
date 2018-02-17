@@ -48,13 +48,27 @@ namespace SM3E
     public Plm (): base ()
     {
       PlmID        = 0;
-      PosX    = 0;
-      PosY    = 0;
+      PosX         = 0;
+      PosY         = 0;
       MainVariable = 0;
 
       MyPlmType = null;
       MyScrollPlmData = null;
     }
+
+
+    // Constructor, copy from existing PLM.
+    public Plm (Plm source): base ()
+    {
+      PlmID        = source.PlmID;
+      PosX         = source.PosX;
+      PosY         = source.PosY;
+      MainVariable = source.MainVariable;
+
+      MyPlmType = source.MyPlmType;
+      MyScrollPlmData = null;
+    }
+
 
 
     // Read data from ROM at given PC address.
@@ -97,7 +111,7 @@ namespace SM3E
       PosY         = 0;
       MainVariable = 0x8000;
 
-      startAddressPC = -1;
+      startAddressPC = DefaultStartAddress;
     }
 
 
@@ -121,7 +135,7 @@ namespace SM3E
     public void Repoint ()
     {
       if (PlmID == ScrollID)
-        MainVariable = MyScrollPlmData.StartAddressLR;
+        MainVariable = MyScrollPlmData?.StartAddressLR ?? 0x8F0000;
     }
 
 //----------------------------------------------------------------------------------------
@@ -169,6 +183,18 @@ namespace SM3E
     }
 
 
+    // Constructor, copy from existing PLM set.
+    public PlmSet (PlmSet source): base ()
+    {
+      Plms = new List <Plm> ();
+      MyRoomStates = new List <RoomState> ();
+      foreach (Plm p in source.Plms)
+      {
+        Plms.Add (new Plm (p));
+      }
+    }
+
+
     // Read data from ROM at given PC address.
     public override bool ReadFromROM (Rom rom, int addressPC)
     {
@@ -213,7 +239,7 @@ namespace SM3E
     {
       Plms.Clear ();
 
-      startAddressPC = -1;
+      startAddressPC = DefaultStartAddress;
     }
 
 

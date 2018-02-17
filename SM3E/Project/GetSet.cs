@@ -622,6 +622,7 @@ namespace SM3E
       return r.RoomStates [roomStateIndex];
     }
 
+//----------------------------------------------------------------------------------------
 
     // Get pointer to level data for given room state.
     public int GetLevelDataPtr (int areaIndex, int roomIndex, int roomStateIndex)
@@ -632,12 +633,19 @@ namespace SM3E
 
 
     // Set level data of active room state to level data of given roomstate.
-    public void SetLevelData (int areaIndex, int roomIndex, int roomStateIndex)
+    public void SetLevelData (int areaIndex, int roomIndex, int roomStateIndex,
+                              bool newData)
     {
       if (ActiveRoomState == null)
         return;
       RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
-      ActiveRoomState.SetLevelData (s?.MyLevelData, out LevelData deleteData);
+      LevelData d = s?.MyLevelData;
+      if (d != null && newData)
+      {
+        d = new LevelData (d);
+        LevelDatas.Add (d);
+      }
+      ActiveRoomState.SetLevelData (d, out LevelData deleteData);
       LevelDatas.Remove (deleteData);
 
       RoomStateDataModified?.Invoke (this, null);
@@ -655,12 +663,18 @@ namespace SM3E
 
     // Set scroll set of active room state to scroll set of given roomstate.
     public void SetScrollSet (int areaIndex, int roomIndex, int roomStateIndex,
-                              int defaultColor)
+                              bool newData, int defaultColor)
     {
       if (ActiveRoomState == null)
         return;
       RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
-      ActiveRoomState.SetScrollSet (s?.MyScrollSet, out ScrollSet deleteData);
+      ScrollSet d = s?.MyScrollSet;
+      if (d != null && newData)
+      {
+        d = new ScrollSet (d);
+        ScrollSets.Add (d);
+      }
+      ActiveRoomState.SetScrollSet (d, out ScrollSet deleteData);
       ScrollSets.Remove (deleteData);
       if (ActiveRoomState.MyScrollSet == null)
         ActiveRoomState.ScrollSetPtr = defaultColor;
@@ -683,12 +697,19 @@ namespace SM3E
 
 
     // Set PLM set of active room state to PLM set of given roomstate.
-    public void SetPlmSet (int areaIndex, int roomIndex, int roomStateIndex)
+    public void SetPlmSet (int areaIndex, int roomIndex, int roomStateIndex,
+                           bool newData)
     {
       if (ActiveRoomState == null)
         return;
       RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
-      ActiveRoomState.SetPlmSet (s?.MyPlmSet, out PlmSet deleteData);
+      PlmSet d = s?.MyPlmSet;
+      if (d != null && newData)
+      {
+        d = new PlmSet (d);
+        PlmSets.Add (d);
+      }
+      ActiveRoomState.SetPlmSet (d, out PlmSet deleteData);
       PlmSets.Remove (deleteData);
 
       RoomStateDataModified?.Invoke (this, null);
@@ -709,12 +730,19 @@ namespace SM3E
 
 
     // Set enemy set of active room state to enemy set of given roomstate.
-    public void SetEnemySet (int areaIndex, int roomIndex, int roomStateIndex)
+    public void SetEnemySet (int areaIndex, int roomIndex, int roomStateIndex,
+                             bool newData)
     {
       if (ActiveRoomState == null)
         return;
       RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
-      ActiveRoomState.SetEnemySet (s?.MyEnemySet, out EnemySet deleteData);
+      EnemySet d = s?.MyEnemySet;
+      if (d != null && newData)
+      {
+        d = new EnemySet (d);
+        EnemySets.Add (d);
+      }
+      ActiveRoomState.SetEnemySet (d, out EnemySet deleteData);
       EnemySets.Remove (deleteData);
 
       RoomStateDataModified?.Invoke (this, null);
@@ -735,12 +763,19 @@ namespace SM3E
 
 
     // Set enemy gfx of active room state to enemy gfx of given roomstate.
-    public void SetEnemyGfx (int areaIndex, int roomIndex, int roomStateIndex)
+    public void SetEnemyGfx (int areaIndex, int roomIndex, int roomStateIndex,
+                             bool newData)
     {
       if (ActiveRoomState == null)
         return;
       RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
-      ActiveRoomState.SetEnemyGfx (s?.MyEnemyGfx, out EnemyGfx deleteData);
+      EnemyGfx d = s?.MyEnemyGfx;
+      if (d != null && newData)
+      {
+        d = new EnemyGfx (d);
+        EnemyGfxs.Add (d);
+      }
+      ActiveRoomState.SetEnemyGfx (d, out EnemyGfx deleteData);
       EnemyGfxs.Remove (deleteData);
 
       RoomStateDataModified?.Invoke (this, null);
@@ -760,12 +795,19 @@ namespace SM3E
 
 
     // Set fx of active room state to fx of given roomstate.
-    public void SetFx (int areaIndex, int roomIndex, int roomStateIndex)
+    public void SetFx (int areaIndex, int roomIndex, int roomStateIndex,
+                       bool newData)
     {
       if (ActiveRoomState == null)
         return;
       RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
-      ActiveRoomState.SetFx (s?.MyFx, out Fx deleteData);
+      Fx d = s?.MyFx;
+      if (d != null && newData)
+      {
+        d = new Fx (d);
+        Fxs.Add (d);
+      }
+      ActiveRoomState.SetFx (d, out Fx deleteData);
       Fxs.Remove (deleteData);
 
       RoomStateDataModified?.Invoke (this, null);

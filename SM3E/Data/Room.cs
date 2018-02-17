@@ -172,7 +172,7 @@ namespace SM3E
       Value = 0;
       RoomStatePtr = 0;
       
-      startAddressPC = -1;
+      startAddressPC = DefaultStartAddress;
     }
 
 
@@ -328,7 +328,7 @@ namespace SM3E
       BackgroundPtr = 0x8F0000;
       SetupAsmPtr = 0x8F0000;
 
-      startAddressPC = -1;
+      startAddressPC = DefaultStartAddress;
     }
 
 
@@ -539,6 +539,7 @@ namespace SM3E
 
   } // class RoomState
 
+
 //========================================================================================
 // CLASS ROOM 
 //========================================================================================
@@ -700,7 +701,7 @@ namespace SM3E
       DoorsPtr          = 0;
       Name              = Tools.IntToHex (RoomIndex);
 
-      startAddressPC = -1;
+      startAddressPC = DefaultStartAddress;
     }
 
 

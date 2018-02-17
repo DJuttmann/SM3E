@@ -100,6 +100,8 @@ namespace SM3E
 
   abstract class Data
   {
+    protected const int DefaultStartAddress = 0x3FFFFF; // Largest possible address.
+
     protected int startAddressPC; // PC address in ROM of data.
 
     public int StartAddressPC
@@ -123,7 +125,7 @@ namespace SM3E
     // Constructor;
     public Data () 
     {
-      startAddressPC = 0;
+      startAddressPC = DefaultStartAddress;
     }
 
 
@@ -179,7 +181,6 @@ namespace SM3E
     public RawData (): base ()
     {
       Bytes = new List <byte> ();
-      startAddressPC = 0;
     }
 
 
@@ -232,7 +233,7 @@ namespace SM3E
     public override void SetDefault ()
     {
       Bytes.Clear ();
-      startAddressPC = -1;
+      startAddressPC = DefaultStartAddress;
     }
 
   } // class RawData

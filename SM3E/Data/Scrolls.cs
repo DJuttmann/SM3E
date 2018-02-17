@@ -77,13 +77,22 @@ namespace SM3E
     }
 
 
+    // Constructor, coping from existing scroll set.
+    public ScrollSet (ScrollSet source): base ()
+    {
+      MyRoomStates = new HashSet <RoomState> ();
+      for (int n = 0; n < source.Bytes.Count; n++)
+        Bytes.Add (source.Bytes [n]);
+    }
+
+
     // Set default values.
     public override void SetDefault ()
     {
       Bytes.Clear ();
       Bytes.Add (1);
 
-      startAddressPC = -1;
+      startAddressPC = DefaultStartAddress;
     }
 
 
@@ -228,7 +237,7 @@ namespace SM3E
     {
       Entries.Clear ();
 
-      startAddressPC = -1;
+      startAddressPC = DefaultStartAddress;
     }
 
   } // Class ScrollPlmData
@@ -349,6 +358,8 @@ namespace SM3E
     public override void SetDefault ()
     {
       Entries.Clear ();
+
+      startAddressPC = DefaultStartAddress;
     }
 
   } // class ScrollAsm

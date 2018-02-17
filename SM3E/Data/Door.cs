@@ -128,7 +128,7 @@ namespace SM3E
       DistanceToSpawn = 0x8000;
       DoorAsmPtr      = 0;
 
-      startAddressPC = -1;
+      startAddressPC = DefaultStartAddress;
     }
 
 
@@ -317,6 +317,7 @@ namespace SM3E
     public override void SetDefault ()
     {
       DoorPtrs.Clear ();
+      startAddressPC = DefaultStartAddress;
     }
 
 

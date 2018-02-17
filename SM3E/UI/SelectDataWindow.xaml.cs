@@ -46,7 +46,9 @@ namespace SM3E.UI
     }
 
 
-//----------------------------------------------------------------------------------------
+//========================================================================================
+// Event handlers.
+
 
     private void NoneRadio_Checked (object sender, RoutedEventArgs e)
     {
@@ -175,64 +177,49 @@ namespace SM3E.UI
 
     private void Save_Click (object sender, RoutedEventArgs e)
     {
-      if (NoneRadio.IsChecked == true)
-        SaveNone ();
-      if (NewRadio.IsChecked == true)
-        SaveNew ();
-      if (CopyRadio.IsChecked == true)
-        SaveCopy ();
-      if (ExistingRadio.IsChecked == true)
-        SaveExisting ();
-
-      DialogResult = true;
-      Close ();
-    }
-
-
-    private void SaveNone ()
-    {
-      AreaSelect.SelectedIndex = -1;
-      SaveExisting ();
-    }
-
-
-    private void SaveNew ()
-    {
-    }
-
-
-    private void SaveCopy ()
-    {
-    }
-
-
-    private void SaveExisting ()
-    {
       int area = AreaSelect.SelectedIndex;
       int room = RoomSelect.SelectedIndex;
       int state = StateSelect.SelectedIndex;
 
+      DialogResult = true;
+      if (NoneRadio.IsChecked == true)
+        Save (-1, -1, -1, false);
+      else if (ExistingRadio.IsChecked == true)
+        Save (area, room, state, false);
+      else if (NewRadio.IsChecked == true)
+        Save (-1, -1, -1, true);
+      else if (CopyRadio.IsChecked == true)
+        Save (area, room, state, true);
+      else
+        DialogResult = false;
+
+      Close ();
+    }
+
+
+    private void Save (int area, int room, int state, bool newData)
+    {
       switch (Type)
       {
       case "level data":
-        MainProject.SetLevelData (area, room, state);
+        MainProject.SetLevelData (area, room, state, newData);
         break;
       case "scroll set":
         int defaultColor = ScrollsSelectDefault.SelectedIndex == 0 ?
                            ScrollSet.AllBlue : ScrollSet.AllGreen;
-        MainProject.SetScrollSet (area, room, state, defaultColor);
+        MainProject.SetScrollSet (area, room, state, newData, defaultColor);
         break;
       case "plm set":
-        MainProject.SetPlmSet (area, room, state);
+        MainProject.SetPlmSet (area, room, state, newData);
         break;
       case "enemy set":
-        MainProject.SetEnemySet (area, room, state);
+        MainProject.SetEnemySet (area, room, state, newData);
         break;
       case "enemy gfx":
-        MainProject.SetEnemyGfx (area, room, state);
+        MainProject.SetEnemyGfx (area, room, state, newData);
         break;
       case "effects":
-        MainProject.SetFx (area, room, state);
+        MainProject.SetFx (area, room, state, newData);
         break;
       }
     }

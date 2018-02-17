@@ -114,7 +114,7 @@ namespace SM3E
       Bytes.Add (2);
       Bytes.Add (2);
 
-      startAddressPC = -1;
+      startAddressPC = DefaultStartAddress;
     }
 
 
@@ -156,7 +156,6 @@ namespace SM3E
     public BackgroundTiles (): base ()
     {
       CompressedData = new List <byte> ();
-      startAddressPC = 0;
     }
 
 
@@ -292,6 +291,28 @@ namespace SM3E
       MyRoomStates = new HashSet <RoomState> ();
     }
 
+    
+    // Constructor, copy from existing Fx.
+    public Fx (Fx source): base ()
+    {
+      NotNull = false;
+      DoorPtr               = source.DoorPtr;
+      LiquidSurfaceStart    = source.LiquidSurfaceStart;
+      LiquidSurfaceNew      = source.LiquidSurfaceNew;
+      LiquidSurfaceSpeed    = source.LiquidSurfaceSpeed;
+      LiquidSurfaceDelay    = source.LiquidSurfaceDelay;
+      FxType                = source.FxType;
+      FxBitA                = source.FxBitA;
+      FxBitB                = source.FxBitB;
+      FxBitC                = source.FxBitC;
+      PaletteFxBitflags     = source.PaletteFxBitflags;
+      TileAnimationBitflags = source.TileAnimationBitflags;
+      PaletteBlend          = source.PaletteBlend;
+
+      MyDoor = null;
+      MyRoomStates = new HashSet <RoomState> ();
+    }
+
 
     // Read data from ROM at given PC address.
     public override bool ReadFromROM (Rom rom, int addressPC)
@@ -374,7 +395,7 @@ namespace SM3E
       TileAnimationBitflags = 0x00;
       PaletteBlend          = 0x00;
 
-      startAddressPC = -1;
+      startAddressPC = DefaultStartAddress;
     }
 
 

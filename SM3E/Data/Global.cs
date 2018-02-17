@@ -101,7 +101,7 @@ namespace SM3E
       SamusX  = 0x0000;
       SamusY  = 0x00B0;
 
-      // startAddressPC = -1; // [wip] add this line?
+      // startAddressPC = DefaultStartAddress; // [wip] add this line?
     }
 
 
