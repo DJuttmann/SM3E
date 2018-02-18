@@ -248,7 +248,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class ScrollAsm: ScrollModification
+  class ScrollAsm: ScrollModification, IReferenceableBy <Door>
   {
     public const int ColourCommandSize = 2;
     public const int ScrollCommandSize = 4;
@@ -286,6 +286,15 @@ namespace SM3E
       MyDoors = new HashSet <Door> ();
     }
 
+
+    // Constructor, copy from existing scroll ASM.
+    public ScrollAsm (ScrollAsm source): base ()
+    {
+      Entries = new List <int> ();
+      MyDoors = new HashSet <Door> ();
+      foreach (int entry in source.Entries)
+        Entries.Add (entry);
+    }
 
 
     // Read data from ROM at given PC address.
@@ -360,6 +369,27 @@ namespace SM3E
       Entries.Clear ();
 
       startAddressPC = DefaultStartAddress;
+    }
+
+
+    public bool ReferenceMe (Door source)
+    {
+      MyDoors.Add (source);
+      return true;
+    }
+
+
+    public int UnreferenceMe (Door source)
+    {
+      MyDoors.Remove (source);
+      return MyDoors.Count;
+    }
+
+
+    public void DetachAllReferences ()
+    {
+      foreach (Door d in MyDoors)
+        d.SetScrollAsm (null, out var ignore);
     }
 
   } // class ScrollAsm

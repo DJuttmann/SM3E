@@ -133,6 +133,9 @@
     <Compile Include="UI\SelectDataWindow.xaml.cs">
       <DependentUpon>SelectDataWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\SelectDoorAsmWindow.xaml.cs">
+      <DependentUpon>SelectDoorAsmWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\TileLayersTab.xaml.cs">
       <DependentUpon>TileLayersTab.xaml</DependentUpon>
     </Compile>
@@ -208,6 +211,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\SelectDataWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\SelectDoorAsmWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

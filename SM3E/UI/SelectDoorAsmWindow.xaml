@@ -1,0 +1,90 @@
+﻿<Window x:Class="SM3E.UI.SelectDoorAsmWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SM3E.UI"
+        mc:Ignorable="d"
+        Title="Select door ASM" Height="300" Width="600" WindowStartupLocation="CenterOwner">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="1*"/>
+      <ColumnDefinition Width="1*"/>
+      <ColumnDefinition Width="1*"/>
+    </Grid.ColumnDefinitions>
+
+    <!-- AREA -->
+    <Grid x:Name="ScrollArea" Grid.Column="0">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="8"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="25"/>
+        <RowDefinition Height="1*"/>
+      </Grid.RowDefinitions>
+      <RadioButton Grid.Row="2" x:Name="ExistingRadio" Content="Existing" Margin="8,3,8,0" Checked="ExistingRadio_Checked"/>
+      <RadioButton Grid.Row="3" x:Name="NewRadio" Content="New" Margin="8,3,8,0" Checked="NewRadio_Checked"/>
+      <RadioButton Grid.Row="4" x:Name="CopyRadio" Content="New, copy from existing" Margin="8,3,8,0" Checked="CopyRadio_Checked"/>
+      <Label   Grid.Row="5" Content="Area" HorizontalAlignment="Left" Width="100" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
+      <ListBox Grid.Row="6" x:Name="AreaSelect" Margin="8,8,8,8" SelectionChanged="AreaSelect_SelectionChanged"/>
+    </Grid>
+
+    <!-- ROOM -->
+    <Grid x:Name="ScrollRoom" Grid.Column="1">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="25"/>
+        <RowDefinition Height="1*"/>
+      </Grid.RowDefinitions>
+      <Label   Grid.Row="0" Content="Room" HorizontalAlignment="Left" Width="100" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
+      <ListBox Grid.Row="1" x:Name="RoomSelect" Margin="8,8,8,8" SelectionChanged="RoomSelect_SelectionChanged"/>
+    </Grid>
+
+    <!-- ROOM STATE -->
+    <Grid x:Name="ScrollDoor" Grid.Column="2">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="25"/>
+        <RowDefinition Height="1*"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="8"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="8"/>
+      </Grid.RowDefinitions>
+      <Label   Grid.Row="0" Content="Door" HorizontalAlignment="Left" Width="100" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
+      <ListBox Grid.Row="1" x:Name="DoorSelect" Margin="8,8,8,8" SelectionChanged="DoorSelect_SelectionChanged"/>
+      <Label   Grid.Row="2" x:Name="CurrentDataLabel" Content="Current" HorizontalAlignment="Left" Margin="4,-1,0,-5"/>
+      <TextBox Grid.Row="2" x:Name="CurrentDataPtr" Grid.Column="1" Margin="80,2,8,2" HorizontalAlignment="Stretch" Text="$000000" IsReadOnly="True" Background="#FFDFDFDF"/>
+      <Label   Grid.Row="3" x:Name="NewDataLabel" Content="New" HorizontalAlignment="Left" Margin="4,-1,0,-5"/>
+      <TextBox Grid.Row="3" x:Name="NewDataPtr" Grid.Column="1" Margin="80,2,8,2" HorizontalAlignment="Stretch" Text="$000000" IsReadOnly="True" Background="#FFDFDFDF"/>
+    </Grid>
+
+    <!-- ROOM -->
+    <Grid x:Name="RegularAsm" Grid.Column="1" Visibility="Hidden">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="25"/>
+        <RowDefinition Height="1*"/>
+      </Grid.RowDefinitions>
+      <Label   Grid.Row="0" Content="ASM" HorizontalAlignment="Left" Width="100" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
+      <ListBox Grid.Row="1" x:Name="RegularAsmSelect" Margin="8,8,8,8" SelectionChanged="RoomSelect_SelectionChanged"/>
+    </Grid>
+
+
+    <!-- SELECT TYPE / SAVE -->
+    <ComboBox x:Name="SelectType" VerticalAlignment="Top" Height="22" Margin="8,8,8,0" SelectedIndex="0" SelectionChanged="SelectType_SelectionChanged">
+      <ComboBoxItem Content="No ASM"/>
+      <ComboBoxItem Content="Regular ASM"/>
+      <ComboBoxItem Content="Scroll ASM"/>
+    </ComboBox>
+    <Grid Grid.Row="5" Grid.Column="3" VerticalAlignment="Bottom" Margin="0,0,0,8" Height="22">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*"/>
+        <ColumnDefinition Width="1*"/>
+      </Grid.ColumnDefinitions>
+      <Button Grid.Column="0" Margin="8,0,4,0" Content="Cancel" Click="Cancel_Click"/>
+      <Button Grid.Column="1" Margin="4,0,8,0" Content="Save" Click="Save_Click"/>
+    </Grid>
+
+  </Grid>
+</Window>

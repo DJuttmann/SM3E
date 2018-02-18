@@ -438,7 +438,7 @@ namespace SM3E
       }
     }
 
-    // Pointers
+    // Room state pointers
     public int LevelDataPtr
     {
       get {return ActiveRoomState?.MyLevelData?.StartAddressLR ?? 0;}
@@ -483,7 +483,7 @@ namespace SM3E
     {
       get {return ActiveRoomState?.MyMainAsm?.StartAddressLR ?? 0;}
     }
-
+    
     // Plm type
     public string PlmTypeName
     {
@@ -836,6 +836,36 @@ namespace SM3E
           };
       }
     }
+
+
+    // List of regular door ASM names
+    public List <string> DoorAsmNames
+    {
+      get
+      {
+        var names = new List <string> ();
+        foreach (Asm a in DoorAsms)
+          names.Add (a.Name);
+        return names;
+      }
+    }
+
+
+    // Door ASM name
+    public String DoorAsmName
+    {
+      get
+      {
+        if (ActiveDoor == null)
+          return String.Empty;
+        if (ActiveDoor.MyScrollAsm != null)
+          return "Scroll $" + Tools.IntToHex (ActiveDoor.MyScrollAsm.StartAddressLR);
+        if (ActiveDoor.MyDoorAsm != null)
+          return ActiveDoor.MyDoorAsm.Name;
+        return String.Empty;
+      }
+    }
+
 
 //---------------------------------------------------------------------------------------------------
 // Other.

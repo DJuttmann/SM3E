@@ -12,18 +12,26 @@
       <ColumnDefinition Width="Auto"/>
       <ColumnDefinition Width="Auto"/>
     </Grid.ColumnDefinitions>
+
+    <!-- DOORS OUT -->
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="0" Grid.Column="0" Margin="0,0,0,0">
       <Grid.RowDefinitions>
         <RowDefinition Height="25"/>
         <RowDefinition Height="1*"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="8"/>
       </Grid.RowDefinitions>
-
-      <!-- DOORS OUT -->
       <Label Grid.Row="0" Content="Doors" HorizontalAlignment="Stretch" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
       <Button Grid.Row="0" Grid.Column="0" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,33,0" VerticalAlignment="Bottom" Width="20" Grid.ColumnSpan="3" Click="AddDoor_Click"/>
       <Button Grid.Row="0" Grid.Column="0" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8,0" VerticalAlignment="Bottom" Width="20" Grid.ColumnSpan="3" Click="DeleteDoor_Click"/>
-      <ListBox x:Name="DoorListBox" Grid.Row="1" HorizontalAlignment="Stretch" Margin="8,4,8,4" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="DoorListBox_SelectionChanged" MouseDoubleClick="DoorListBox_DoubleClick" />
+      <ListBox x:Name="DoorListBox" Grid.Row="1" HorizontalAlignment="Stretch" Margin="8,4,8,8" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="DoorListBox_SelectionChanged" MouseDoubleClick="DoorListBox_DoubleClick" />
+      <Label Grid.Row="2" Content="ASM" HorizontalAlignment="Stretch" Margin="4,-3,0,-3" />
+      <TextBox Grid.Row="2" x:Name="DoorAsmInput" Margin="40,2,54,2" HorizontalAlignment="Stretch" Text="$000000" IsReadOnly="True" Background="#FFDFDFDF"/>
+      <Button Grid.Row="2" Content="&#x270F;" HorizontalAlignment="Right" Height="20" Margin="0,0,30,0" VerticalAlignment="Top" Width="20" RenderTransformOrigin="0.54,0.5" Click="Asm_Click"/>
+      <Label Grid.Row="2" x:Name="LavelDataRefCount" Margin="0,-3,12,-3" Content="0" HorizontalAlignment="Right"/>
     </Grid>
+
+    <!-- MAP TILE SELECTOR -->
     <Grid Grid.Column="1">
       <Grid.RowDefinitions>
         <RowDefinition Height="8"/>
@@ -33,8 +41,6 @@
         <RowDefinition Height="22"/>
         <RowDefinition Height="1*"/>
       </Grid.RowDefinitions>
-
-      <!-- MAP TILE SELECTOR -->
       <Grid Grid.Row="1" Grid.RowSpan="2" Width="32" Height="32" Margin="8,0,8,0" HorizontalAlignment="Right">
         <Image x:Name="SelectedMapTileImage" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
       </Grid>
@@ -43,7 +49,7 @@
       <RadioButton Grid.Row="2" x:Name="MapEditRadio" Content="Edit" Margin="4,3,0,-5" Click="MapEditRadio_Click"/>
       <Button Grid.Row="2" x:Name="MapEditHFlip" Width="20" Height="20" Content="&#x2194;" HorizontalAlignment="Left" Margin="60,0,0,0" Click="MapEditHFlip_Click"/>
       <Grid Grid.Row="3" x:Name="MapTileViewer" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="4,8,4,8"/>
-      <Label Grid.Row="4" Content="Palette row" HorizontalAlignment="Stretch" Margin="0,-3,0,-3" />
+      <Label Grid.Row="4" Content="Palette row" HorizontalAlignment="Stretch" Margin="4,-3,0,-3" />
       <ComboBox Grid.Row="4" x:Name="MapPaletteSelect" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="80,-1,8,-1" SelectedIndex="3" SelectionChanged="MapPaletteSelect_SelectionChanged">
         <ComboBoxItem Content="0"/>
         <ComboBoxItem Content="1"/>

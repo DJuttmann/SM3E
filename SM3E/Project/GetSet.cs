@@ -39,6 +39,29 @@ namespace SM3E
     }
 
 
+    // List of room state names for given room in area.
+    public List <string> GetDoorNames (int areaIndex, int roomIndex)
+    {
+      var names = new List <string> ();
+      if (areaIndex >= 0 && areaIndex < AreaCount &&
+          roomIndex >= 0 && roomIndex < Rooms [areaIndex].Count)
+      {
+        DoorSet s = ((Room) Rooms [areaIndex] [roomIndex]).MyDoorSet;
+        for (int n = 0; n < s.DoorCount; n++)
+        {
+          string name = Tools.IntToHex (n) + " ";
+          Door d = s.MyDoors [n];
+          if (d.ElevatorPad)
+            name += "[Elevator pad]";
+          else
+            name += d.MyTargetRoom?.Name ?? "";
+          names.Add (name);
+        }
+      }
+      return names;
+    }
+
+
     public void GetRoomSizeInScreens (int areaIndex, int roomIndex,
                                       out int width, out int height)
     {
@@ -610,6 +633,7 @@ namespace SM3E
       RoomStateDataModified?.Invoke (this, null);
     }
 
+//----------------------------------------------------------------------------------------
 
     private RoomState IndexToRoomState (int areaIndex, int roomIndex, int roomStateIndex)
     {
@@ -622,7 +646,6 @@ namespace SM3E
       return r.RoomStates [roomStateIndex];
     }
 
-//----------------------------------------------------------------------------------------
 
     // Get pointer to level data for given room state.
     public int GetLevelDataPtr (int areaIndex, int roomIndex, int roomStateIndex)
@@ -640,9 +663,10 @@ namespace SM3E
         return;
       RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
       LevelData d = s?.MyLevelData;
-      if (d != null && newData)
+      if (newData)
       {
-        d = new LevelData (d);
+        d = d != null ? new LevelData (d) : new LevelData (RoomWidthInScreens,
+                                                           RoomHeightInScreens);
         LevelDatas.Add (d);
       }
       ActiveRoomState.SetLevelData (d, out LevelData deleteData);
@@ -669,9 +693,9 @@ namespace SM3E
         return;
       RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
       ScrollSet d = s?.MyScrollSet;
-      if (d != null && newData)
+      if (newData)
       {
-        d = new ScrollSet (d);
+        d = d != null ? new ScrollSet (d) : new ScrollSet ();
         ScrollSets.Add (d);
       }
       ActiveRoomState.SetScrollSet (d, out ScrollSet deleteData);
@@ -704,9 +728,9 @@ namespace SM3E
         return;
       RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
       PlmSet d = s?.MyPlmSet;
-      if (d != null && newData)
+      if (newData)
       {
-        d = new PlmSet (d);
+        d = d != null ? new PlmSet (d) : new PlmSet ();
         PlmSets.Add (d);
       }
       ActiveRoomState.SetPlmSet (d, out PlmSet deleteData);
@@ -737,9 +761,9 @@ namespace SM3E
         return;
       RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
       EnemySet d = s?.MyEnemySet;
-      if (d != null && newData)
+      if (newData)
       {
-        d = new EnemySet (d);
+        d = d != null ? new EnemySet (d) : new EnemySet ();
         EnemySets.Add (d);
       }
       ActiveRoomState.SetEnemySet (d, out EnemySet deleteData);
@@ -770,9 +794,9 @@ namespace SM3E
         return;
       RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
       EnemyGfx d = s?.MyEnemyGfx;
-      if (d != null && newData)
+      if (newData)
       {
-        d = new EnemyGfx (d);
+        d = d != null ? new EnemyGfx (d) : new EnemyGfx ();
         EnemyGfxs.Add (d);
       }
       ActiveRoomState.SetEnemyGfx (d, out EnemyGfx deleteData);
@@ -802,9 +826,9 @@ namespace SM3E
         return;
       RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
       Fx d = s?.MyFx;
-      if (d != null && newData)
+      if (newData)
       {
-        d = new Fx (d);
+        d = d != null ? new Fx (d) : new Fx ();
         Fxs.Add (d);
       }
       ActiveRoomState.SetFx (d, out Fx deleteData);
@@ -814,6 +838,70 @@ namespace SM3E
       LevelDataModified?.Invoke (this, new LevelDataEventArgs () {AllScreens = true});
     }
 
-  }
+
+    // Get Door Asm type
+    public DoorAsmType GetDoorAsmType ()
+    {
+      if (ActiveDoor.MyDoorAsm != null)
+        return DoorAsmType.Regular;
+      if (ActiveDoor.MyScrollAsm != null)
+        return DoorAsmType.Scroll;
+      return DoorAsmType.None;
+    }
+
+
+    private Door IndexToDoor (int areaIndex, int roomIndex, int doorIndex)
+    {
+      if (areaIndex < 0 || areaIndex >= AreaCount ||
+          roomIndex < 0 || roomIndex >= Rooms [areaIndex].Count)
+        return null;
+      Room r = (Room) Rooms [areaIndex] [roomIndex];
+      if (doorIndex < 0 || doorIndex >= r.MyDoorSet.DoorCount)
+        return null;
+      return r.MyDoorSet.MyDoors [doorIndex];
+    }
+
+
+    // Get pointer to Asm for given Door.
+    public int GetScrollAsmPtr (int areaIndex, int roomIndex, int doorIndex)
+    {
+      Door d = IndexToDoor (areaIndex, roomIndex, doorIndex);
+      return d?.MyScrollAsm?.StartAddressLR ?? 0;
+    }
+
+
+    public void SetRegularDoorAsm (int index)
+    {
+      if (ActiveDoor == null)
+        return;
+      Asm target = null;
+      if (index >= 0 && index < DoorAsms.Count)
+        target = (Asm) DoorAsms [index];
+      ActiveDoor.SetDoorAsm (target, out ScrollAsm deleteData);
+      ScrollAsms.Remove (deleteData);
+
+      DoorDataModified?.Invoke (this, null);
+    }
+
+
+    public void SetScrollAsm (int areaIndex, int roomIndex, int doorIndex,
+                       bool newData)
+    {
+      if (ActiveDoor == null)
+        return;
+      Door d = IndexToDoor (areaIndex, roomIndex, doorIndex);
+      ScrollAsm a = d?.MyScrollAsm;
+      if (newData)
+      {
+        a = a != null ? new ScrollAsm (a) : new ScrollAsm ();
+        ScrollAsms.Add (a);
+      }
+      ActiveDoor.SetScrollAsm (a, out ScrollAsm deleteData);
+      ScrollAsms.Remove (deleteData);
+
+      DoorDataModified?.Invoke (this, null);
+    }
+
+  } // partial class Project
 
 }

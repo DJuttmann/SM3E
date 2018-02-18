@@ -14,7 +14,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class Asm: RawData, IReusable, IReferenceableBy <RoomState>
+  class Asm: RawData, IReusable, IReferenceableBy <RoomState>, IReferenceableBy <Door>
   {
     public string Name;
 
@@ -54,6 +54,20 @@ namespace SM3E
     }
 
 
+    public bool ReferenceMe (Door source)
+    {
+      MyReferringData.Add (source);
+      return true;
+    }
+
+
+    public int UnreferenceMe (Door source)
+    {
+      MyReferringData.Remove (source);
+      return MyReferringData.Count;
+    }
+
+
     public void DetachAllReferences ()
     {
       foreach (Data d in MyReferringData)
@@ -64,6 +78,9 @@ namespace SM3E
             r.SetSetupAsm (null, out var ignore);
           if (r.MyMainAsm == this)
             r.SetMainAsm (null, out var ignore);
+          break;
+        case Door door:
+          door.SetDoorAsm (null, out var ignore2);
           break;
         default:
           break;

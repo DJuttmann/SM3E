@@ -9,6 +9,14 @@ using System.Collections.Generic;
 namespace SM3E
 {
 
+    public enum DoorAsmType
+    {
+      None,
+      Regular,
+      Scroll
+    }
+
+
 //========================================================================================
 // CLASS DOOR
 //========================================================================================
@@ -32,6 +40,7 @@ namespace SM3E
 
     public Room MyTargetRoom;
     public ScrollAsm MyScrollAsm;
+    public Asm MyDoorAsm;
     public HashSet <DoorSet> MyDoorSets;
 
     public override int Size
@@ -132,7 +141,7 @@ namespace SM3E
     }
 
 
-    public bool Connect (List <Data> Rooms, List <Data> ScrollAsms)
+    public bool Connect (List <Data> Rooms, List <Data> ScrollAsms, List <Data> DoorAsms)
     {
       MyTargetRoom = (Room) Rooms.Find (x => x.StartAddressLR == RoomPtr);
       if (MyTargetRoom != null)
@@ -142,7 +151,9 @@ namespace SM3E
         MyScrollAsm.MyDoors.Add (this);
       else
       {
-        // [wip] connect to generic ASM?
+        MyDoorAsm = (Asm) DoorAsms.Find (x => x.StartAddressLR == DoorAsmPtr);
+        if (MyDoorAsm != null)
+          MyDoorAsm.MyReferringData.Add (this);
       }
       return MyTargetRoom != null;
     }
@@ -240,6 +251,28 @@ namespace SM3E
       MyTargetRoom = null;
       if (target?.ReferenceMe (this) ?? false)
         MyTargetRoom = target;
+    }
+
+
+    public void SetScrollAsm (ScrollAsm target, out ScrollAsm DeleteScrollAsm)
+    {
+      MyDoorAsm?.UnreferenceMe (this);
+      MyDoorAsm = null;
+      DeleteScrollAsm = MyScrollAsm?.UnreferenceMe (this) == 0 ? MyScrollAsm : null;
+      MyScrollAsm = null;
+      if (target?.ReferenceMe (this) ?? false)
+        MyScrollAsm = target;
+    }
+
+
+    public void SetDoorAsm (Asm target, out ScrollAsm DeleteScrollAsm)
+    {
+      MyDoorAsm?.UnreferenceMe (this);
+      MyDoorAsm = null;
+      DeleteScrollAsm = MyScrollAsm?.UnreferenceMe (this) == 0 ? MyScrollAsm : null;
+      MyScrollAsm = null;
+      if (target?.ReferenceMe (this) ?? false)
+        MyDoorAsm = target;
     }
 
   } // Class Door

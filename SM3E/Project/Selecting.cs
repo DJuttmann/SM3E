@@ -85,6 +85,10 @@ namespace SM3E
     {
       get {return MainAsms.FindIndex (x => x == ActiveRoomState?.MyMainAsm);}
     }
+    public int DoorAsmIndex
+    {
+      get {return MainAsms.FindIndex (x => x == ActiveDoor?.MyDoorAsm);}
+    }
 
 
 //========================================================================================

@@ -51,6 +51,7 @@ namespace SM3E.UI
       MainProject.MapTileSelected += UpdateActiveMapTile;
       MainProject.MapPaletteSelected += UpdateMapTileSelector;
       MainProject.MapDataModified += UpdateMapEditor;
+      MainProject.DoorDataModified += UpdateDoorData;
     }
 
 
@@ -74,6 +75,12 @@ namespace SM3E.UI
       MapEditor.MouseUp += MapEditor_MouseUp;
       MapViewer.Children.Add (MapEditor.Element);
       SelectedMapTileImage.RenderTransformOrigin = new Point (0.5, 0.5);
+    }
+
+
+    private void UpdateDoorData (object sender, EventArgs e)
+    {
+      DoorAsmInput.Text = MainProject.DoorAsmName;
     }
 
 
@@ -127,6 +134,7 @@ namespace SM3E.UI
       QuietSelect = true;
       DoorListBox.SelectedIndex = MainProject.DoorIndex;
       QuietSelect = false;
+      DoorAsmInput.Text = MainProject.DoorAsmName;
     }
 
 
@@ -159,6 +167,14 @@ namespace SM3E.UI
     private void DeleteDoor_Click (object sender, RoutedEventArgs e)
     {
       MainProject.DeleteDoor ();
+    }
+
+
+    private void Asm_Click (object sender, RoutedEventArgs e)
+    {
+      var window = new SelectDoorAsmWindow (MainProject);
+      window.Owner = Window.GetWindow (this);
+      window.ShowDialog ();
     }
 
 //----------------------------------------------------------------------------------------
@@ -227,9 +243,9 @@ namespace SM3E.UI
   } // class NavigateTab
 
 
-//========================================================================================
-// EVENT DELEGATES
-//========================================================================================
+  //========================================================================================
+  // EVENT DELEGATES
+  //========================================================================================
 
 
   public class RoomSelectEventArgs: EventArgs
