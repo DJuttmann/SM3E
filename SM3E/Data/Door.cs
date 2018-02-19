@@ -256,6 +256,11 @@ namespace SM3E
 
     public void SetScrollAsm (ScrollAsm target, out ScrollAsm DeleteScrollAsm)
     {
+      if (target == MyScrollAsm)
+      {
+        DeleteScrollAsm = null;
+        return;
+      }
       MyDoorAsm?.UnreferenceMe (this);
       MyDoorAsm = null;
       DeleteScrollAsm = MyScrollAsm?.UnreferenceMe (this) == 0 ? MyScrollAsm : null;

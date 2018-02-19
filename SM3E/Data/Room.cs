@@ -477,6 +477,11 @@ namespace SM3E
     private void SetReference <T> (ref T field, T target, out T deleteData) 
       where T: Data, IReferenceableBy <RoomState>
     {
+      if (target == field)
+      {
+        deleteData = null;
+        return;
+      }
       deleteData = field?.UnreferenceMe (this) == 0 ? field : null;
       field = null;
       if (target?.ReferenceMe (this) ?? false)

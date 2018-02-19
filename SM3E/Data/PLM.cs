@@ -146,6 +146,20 @@ namespace SM3E
       PosY += (byte) dy;
     }
 
+
+    public void SetScrollPlmData (ScrollPlmData target, out ScrollPlmData deleteData)
+    {
+      if (target == MyScrollPlmData)
+      {
+        deleteData = null;
+        return;
+      }
+      deleteData = MyScrollPlmData?.UnreferenceMe (this) == 0 ? MyScrollPlmData : null;
+      MyScrollPlmData = null;
+      if (target?.ReferenceMe (this) ?? false)
+        MyScrollPlmData = target;
+    }
+
   } // Class Plm
 
 

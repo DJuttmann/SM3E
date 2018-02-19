@@ -100,6 +100,9 @@
     <Compile Include="Tools\Compression.cs" />
     <Compile Include="Tools\BtsConvert.cs" />
     <Compile Include="Tools\Rom.cs" />
+    <Compile Include="UI\EditPlmWindow.xaml.cs">
+      <DependentUpon>EditPlmWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\SelectAsmWindow.xaml.cs">
       <DependentUpon>SelectAsmWindow.xaml</DependentUpon>
     </Compile>
@@ -136,6 +139,9 @@
     <Compile Include="UI\SelectDoorAsmWindow.xaml.cs">
       <DependentUpon>SelectDoorAsmWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\SelectScrollPlmDataWindow.xaml.cs">
+      <DependentUpon>SelectScrollPlmDataWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\TileLayersTab.xaml.cs">
       <DependentUpon>TileLayersTab.xaml</DependentUpon>
     </Compile>
@@ -166,6 +172,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="UI\EditPlmWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\SelectAsmWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -215,6 +225,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\SelectDoorAsmWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\SelectScrollPlmDataWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

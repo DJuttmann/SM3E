@@ -89,6 +89,24 @@ namespace SM3E
     {
       get {return MainAsms.FindIndex (x => x == ActiveDoor?.MyDoorAsm);}
     }
+    public int ScrollPlmIndex
+    {
+      get
+      {
+        if (ActivePlmSet == null || PlmIndex == IndexNone ||
+            ActivePlm.PlmID != Plm.ScrollID)
+          return IndexNone;
+        int index = 0;
+        for (int i = 0; i < ActivePlmSet.PlmCount; i++)
+        {
+          if (i == PlmIndex)
+            break;
+          if (ActivePlmSet.Plms [i].PlmID == Plm.ScrollID)
+            index++;
+        }
+        return index;
+      }
+    }
 
 
 //========================================================================================

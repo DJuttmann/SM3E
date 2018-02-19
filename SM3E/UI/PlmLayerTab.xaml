@@ -18,25 +18,25 @@
       <Grid.RowDefinitions>
         <RowDefinition Height="25"/>
         <RowDefinition Height="1*"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="8"/>
       </Grid.RowDefinitions>
       <Label   Grid.Row="0" Content="PLMs" HorizontalAlignment="Stretch" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
       <Button  Grid.Row="0" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,0,83,0" VerticalAlignment="Bottom" Width="20" Click="AddPlm_Click"/>
       <Button  Grid.Row="0" Content="&#x2BC5;" HorizontalAlignment="Right" Height="20" Margin="0,0,58,0" VerticalAlignment="Bottom" Width="20" Click="MovePlmUp_Click"/>
       <Button  Grid.Row="0" Content="&#x2BC6;" HorizontalAlignment="Right" Height="20" Margin="0,0,33,0" VerticalAlignment="Bottom" Width="20" Click="MovePlmDown_Click"/>
       <Button  Grid.Row="0" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8,0" VerticalAlignment="Bottom" Width="20" Click="DeletePlm_Click"/>
-      <ListBox Grid.Row="1" x:Name="PlmListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,8" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="PlmListBox_SelectionChanged"/>
+      <ListBox Grid.Row="1" x:Name="PlmListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,8" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="PlmListBox_SelectionChanged" MouseDoubleClick="PlmListBox_DoubleClick"/>
+      <Label   Grid.Row="2" Margin="5,-3,0,-3" Content="Position" HorizontalAlignment="Left"/>
+      <TextBox Grid.Row="2" x:Name="PositionInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00,00"/>
     </Grid>
     <Grid Grid.Column="1">
       <Grid.RowDefinitions>
         <RowDefinition Height="25"/>
         <RowDefinition Height="1*"/>
-        <RowDefinition Height="22"/>
-        <RowDefinition Height="8"/>
       </Grid.RowDefinitions>
       <Label   Grid.Row="0" x:Name="PlmName" Grid.Column="1" Content="[selected plm]" HorizontalAlignment="Stretch" Margin="0,2,0,-3"/>
       <Image   Grid.Row="1" x:Name="PlmImage" Grid.Column="1" HorizontalAlignment="Stretch" Margin="8,8,8,8" VerticalAlignment="Stretch" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
-      <Label   Grid.Row="2" Margin="5,-3,0,-3" Content="Value" HorizontalAlignment="Left"/>
-      <TextBox Grid.Row="2" x:Name="PlmValueInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$00"/>
     </Grid>
     <Grid Grid.Column="2">
       <Grid.RowDefinitions>

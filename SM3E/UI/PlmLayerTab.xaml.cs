@@ -123,6 +123,18 @@ namespace SM3E.UI
     }
 
 
+    private void PlmListBox_DoubleClick (object sender, MouseButtonEventArgs e)
+    {
+      Window window;
+      if (MainProject.PlmID == Plm.ScrollID)
+        window = new UI.SelectScrollPlmDataWindow (MainProject);
+      else
+        window = new UI.EditPlmWindow (MainProject);
+      window.Owner = Window.GetWindow (this);
+      window.ShowDialog ();
+    }
+
+
     private void AddPlm_Click (object sender, RoutedEventArgs e)
     {
       MainProject.AddPlm (0, 0);
@@ -146,5 +158,6 @@ namespace SM3E.UI
       MainProject.DeletePlm ();
     }
 
-  }
+  } // partial class PlmLayerTab
+
 }

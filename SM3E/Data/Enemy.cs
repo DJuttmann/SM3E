@@ -296,6 +296,15 @@ namespace SM3E
 //========================================================================================
 
 
+  public enum EnemyGfxPalette
+  {
+    P1 = 0x0001,
+    P2 = 0x0002,
+    P3 = 0x0003,
+    P4 = 0x0007
+  }
+
+
   class EnemyGfx: Data, IReusable, IReferenceableBy <RoomState>
   {
     public const int BlockSize = 4;

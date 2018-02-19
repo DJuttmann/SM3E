@@ -62,6 +62,24 @@ namespace SM3E
     }
 
 
+    // List of PLM names for ginen room state.
+    public List <string> GetScrollPlmNames (int areaIndex, int roomIndex, int stateIndex)
+    {
+      var names = new List <string> ();
+      RoomState s = IndexToRoomState (areaIndex, roomIndex, stateIndex);
+      if (s != null && s.MyPlmSet != null)
+      {
+        foreach (Plm p in s.MyPlmSet.Plms)
+        {
+          if (p.PlmID == Plm.ScrollID)
+          names.Add (String.Format ("Scroll PLM at ({0},{1})",
+                                    Tools.IntToHex (p.PosX), Tools.IntToHex (p.PosY)));
+        }
+      }
+      return names;
+    }
+
+
     public void GetRoomSizeInScreens (int areaIndex, int roomIndex,
                                       out int width, out int height)
     {
@@ -395,6 +413,31 @@ namespace SM3E
     public void SetPlmPositionRelative (int dx, int dy)
     {
       SetPlmPosition (ActivePlm.PosX + dx, ActivePlm.PosY + dy);
+    }
+
+
+    // Get properties if PLM is not a scroll PLM.
+    public void GetPlmProperties (out int properties, out int index)
+    {
+      properties = 0;
+      index = 0;
+      if (ActivePlm != null && ActivePlm.PlmID != Plm.ScrollID)
+      {
+        properties = (ActivePlm.MainVariable >> 8) & 0xFF;
+        index = ActivePlm.MainVariable & 0xFF;;
+      }
+    }
+
+
+    // Set properties if PLM is not a scroll PLM.
+    public void SetPlmProperties (int properties, int index)
+    {
+      if (ActivePlm != null && ActivePlm.PlmID != Plm.ScrollID)
+      {
+        byte b0 = (byte) index;
+        byte b1 = (byte) properties;
+        ActivePlm.MainVariable = Tools.ConcatBytes (b0, b1);
+      }
     }
 
 
@@ -900,6 +943,54 @@ namespace SM3E
       ScrollAsms.Remove (deleteData);
 
       DoorDataModified?.Invoke (this, null);
+    }
+
+
+    // List of all scroll PLMs for give room state
+    private List <Plm> GetScrollPlms (int areaIndex, int roomIndex, int roomStateIndex)
+    {
+      RoomState s = IndexToRoomState (areaIndex, roomIndex, roomStateIndex);
+      List <Plm> plms = s?.MyPlmSet?.Plms;
+      if (plms != null)
+        return (from Plm p in plms
+                where p.PlmID == Plm.ScrollID
+                select p).ToList ();
+      return new List <Plm> ();
+    }
+
+
+    public int GetScrollPlmDataPtr (int areaIndex, int roomIndex, int roomStateIndex,
+                                    int scrollPlmIndex)
+    {
+      List <Plm> scrollPlms = GetScrollPlms (areaIndex, roomIndex, roomStateIndex);
+      if (scrollPlms == null || scrollPlmIndex < 0 || scrollPlmIndex >= scrollPlms.Count)
+        return 0;
+      return scrollPlms [scrollPlmIndex].MyScrollPlmData?.StartAddressLR ?? 0;
+    }
+
+
+    public void SetScrollPlmData (int areaIndex, int roomIndex, int roomStateIndex,
+                                  int scrollPlmIndex, bool newData)
+    {
+      if (ActivePlm == null || ActivePlm.PlmID != Plm.ScrollID)
+        return;
+      List <Plm> scrollPlms = GetScrollPlms (areaIndex, roomIndex, roomStateIndex);
+      ScrollPlmData d = null;
+      if (scrollPlmIndex >= 0 && scrollPlmIndex < scrollPlms.Count)
+        d = scrollPlms [scrollPlmIndex].MyScrollPlmData;
+
+      if (newData)
+      {
+        d = d != null ? new ScrollPlmData (d) : new ScrollPlmData ();
+        ScrollPlmDatas.Add (d);
+      }
+      ActivePlm.SetScrollPlmData (d, out ScrollPlmData deleteData);
+      ScrollPlmDatas.Remove (deleteData);
+
+      ForceSelectScrollData (0);
+      ScrollDataListChanged (this, new ListLoadEventArgs (ScrollDataIndex));
+      RoomStateDataModified?.Invoke (this, null);
+      LevelDataModified?.Invoke (this, new LevelDataEventArgs () {AllScreens = true});
     }
 
   } // partial class Project

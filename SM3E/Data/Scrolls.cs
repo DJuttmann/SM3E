@@ -172,7 +172,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class ScrollPlmData: ScrollModification
+  class ScrollPlmData: ScrollModification, IReferenceableBy <Plm>
   {
     public const int BlockSize = 2;
     public const int TerminatorSize = 1;
@@ -192,6 +192,17 @@ namespace SM3E
     {
       Entries = new List <int> ();
       MyPlms = new HashSet <Plm> ();
+    }
+
+ 
+    // Constructor, copy from existing scroll PLM data.
+    public ScrollPlmData (ScrollPlmData source): base ()
+    {
+      Entries = new List <int> ();
+      MyPlms = new HashSet <Plm> ();
+
+      foreach (int i in source.Entries)
+        Entries.Add (i);
     }
 
 
@@ -238,6 +249,27 @@ namespace SM3E
       Entries.Clear ();
 
       startAddressPC = DefaultStartAddress;
+    }
+
+
+    public bool ReferenceMe (Plm source)
+    {
+      MyPlms.Add (source);
+      return true;
+    }
+
+
+    public int UnreferenceMe (Plm source)
+    {
+      MyPlms.Remove (source);
+      return MyPlms.Count;
+    }
+
+
+    public void DetachAllReferences ()
+    {
+      foreach (Plm p in MyPlms)
+        p.SetScrollPlmData (null, out var ignore);
     }
 
   } // Class ScrollPlmData

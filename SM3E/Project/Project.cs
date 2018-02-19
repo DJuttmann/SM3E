@@ -484,7 +484,13 @@ namespace SM3E
       get {return ActiveRoomState?.MyMainAsm?.StartAddressLR ?? 0;}
     }
     
-    // Plm type
+    // PLM
+    public int PlmID
+    {
+      get {return ActivePlm?.PlmID ?? 0;}
+    }
+
+    // PLM type
     public string PlmTypeName
     {
       get {return ActivePlmType?.Name ?? "<none>";}
@@ -565,7 +571,7 @@ namespace SM3E
       }
     }
 
-    // List of Plm names for active room
+    // List of Plm names for active room state.
     public List <string> PlmNames
     {
       get
@@ -679,10 +685,10 @@ namespace SM3E
             names.Add ("Room Scrolls");
             break;
           case ScrollPlmData s:
-            names.Add ("PLM ($" + s.StartAddressPC + ")");
+            names.Add ("PLM ($" + Tools.IntToHex (s.StartAddressLR) + ")");
             break;
           case ScrollAsm s:
-            names.Add ("ASM ($" + s.StartAddressPC + ")");
+            names.Add ("ASM ($" + Tools.IntToHex (s.StartAddressLR) + ")");
             break;
           default:
             break;
