@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Reflection;
 
 
 namespace SM3E
@@ -21,6 +22,18 @@ namespace SM3E
   }
 
 
+  [AttributeUsage (AttributeTargets.Field, AllowMultiple = false)]
+  public class RegisteredData: Attribute
+  {
+    public string Name;
+
+    public RegisteredData (string name)
+    {
+      Name = name;
+    }
+  }
+
+
 //========================================================================================
 // CLASS PROJECT
 //========================================================================================
@@ -35,34 +48,125 @@ namespace SM3E
 
     // Fields
     private string [] Areas = new string [AreaCount];
-    private List <Data> [] Rooms = new List <Data> [AreaCount];
+
+    [RegisteredData ("rooms")]
+    private ListArray <Data> Rooms;
+
+    [RegisteredData ("doorsets")]
     private List <Data> DoorSets;
+
+    [RegisteredData ("doors")]
     private List <Data> Doors;
+    
     private List <Data> RoomStates;
+
+    [RegisteredData ("scrollsets")]
     private List <Data> ScrollSets;
+
+    [RegisteredData ("plmsets")]
     private List <Data> PlmSets;
+
+    [RegisteredData ("scrollplmdatas")]
     private List <Data> ScrollPlmDatas;
+
+    [RegisteredData ("backgrounds")]
     private List <Data> Backgrounds;
+
+    [RegisteredData ("fxs")]
     private List <Data> Fxs;
+
+    [RegisteredData ("saverooms")]
     private List <Data> SaveRooms;
+
+    [RegisteredData ("leveldatas")]
     private List <Data> LevelDatas;
+
+    [RegisteredData ("enemysets")]
     private List <Data> EnemySets;
+
+    [RegisteredData ("enemygfxs")]
     private List <Data> EnemyGfxs;
+
+    [RegisteredData ("scrollasms")]
     private List <Data> ScrollAsms;
+
+    [RegisteredData ("doorasms")]
     private List <Data> DoorAsms;
+
+    [RegisteredData ("setupasms")]
     private List <Data> SetupAsms;
+
+    [RegisteredData ("mainasms")]
     private List <Data> MainAsms;
 
+    [RegisteredData ("tilesets")]
     private List <Data> TileSets;
+
+    [RegisteredData ("tiletables")]
     private List <Data> TileTables;
+
+    [RegisteredData ("tilesheets")]
     private List <Data> TileSheets;
+
+    [RegisteredData ("palettes")]
     private List <Data> Palettes;
+
+    [RegisteredData ("areamaps")]
     private List <Data> AreaMaps;
+
     private List <PlmType> PlmTypes;
+
     private List <EnemyType> EnemyTypes;
 
-    private Dictionary <string, List <Data>> DataLists;
+    private Dictionary <string, IEnumerable <Data>> DataLists;
 
+//----------------------------------------------------------------------------------------
+
+    // Constructor.
+    public Project ()
+    {
+      // Initialize data lists.
+      // for (int i = 0; i < AreaCount; i++)
+      //   Rooms [i]    = new List <Data> ();
+      Rooms          = new ListArray <Data> (AreaCount);
+      DoorSets       = new List <Data> ();
+      Doors          = new List <Data> ();
+      RoomStates     = new List <Data> ();
+      ScrollSets     = new List <Data> ();
+      PlmSets        = new List <Data> ();
+      ScrollPlmDatas = new List <Data> ();
+      Backgrounds    = new List <Data> ();
+      Fxs            = new List <Data> ();
+      SaveRooms      = new List <Data> ();
+      LevelDatas     = new List <Data> ();
+      EnemySets      = new List <Data> ();
+      EnemyGfxs      = new List <Data> ();
+      ScrollAsms     = new List <Data> ();
+      DoorAsms       = new List <Data> ();
+      SetupAsms      = new List <Data> ();
+      MainAsms       = new List <Data> ();
+      TileSets       = new List <Data> ();
+      TileTables     = new List <Data> ();
+      TileSheets     = new List <Data> ();
+      Palettes       = new List <Data> ();
+      AreaMaps       = new List <Data> ();
+      PlmTypes       = new List <PlmType> ();
+      EnemyTypes     = new List <EnemyType> ();
+
+      // Add data lists to the DataLists dictionary.
+      DataLists = new Dictionary <string, IEnumerable <Data>> ();
+      FieldInfo [] fields = typeof (Project).GetFields (BindingFlags.NonPublic | 
+                                                        BindingFlags.Instance);
+      foreach (FieldInfo f in fields)
+      {
+        var attribute = f.GetCustomAttribute (typeof (RegisteredData)) as RegisteredData;
+        if (attribute != null)
+          DataLists.Add (attribute.Name, (IEnumerable <Data>) f.GetValue (this));
+      }
+
+      // Load Resources.
+      LoadBtsTiles ();
+    }
 
 //========================================================================================
 // Properties
@@ -908,70 +1012,6 @@ namespace SM3E
     public int RoomY
     {
       get {return ActiveRoom?.MapY ?? 0;}
-    }
-
-
-//========================================================================================
-// Constructor
-
-
-    // Constructor.
-    public Project ()
-    {
-      // Initialize data lists.
-      for (int i = 0; i < AreaCount; i++)
-        Rooms [i]    = new List <Data> ();
-      DoorSets       = new List <Data> ();
-      Doors          = new List <Data> ();
-      RoomStates     = new List <Data> ();
-      ScrollSets     = new List <Data> ();
-      PlmSets        = new List <Data> ();
-      ScrollPlmDatas = new List <Data> ();
-      Backgrounds    = new List <Data> ();
-      Fxs            = new List <Data> ();
-      SaveRooms      = new List <Data> ();
-      LevelDatas     = new List <Data> ();
-      EnemySets      = new List <Data> ();
-      EnemyGfxs      = new List <Data> ();
-      ScrollAsms     = new List <Data> ();
-      DoorAsms       = new List <Data> ();
-      SetupAsms      = new List <Data> ();
-      MainAsms       = new List <Data> ();
-      TileSets       = new List <Data> ();
-      TileTables     = new List <Data> ();
-      TileSheets     = new List <Data> ();
-      Palettes       = new List <Data> ();
-      AreaMaps       = new List <Data> ();
-      PlmTypes       = new List <PlmType> ();
-      EnemyTypes     = new List <EnemyType> ();
-
-      // Add data lists to the DataLists dictionary.
-      DataLists = new Dictionary <string, List <Data>> ();
-      for (int i = 0; i < AreaCount; i++)
-        DataLists.Add ("rooms" + i.ToString (), Rooms [i]);
-      DataLists.Add ("doorsets"      , DoorSets      );
-      DataLists.Add ("doors"         , Doors         );
-      DataLists.Add ("scrollsets"    , ScrollSets    );
-      DataLists.Add ("plmsets"       , PlmSets       );
-      DataLists.Add ("scrollplmdatas", ScrollPlmDatas);
-      DataLists.Add ("backgrounds"   , Backgrounds   );
-      DataLists.Add ("fxs"           , Fxs           );
-      DataLists.Add ("saverooms"     , SaveRooms     );
-      DataLists.Add ("leveldatas"    , LevelDatas    );
-      DataLists.Add ("enemysets"     , EnemySets     );
-      DataLists.Add ("enemygfxs"     , EnemyGfxs     );
-      DataLists.Add ("scrollasms"    , ScrollAsms    );
-      DataLists.Add ("doorasms"      , DoorAsms      );
-      DataLists.Add ("setupasms"     , SetupAsms     );
-      DataLists.Add ("mainasms"      , MainAsms      );
-      DataLists.Add ("tilesets"      , TileSets      );
-      DataLists.Add ("tiletables"    , TileTables    );
-      DataLists.Add ("tilesheets"    , TileSheets    );
-      DataLists.Add ("palettes"      , Palettes      );
-      DataLists.Add ("areamaps"      , AreaMaps      );
-
-      // Load Resources.
-      LoadBtsTiles ();
     }
 
   } // class Project

@@ -224,6 +224,41 @@ namespace SM3E
       }
     }
 
+
+    public void SelectLayer1 (int col, int row)
+    {
+      if (ActiveLevelData != null)
+      {
+        TileIndex = GetLayer1Tile (row, col);
+        TileHFlip = GetLayer1HFlip (row, col);
+        TileVFlip = GetLayer1VFlip (row, col);
+        TileSelected?.Invoke (this, null);
+      }
+    }
+
+
+    public void SelectLayer2 (int col, int row)
+    {
+      if (ActiveLevelData?.HasLayer2 == true)
+      {
+        TileIndex = GetLayer2Tile (row, col);
+        TileHFlip = GetLayer2HFlip (row, col);
+        TileVFlip = GetLayer2VFlip (row, col);
+        TileSelected?.Invoke (this, null);
+      }
+    }
+
+
+    public void SelectBts (int col, int row)
+    {
+      if (ActiveLevelData != null)
+      {
+        BtsType = GetBtsType (row, col);
+        BtsValue = GetBtsValue (row, col);
+        BtsSelected?.Invoke (this, null);
+      }
+    }
+
 //----------------------------------------------------------------------------------------
     
     public void SetLayer1 (int rowMin, int colMin, int rowMax, int colMax)

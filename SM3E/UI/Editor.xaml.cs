@@ -585,7 +585,20 @@ namespace SM3E.UI
         break;
 
       case MouseButton.Right:
-        // Copy selected area.
+        switch (LayerSelect.SelectedIndex)
+        {
+        case 2: // Layer 1
+          MainProject.SelectLayer1 (e.PosTileX, e.PosTileY);
+          break;
+        case 3: // Bts
+          MainProject.SelectBts (e.PosTileX, e.PosTileY);
+          break;
+        case 4: // Layer 2
+          MainProject.SelectLayer2 (e.PosTileX, e.PosTileY);
+          break;
+        default:
+          break;
+        }
         break;
 
       default:

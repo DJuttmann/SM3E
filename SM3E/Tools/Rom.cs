@@ -29,7 +29,7 @@ namespace SM3E
       {
         List <Data> objects = new List <Data> ();
         foreach (RomSection s in Sections)
-          foreach (KeyValuePair <string, List <Data>> kv in s.Data)
+          foreach (KeyValuePair <string, IEnumerable <Data>> kv in s.Data)
             objects.AddRange (kv.Value);
         return objects;
       }
@@ -69,7 +69,8 @@ namespace SM3E
 
       
     // Add a data list to a section of the ROM.
-    public void AddDataList (string sectionName, string dataName, List <Data> dataList)
+    public void AddDataList (string sectionName, string dataName,
+                             IEnumerable <Data> dataList)
     {
       RomSection section = Sections.Find (x => x.Name == sectionName);
       if (section != null)
@@ -170,7 +171,7 @@ namespace SM3E
     // Fields
     public Type SectionType {get; private set;}
     private List <DataBlock> blocks;
-    public Dictionary <string, List <Data>> Data {get; private set;}
+    public Dictionary <string, IEnumerable <Data>> Data {get; private set;}
     public String Name;
 
     // Properties
@@ -193,7 +194,7 @@ namespace SM3E
       SectionType = sectionType;
       Name = name;
       blocks = new List <DataBlock> ();
-      Data = new Dictionary <string, List <Data>> ();
+      Data = new Dictionary <string, IEnumerable <Data>> ();
     }
 
 
@@ -245,7 +246,7 @@ namespace SM3E
 
 
     // Add a data list to the section.
-    public void AddData (string name, List <Data> dataList)
+    public void AddData (string name, IEnumerable <Data> dataList)
     {
       if (dataList != null)
         Data.Add (name, dataList);
@@ -258,7 +259,7 @@ namespace SM3E
       if (SectionType == Type.Fixed)
         return true;
       var objects = new List <Data> ();
-      foreach (KeyValuePair <string, List <Data>> kv in Data)
+      foreach (KeyValuePair <string, IEnumerable <Data>> kv in Data)
         objects.AddRange (kv.Value);
       return Allocate (objects);
     }

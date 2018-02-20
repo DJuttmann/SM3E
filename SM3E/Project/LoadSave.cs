@@ -313,32 +313,29 @@ namespace SM3E
     // Connect all loaded data objects.
     private bool Connect ()
     {
-      var AllRooms = new List <Data> ();
-      foreach (var areaRooms in Rooms)
-        AllRooms.AddRange (areaRooms);
+      var RoomsList = new List <Data> (Rooms);
 
-      for (int n = 0; n < AllRooms.Count; n++)
-        ((Room) AllRooms [n]).Connect (DoorSets);
-      for (int n = 0; n < DoorSets.Count; n++)
-        ((DoorSet) DoorSets [n]).Connect (Doors);
-      for (int n = 0; n < Doors.Count; n++)
-        ((Door) Doors [n]).Connect (AllRooms, ScrollAsms, DoorAsms);
-      for (int n = 0; n < RoomStates.Count; n++)
-        ((RoomState) RoomStates [n]).Connect (PlmSets, ScrollSets, Backgrounds, Fxs, 
-                                              LevelDatas, EnemySets, EnemyGfxs,
-                                              SetupAsms, MainAsms);
-      for (int n = 0; n < PlmSets.Count; n++)
-        ((PlmSet) PlmSets [n]).Connect (ScrollPlmDatas, PlmTypes);
-      for (int n = 0; n < Fxs.Count; n++)
-        ((Fx) Fxs [n]).Connect (Doors);
-      for (int n = 0; n < SaveRooms.Count; n++)
-        ((SaveRoom) SaveRooms [n]).Connect (AllRooms, Doors);
-      for (int n = 0; n < EnemySets.Count; n++)
-        ((EnemySet) EnemySets [n]).Connect (EnemyTypes);
-      for (int n = 0; n < EnemyGfxs.Count; n++)
-        ((EnemyGfx) EnemyGfxs [n]).Connect (EnemyTypes);
-      for (int n = 0; n < TileSets.Count; n++)
-        ((TileSet) TileSets [n]).Connect (TileTables, TileSheets, Palettes);
+      foreach (Room r in Rooms)
+        r.Connect (DoorSets);
+      foreach (DoorSet d in DoorSets)
+        d.Connect (Doors);
+      foreach (Door d in Doors)
+        d.Connect (RoomsList, ScrollAsms, DoorAsms);
+      foreach (RoomState r in RoomStates)
+        r.Connect (PlmSets, ScrollSets, Backgrounds, Fxs, LevelDatas, 
+                   EnemySets, EnemyGfxs, SetupAsms, MainAsms);
+      foreach (PlmSet p in PlmSets)
+        p.Connect (ScrollPlmDatas, PlmTypes);
+      foreach (Fx f in Fxs)
+        f.Connect (Doors);
+      foreach (SaveRoom s in SaveRooms)
+        s.Connect (RoomsList, Doors);
+      foreach (EnemySet e in EnemySets)
+        e.Connect (EnemyTypes);
+      foreach (EnemyGfx e in EnemyGfxs)
+        e.Connect (EnemyTypes);
+      foreach (TileSet t in TileSets)
+        t.Connect (TileTables, TileSheets, Palettes);
 
       return true;
     }
@@ -349,8 +346,7 @@ namespace SM3E
     private void ReadRooms (Rom rom, List <int> Addresses, List <string> Names,
                             List <int> DoorCounts)
     {
-      foreach (var areaRooms in Rooms)
-        areaRooms.Clear ();
+      Rooms.Clear ();
       for (int n = 0; n < Addresses.Count; n++)
       {
         Room newRoom = new Room ();
@@ -871,7 +867,7 @@ namespace SM3E
         section.SetAttributeValue ("type", s.SectionType.ToString ());
         sectionsElement.Add (section);
         // Add data.
-        foreach (KeyValuePair <string, List <Data>> kv in s.Data)
+        foreach (KeyValuePair <string, IEnumerable <Data>> kv in s.Data)
         {
           XElement data = new XElement ("Data");
           data.SetAttributeValue ("name", kv.Key);

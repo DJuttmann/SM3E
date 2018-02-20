@@ -99,6 +99,7 @@
     <Compile Include="Project\Selecting.cs" />
     <Compile Include="Tools\Compression.cs" />
     <Compile Include="Tools\BtsConvert.cs" />
+    <Compile Include="Tools\DataStructures.cs" />
     <Compile Include="Tools\Rom.cs" />
     <Compile Include="UI\EditPlmWindow.xaml.cs">
       <DependentUpon>EditPlmWindow.xaml</DependentUpon>
