@@ -31,7 +31,7 @@
         <RowDefinition Height="1*"/>
       </Grid.RowDefinitions>
       <Label   Grid.Row="0" Content="Select Color" HorizontalAlignment="Stretch" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
-      <ListBox Grid.Row="1" x:Name="ScrollColorListBox" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="100" Margin="8,4,8,8" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="ScrollColorListBox_SelectionChanged"/>
+      <ListBox Grid.Row="1" x:Name="ScrollColorListBox" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="Auto" Margin="8,4,8,8" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="ScrollColorListBox_SelectionChanged"/>
     </Grid>
   </Grid>
 </UserControl>

@@ -87,6 +87,7 @@ namespace SM3E.UI
       QuietSelect = true;
       PlmTypeListBox.SelectedIndex = MainProject.PlmTypeIndex;
       QuietSelect = false;
+      IdInput.Text = Tools.IntToHex (MainProject.PlmTypeID, 4);
     }
 
 

@@ -120,7 +120,7 @@ namespace SM3E
         if (Source == null)
           throw new ObjectDisposedException ("ListArrayEnumerator <T>");
         ArrayIndex = 0;
-        ListIndex = 0;
+        ListIndex = -1;
       }
 
 

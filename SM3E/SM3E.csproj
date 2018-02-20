@@ -146,6 +146,9 @@
     <Compile Include="UI\TileLayersTab.xaml.cs">
       <DependentUpon>TileLayersTab.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\UIElements\HexBox.xaml.cs">
+      <DependentUpon>HexBox.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -234,6 +237,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\TileLayersTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\UIElements\HexBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

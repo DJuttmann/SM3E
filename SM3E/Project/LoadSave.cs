@@ -31,25 +31,23 @@ namespace SM3E
     public void Load (string projectFile)
     {
       ProjectFileName = projectFile;
-      ReadProjectFileXml (out List <int> roomAddresses,
-                          out List <int> roomDoorCounts,
-                          out List <string> roomNames,
+      ReadProjectFileXml (out List <Tuple <int, int, string>> rooms,
                           out List <Tuple <int, int, string>> doorAsms,
                           out List <Tuple <int, int, string>> setupAsms,
                           out List <Tuple <int, int, string>> mainAsms,
                           out List <Tuple <int, string>> backgrounds);
 
       // Read uncompressed data from ROM.
-      ReadRooms (CurrentRom, roomAddresses, roomNames, roomDoorCounts);
+      ReadRooms (CurrentRom, rooms, out List <RoomState> roomStates);
       ReadDoors (CurrentRom);
       ReadScrollSets (CurrentRom);
-      ReadPlmSets (CurrentRom);
+      ReadPlmSets (CurrentRom, roomStates);
       ReadScrollPlmDatas (CurrentRom);
       ReadBackgrounds (CurrentRom, backgrounds);
-      ReadFxs (CurrentRom);
+      ReadFxs (CurrentRom, roomStates);
       ReadSaveRooms (CurrentRom);
-      ReadEnemySets (CurrentRom);
-      ReadEnemyGfxs (CurrentRom);
+      ReadEnemySets (CurrentRom, roomStates);
+      ReadEnemyGfxs (CurrentRom, roomStates);
       ReadScrollAsms (CurrentRom);
       ReadTileSets (CurrentRom);
       ReadAreaMaps (CurrentRom, AreaMap.Addresses);
@@ -58,7 +56,7 @@ namespace SM3E
       ReadMainAsms (CurrentRom, mainAsms);
 
       // Read Compressed data from ROM.
-      ReadLevelDatas (CurrentRom);
+      ReadLevelDatas (CurrentRom, roomStates);
       ReadTileTables (CurrentRom);
       ReadTileSheets (CurrentRom);
       ReadPalettes (CurrentRom);
@@ -69,7 +67,7 @@ namespace SM3E
       ReadEnemyTypes ();
 
       // Connect the data objects.
-      Connect ();
+      Connect (roomStates);
       LoadRoomTiles (0); //
 
       // Raise events.
@@ -86,98 +84,21 @@ namespace SM3E
     }
 
 
-    /* Read information about the ROM from the project file, including:
-    // - The file name of the ROM.
-    // - A list of area names.
-    // - A list of room names, addresses and number of doors per room.
-    // - Information about available spaces in different banks.
-    private bool ReadProjectFile (out List <int> roomAddresses,
-                                  out List <int> roomDoorCounts,
-                                  out List <string> roomNames)
-    {
-      RomFileName = null;
-      roomAddresses = new List <int> ();
-      roomDoorCounts = new List <int> ();
-      roomNames = new List <string> ();
-
-      string [] lines;
-      try {lines = System.IO.File.ReadAllLines (ProjectFileName);}
-      catch {return false;}
-
-      for (int n = 0; n < lines.Length; n++)
-      {
-        List <string> segments = Tools.SplitString (lines [n]);
-        if (segments.Count == 0)
-          continue;
-
-        // Load rom file.
-        if (segments [0] == "rom" && segments.Count > 1)
-        {
-          RomFileName = segments [1];
-          CurrentRom = new Rom (RomFileName);
-        }
-
-        // Load area names.
-        else if (segments [0] == "areas") {
-          for (int i = 0; i < AreaCount; i++) {
-            if (i + 1 < segments.Count)
-              Areas [i] = segments [i + 1];
-            else
-              Areas [i] = Tools.IntToHex (n);
-          }
-        }
-
-        // Load a ROM section.
-        else if (segments [0] == "section" && segments.Count > 2)
-        {
-          CurrentRom.AddSection (segments [1], RomSection.StringToType (segments [2]));
-          for (int i = 3; i < segments.Count; i++)
-          {
-            string dataName = segments [i].ToLower ();
-            CurrentRom.AddDataList (segments [1], dataName, DataLists [dataName]);
-          }
-        }
-
-        // Load a data block in a section
-        else if (segments [0] == "block" && segments.Count > 3)
-        {
-          int start = Tools.HexToInt (segments [2]);
-          int end = Tools.HexToInt (segments [3]);
-          CurrentRom.AddBlock (segments [1], start, end - start);
-        }
-
-        // Load room data
-        else if (segments [0] == "room") {
-          if (segments.Count > 1) {
-            roomAddresses.Add (Tools.HexToInt (segments [1]));
-            if (segments.Count > 2)
-              roomDoorCounts.Add (Tools.DecToInt (segments [2]));
-            else
-              roomDoorCounts.Add (0);
-            if (segments.Count > 3)
-              roomNames.Add (segments [3]);
-            else
-              roomNames.Add ("");
-          }
-        }
-      }
-      return true;
-    }*/
-
-
     // Read the project file in Xml format.
-    private bool ReadProjectFileXml (out List <int> roomAddresses,
-                                     out List <int> roomDoorCounts,
-                                     out List <string> roomNames,
+    private bool ReadProjectFileXml (//out List <int> roomAddresses,
+                                     //out List <int> roomDoorCounts,
+                                     //out List <string> roomNames,
+                                     out List <Tuple <int, int, string>> rooms,
                                      out List <Tuple <int, int, string>> doorAsms,
                                      out List <Tuple <int, int, string>> setupAsms,
                                      out List <Tuple <int, int, string>> mainAsms,
                                      out List <Tuple <int, string>> backgrounds)
     {
       RomFileName = null;
-      roomAddresses = new List <int> ();
-      roomDoorCounts = new List <int> ();
-      roomNames = new List <string> ();
+      // roomAddresses = new List <int> ();
+      // roomDoorCounts = new List <int> ();
+      // roomNames = new List <string> ();
+      rooms     = new List <Tuple <int, int, string>> ();
       doorAsms  = new List <Tuple <int, int, string>> ();
       setupAsms = new List <Tuple <int, int, string>> ();
       mainAsms  = new List <Tuple <int, int, string>> ();
@@ -223,7 +144,7 @@ namespace SM3E
             foreach (XElement data in section.Elements ("Data"))
             {
               string dataName = data.Attribute ("name")?.Value;
-              if (dataName != null)
+              if (dataName != null && DataLists.ContainsKey (dataName))
                 CurrentRom.AddDataList (sectionName, dataName, DataLists [dataName]);
             }
             foreach (XElement block in section.Elements ("Block"))
@@ -247,15 +168,10 @@ namespace SM3E
             string roomName = room.Attribute ("name")?.Value;
             if (roomAddress != null)
             {
-              roomAddresses.Add (Tools.HexToInt (roomAddress));
-              if (doorCount != null)
-                roomDoorCounts.Add (Tools.DecToInt (doorCount));
-              else
-                roomDoorCounts.Add (0);
-              if (roomName != null)
-                roomNames.Add (roomName);
-              else
-                roomNames.Add ("");
+              int address = Tools.HexToInt (roomAddress);
+              int count = doorCount != null ? Tools.DecToInt (doorCount) : 0;
+              rooms.Add (new Tuple <int, int, string> (address, count, 
+                                                       roomName ?? String.Empty));
             }
           }
           break;
@@ -311,9 +227,10 @@ namespace SM3E
 
 
     // Connect all loaded data objects.
-    private bool Connect ()
+    private bool Connect (List <RoomState> roomStates)
     {
       var RoomsList = new List <Data> (Rooms);
+      foreach (Room r in Rooms);
 
       foreach (Room r in Rooms)
         r.Connect (DoorSets);
@@ -321,7 +238,7 @@ namespace SM3E
         d.Connect (Doors);
       foreach (Door d in Doors)
         d.Connect (RoomsList, ScrollAsms, DoorAsms);
-      foreach (RoomState r in RoomStates)
+      foreach (RoomState r in roomStates)
         r.Connect (PlmSets, ScrollSets, Backgrounds, Fxs, LevelDatas, 
                    EnemySets, EnemyGfxs, SetupAsms, MainAsms);
       foreach (PlmSet p in PlmSets)
@@ -343,21 +260,23 @@ namespace SM3E
 //----------------------------------------------------------------------------------------
 
     // Read all rooms from ROM.
-    private void ReadRooms (Rom rom, List <int> Addresses, List <string> Names,
-                            List <int> DoorCounts)
+    private void ReadRooms (Rom rom, List <Tuple <int, int, string>> rooms,
+                            out List <RoomState> roomStates)
+      
     {
+      roomStates = new List <RoomState> ();
       Rooms.Clear ();
-      for (int n = 0; n < Addresses.Count; n++)
+      for (int n = 0; n < rooms.Count; n++)
       {
         Room newRoom = new Room ();
-        newRoom.ReadFromROM (rom, Addresses [n]);
-        newRoom.Name = Names [n];
+        newRoom.ReadFromROM (rom, rooms [n].Item1);
+        newRoom.Name = rooms [n].Item3;
         Rooms [newRoom.Area].Add (newRoom);
-        var newDoorSet = new DoorSet () {DoorCount = DoorCounts [n]};
+        var newDoorSet = new DoorSet () {DoorCount = rooms [n].Item2};
         newDoorSet.ReadFromROM (rom, newRoom.DoorsPtrPC);
         DoorSets.Add (newDoorSet);
         for (int i = 0; i < newRoom.RoomStates.Count; i++)
-          RoomStates.Add (newRoom.RoomStates [i]);
+          roomStates.Add (newRoom.RoomStates [i]);
       }
     }
 
@@ -412,10 +331,10 @@ namespace SM3E
 
 
     // Read all PLM sets from ROM.
-    private void ReadPlmSets (Rom rom)
+    private void ReadPlmSets (Rom rom, List <RoomState> roomStates)
     {
       List <int> addressesPC = new List <int> ();
-      foreach (RoomState r in RoomStates)
+      foreach (RoomState r in roomStates)
       {
         int address = Tools.LRtoPC (r.PlmSetPtr);
         if (address != 0)
@@ -481,10 +400,10 @@ namespace SM3E
 
 
     // Read all fxs from ROM.
-    private void ReadFxs (Rom rom)
+    private void ReadFxs (Rom rom, List <RoomState> roomStates)
     {
       List <int> addressesPC = new List <int> ();
-      foreach (RoomState r in RoomStates) {
+      foreach (RoomState r in roomStates) {
         int address = Tools.LRtoPC (r.FxPtr);
         if (address != 0)     // Skip invalid addresses
           addressesPC.Add (address);
@@ -513,10 +432,10 @@ namespace SM3E
 
 
     // Read all level datas from ROM.
-    private void ReadLevelDatas (Rom rom)
+    private void ReadLevelDatas (Rom rom, List <RoomState> roomStates)
     {
       List <int> addressesPC = new List <int> ();
-      foreach (RoomState r in RoomStates) {
+      foreach (RoomState r in roomStates) {
         int address = Tools.LRtoPC (r.LevelDataPtr);
         if (address != 0)     // Skip invalid addresses
           addressesPC.Add (address);
@@ -532,10 +451,10 @@ namespace SM3E
 
 
     // Read all enemy sets from ROM.
-    private void ReadEnemySets (Rom rom)
+    private void ReadEnemySets (Rom rom, List <RoomState> roomStates)
     {
       List <int> addressesPC = new List <int> ();
-      foreach (RoomState r in RoomStates) {
+      foreach (RoomState r in roomStates) {
         int address = Tools.LRtoPC (r.EnemySetPtr);
         if (address != 0)     // Skip invalid addresses
           addressesPC.Add (address);
@@ -551,10 +470,10 @@ namespace SM3E
 
 
     // Read all enemy gfxs from ROM.
-    private void ReadEnemyGfxs (Rom rom)
+    private void ReadEnemyGfxs (Rom rom, List <RoomState> roomStates)
     {
       List <int> addressesPC = new List <int> ();
-      foreach (RoomState r in RoomStates) {
+      foreach (RoomState r in roomStates) {
         int address = Tools.LRtoPC (r.EnemyGfxPtr);
         if (address != 0)     // Skip invalid addresses
           addressesPC.Add (address);
@@ -781,55 +700,6 @@ namespace SM3E
         if (d is IRepointable r)
           r.Repoint ();
     }
-
-    
-    /* Write information about the ROM to the project file
-    private void WriteProjectFile ()
-    {
-      StreamWriter output = new StreamWriter (ProjectFileName);
-
-      // Write ROM filename.
-      output.Write ("rom " + RomFileName);
-      output.Write (Environment.NewLine);
-
-      // Write area names.
-      output.Write ("Areas");
-      for (int i = 0; i < AreaCount; i++)
-        output.Write (" " + Areas [i]);
-      output.Write (Environment.NewLine);
-
-      // Write section data.
-      foreach (RomSection s in CurrentRom.Sections)
-      {
-        output.Write ("section \"" + s.Name + "\" " + s.SectionType.ToString ());
-        foreach (KeyValuePair <string, List <Data>> kv in s.Data)
-          output.Write (" \"" + kv.Key + "\"");
-        output.Write (Environment.NewLine);
-
-        // Write blocks
-        foreach (var block in s.Blocks)
-        {
-          output.Write ("block \"" + s.Name + "\" " +
-                        Tools.IntToHex (block.Item1) + " " + 
-                        Tools.IntToHex (block.Item2));
-          output.Write (Environment.NewLine);
-        }
-      }
-
-      // Write room data.
-      for (int i = 0; i < AreaCount; i++)
-      {
-        foreach (Room r in Rooms [i])
-        {
-          output.Write ("room\t" +  Tools.IntToHex (r.StartAddressPC) + "\t" +
-                        r.RoomStates.Count.ToString () + "\t\"" +
-                        r.Name + "\"");
-          output.Write (Environment.NewLine);
-        }
-      }
-
-      output.Close ();
-    }*/
 
 
     // [test] Write project file as XML.

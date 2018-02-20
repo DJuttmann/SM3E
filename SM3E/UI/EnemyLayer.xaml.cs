@@ -110,6 +110,7 @@ namespace SM3E.UI
       QuietSelect = true;
       EnemyTypeListBox.SelectedIndex = MainProject.EnemyTypeIndex;
       QuietSelect = false;
+      IdInput.Text = Tools.IntToHex (MainProject.EnemyTypeID, 4);
     }
 
 

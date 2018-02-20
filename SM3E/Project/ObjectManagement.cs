@@ -627,7 +627,6 @@ namespace SM3E
 
       ActiveRoom.RoomStateHeaders.Insert (0, newHeader);
       ActiveRoom.RoomStates.Insert (0, newState);
-      RoomStates.Add (newState);
       LevelDatas.Add (newState.MyLevelData);
       PlmSets.Add (newState.MyPlmSet);
       EnemySets.Add (newState.MyEnemySet);
@@ -651,7 +650,6 @@ namespace SM3E
       ForceRemoveBackground ();
       
       ActiveRoomState.MyRoom = null;
-      RoomStates.Remove (ActiveRoomState);
       ActiveRoom.RoomStateHeaders.RemoveAt (RoomStateIndex);
       ActiveRoom.RoomStates.RemoveAt (RoomStateIndex);
       return true;

@@ -44,6 +44,7 @@ namespace SM3E
 
     private bool mouseOver = false;
     private bool mouseDown = false;
+    private bool panning = false;
     public int TileClickX {get; private set;}
     public int TileClickY {get; private set;}
     public int TileOverX {get; private set;}
@@ -52,6 +53,10 @@ namespace SM3E
     public double ClickY {get; private set;}
     public double OverX {get; private set;}
     public double OverY {get; private set;}
+    private double PanningOriginX;
+    private double PanningOriginY;
+    private double PanningStartX;
+    private double PanningStartY;
 
     public event ViewportEventHandler ViewportChanged;
     public event TileViewerMouseEventHandler MouseDown;
@@ -250,14 +255,24 @@ namespace SM3E
       Selection.Visibility = Visibility.Visible;
       mouseOver = true;
       if (System.Windows.Input.Mouse.LeftButton != MouseButtonState.Pressed &&
+          System.Windows.Input.Mouse.MiddleButton != MouseButtonState.Pressed &&
           System.Windows.Input.Mouse.RightButton != MouseButtonState.Pressed)
+      {
         mouseDown = false;
+        panning = false;
+      }
       TileOverX = newX;
       TileOverY = newY;
       OverX = p.X / TileSize;
       OverY = p.Y / TileSize;
 
-      if (mouseDown)
+      if (panning)
+      {
+        Point q = e.GetPosition (Parent);
+        Parent.ScrollToHorizontalOffset (PanningOriginX + PanningStartX - q.X);
+        Parent.ScrollToVerticalOffset (PanningOriginY + PanningStartY - q.Y);
+      }
+      else if (mouseDown)
       {
         Selection.SetValue (Grid.RowProperty, Math.Min (TileOverY, TileClickY));
         Selection.SetValue (Grid.ColumnProperty, Math.Min (TileOverX, TileClickX));
@@ -305,6 +320,19 @@ namespace SM3E
         TileClickY = 0;
       if (TileClickY >= RowCount)
         TileClickY = RowCount;
+      if (e.ChangedButton == MouseButton.Middle)
+      {
+        if (Parent != null)
+        {
+          Point q = e.GetPosition (Parent);
+          PanningOriginX = Parent.HorizontalOffset;
+          PanningOriginY = Parent.VerticalOffset;
+          PanningStartX = q.X;
+          PanningStartY = q.Y;
+          panning = true;
+        }
+        return;
+      }
 
       var a = new TileViewerMouseEventArgs ()
       {
@@ -321,6 +349,7 @@ namespace SM3E
     private void TileViewer_MouseUp (object sender, MouseButtonEventArgs e)
     {
       mouseDown = false;
+      panning = false;
 
       Point p = e.GetPosition (MainGrid);
       OverX = p.X / TileSize;

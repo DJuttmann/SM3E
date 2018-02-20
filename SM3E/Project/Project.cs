@@ -25,7 +25,7 @@ namespace SM3E
   [AttributeUsage (AttributeTargets.Field, AllowMultiple = false)]
   public class RegisteredData: Attribute
   {
-    public string Name;
+    public readonly string Name;
 
     public RegisteredData (string name)
     {
@@ -58,8 +58,6 @@ namespace SM3E
     [RegisteredData ("doors")]
     private List <Data> Doors;
     
-    private List <Data> RoomStates;
-
     [RegisteredData ("scrollsets")]
     private List <Data> ScrollSets;
 
@@ -125,13 +123,9 @@ namespace SM3E
     // Constructor.
     public Project ()
     {
-      // Initialize data lists.
-      // for (int i = 0; i < AreaCount; i++)
-      //   Rooms [i]    = new List <Data> ();
       Rooms          = new ListArray <Data> (AreaCount);
       DoorSets       = new List <Data> ();
       Doors          = new List <Data> ();
-      RoomStates     = new List <Data> ();
       ScrollSets     = new List <Data> ();
       PlmSets        = new List <Data> ();
       ScrollPlmDatas = new List <Data> ();
@@ -600,6 +594,11 @@ namespace SM3E
       get {return ActivePlmType?.Name ?? "<none>";}
     }
 
+    public int PlmTypeID
+    {
+      get {return ActivePlmType?.PlmID ?? 0;}
+    }
+
     public BlitImage PlmTypeImage
     {
       get {return ActivePlmType?.Graphics;}
@@ -609,6 +608,11 @@ namespace SM3E
     public string EnemyTypeName
     {
       get {return ActiveEnemyType?.Name ?? "<none>";}
+    }
+
+    public int EnemyTypeID
+    {
+      get {return ActiveEnemyType?.EnemyID ?? 0;}
     }
 
     public BlitImage EnemyTypeImage
