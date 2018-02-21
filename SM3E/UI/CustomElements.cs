@@ -199,6 +199,7 @@ namespace SM3E
       Marker.Height = height * TileSize;
       Marker.SetValue (Grid.ColumnSpanProperty, ColCount);
       Marker.SetValue (Grid.RowSpanProperty, RowCount);
+      Marker.SetValue (Canvas.ZIndexProperty, 99);
     }
 
 

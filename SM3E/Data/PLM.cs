@@ -118,6 +118,8 @@ namespace SM3E
     public bool Connect (List <Data> ScrollPlmDatas, List <PlmType> PlmTypes)
     {
       MyPlmType = PlmTypes.Find (x => x.PlmID == PlmID);
+      if (MyPlmType == null)
+        MyPlmType = PlmTypes [0];
 
       if (PlmID == ScrollID) {
         MyScrollPlmData =

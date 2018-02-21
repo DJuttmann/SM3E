@@ -116,8 +116,8 @@
     <Compile Include="UI\Editor.xaml.cs">
       <DependentUpon>Editor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\EnemyLayer.xaml.cs">
-      <DependentUpon>EnemyLayer.xaml</DependentUpon>
+    <Compile Include="UI\EnemyLayerTab.xaml.cs">
+      <DependentUpon>EnemyLayerTab.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\NavigateTab.xaml.cs">
       <DependentUpon>NavigateTab.xaml</DependentUpon>
@@ -149,6 +149,7 @@
     <Compile Include="UI\UIElements\HexBox.xaml.cs">
       <DependentUpon>HexBox.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\UIElements\Tools.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -196,7 +197,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\EnemyLayer.xaml">
+    <Page Include="UI\EnemyLayerTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

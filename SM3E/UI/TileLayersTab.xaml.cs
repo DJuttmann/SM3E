@@ -25,9 +25,12 @@ namespace SM3E.UI
     private UITileViewer TileSelector;
     private UITileViewer BtsSelector;
 
-    bool QuietSelect = false;
+    public bool LinkBts
+    {
+      get {return LinkCheck.IsChecked == true;}
+    }
 
-
+  
     // Constructor.
     public TileLayersTab()
     {
@@ -95,6 +98,8 @@ namespace SM3E.UI
     {
       int type = MainProject.BtsType;
       int value = MainProject.BtsValue;
+      BtsTypeInput.Text = Tools.IntToHex (type, 1);
+      BtsValueInput.Text = Tools.IntToHex (value, 2);
       BlitImage image = new BlitImage (16, 16);
       image.Clear ();
       MainProject.RenderBts (image, 0, 0, type, value);
@@ -146,6 +151,30 @@ namespace SM3E.UI
     private void BtsHFlipButton_Click (object sender, RoutedEventArgs e)
     {
       MainProject.HFlipBts ();
+    }
+
+    private void BtsTypeInput_LostFocus (object sender, RoutedEventArgs e)
+    {
+      MainProject.BtsType = Tools.HexToInt (BtsTypeInput.Text);
+    }
+
+    private void BtsTypeInput_KeyDown (object sender, KeyEventArgs e)
+    {
+      if (e.Key == Key.Enter)
+        BtsTypeInput_LostFocus (sender, null);
+      UITools.ValidateHex (ref e);
+    }
+
+    private void BtsValueInput_LostFocus (object sender, RoutedEventArgs e)
+    {
+      MainProject.BtsValue = Tools.HexToInt (BtsValueInput.Text);
+    }
+
+    private void BtsValueInput_KeyDown (object sender, KeyEventArgs e)
+    {
+      if (e.Key == Key.Enter)
+        BtsValueInput_LostFocus (sender, null);
+      UITools.ValidateHex (ref e);
     }
 
   } // partial class TileLayersTab

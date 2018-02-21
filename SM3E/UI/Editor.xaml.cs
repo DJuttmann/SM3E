@@ -422,6 +422,30 @@ namespace SM3E.UI
       LevelData.ReloadVisibleTiles ();
     }
 
+
+    private void Editor_KeyDown (object sender, KeyEventArgs e)
+    {
+      bool hFlip = (e.Key == Key.H);
+      bool vFlip = (e.Key == Key.V);
+      if (LayerSelect.SelectedIndex == 2 || LayerSelect.SelectedIndex == 4)
+      {
+        if (hFlip)
+          MainProject.TileHFlip = !MainProject.TileHFlip;
+        if (vFlip)
+          MainProject.TileVFlip = !MainProject.TileVFlip;
+      }
+      if ((LayerSelect.SelectedIndex == 2 && TileLayersEditor.LinkBts) ||
+          LayerSelect.SelectedIndex == 3)
+      {
+        if (hFlip)
+          MainProject.HFlipBts ();
+        if (vFlip)
+          MainProject.VFlipBts ();
+      }
+      if (hFlip || vFlip)
+        e.Handled = true;
+    }
+
 //----------------------------------------------------------------------------------------
 // Level viewer events
 
@@ -559,6 +583,8 @@ namespace SM3E.UI
         {
         case 2: // Layer 1
           MainProject.SetLayer1 (e.PosTileY, e.PosTileX, e.TileClickY, e.TileClickX);
+          if (TileLayersEditor.LinkBts)
+            MainProject.SetBts (e.PosTileY, e.PosTileX, e.TileClickY, e.TileClickX);
           break;
         case 3: // Bts
           MainProject.SetBts (e.PosTileY, e.PosTileX, e.TileClickY, e.TileClickX);
@@ -589,6 +615,8 @@ namespace SM3E.UI
         {
         case 2: // Layer 1
           MainProject.SelectLayer1 (e.PosTileX, e.PosTileY);
+          if (TileLayersEditor.LinkBts)
+            MainProject.SelectBts (e.PosTileX, e.PosTileY);
           break;
         case 3: // Bts
           MainProject.SelectBts (e.PosTileX, e.PosTileY);

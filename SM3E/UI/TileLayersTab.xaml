@@ -6,32 +6,43 @@
              xmlns:local="clr-namespace:SM3E.UI"
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="850">
-  
+
   <Grid>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="371*"/>
       <ColumnDefinition Width="152"/>
       <ColumnDefinition Width="542"/>
     </Grid.ColumnDefinitions>
-    
+
     <!-- BTS & TILE SELECTORS -->
     <ScrollViewer x:Name="TileSelectorViewer" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,8,8,8"/>
     <ScrollViewer x:Name="BtsSelectorViewer" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,8,4,8"/>
 
     <!-- ACTIVE TILES -->
     <Grid x:Name="ActiveTiles" Visibility="Visible">
-      <Grid HorizontalAlignment="Right" Height="48" Margin="0,10,40,0" VerticalAlignment="Top" Width="48" Background="Black">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="1*"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="8"/>
+      </Grid.RowDefinitions>
+      <Grid HorizontalAlignment="Right" Height="48" Margin="0,10,40.2,0" VerticalAlignment="Top" Width="48" Background="Black">
         <Image x:Name="SelectedTileImage" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
       </Grid>
-      <Grid HorizontalAlignment="Right" Height="48" Margin="0,110,40,0" VerticalAlignment="Top" Width="48" Background="Black">
+      <Grid HorizontalAlignment="Right" Height="48" Margin="0,100,40.2,0" VerticalAlignment="Top" Width="48" Background="Black">
         <Image x:Name="SelectedBtsImage" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
       </Grid>
-      <Button x:Name="TileVFlipButton" Content="&#x2195;" HorizontalAlignment="Right" Height="48" Margin="0,10,10,0" VerticalAlignment="Top" Width="20" Click="TileVFlipButton_Click"/>
-      <Button x:Name="TileHFlipButton" Content="&#x2194;" HorizontalAlignment="Right" Height="20" Margin="0,70,40,0" VerticalAlignment="Top" Width="48" Click="TileHFlipButton_Click"/>
-      <Button x:Name="BtsVFlipButton" Content="&#x2195;" HorizontalAlignment="Right" Height="48" Margin="0,110,10,0" VerticalAlignment="Top" Width="20" Click="BtsVFlipButton_Click"/>
-      <Button x:Name="BtsHFlipButton" Content="&#x2194;" HorizontalAlignment="Right" Height="20" Margin="0,170,40,0" VerticalAlignment="Top" Width="48" Click="BtsHFlipButton_Click"/>
+      <Button x:Name="TileVFlipButton" Content="&#x2195;" HorizontalAlignment="Right" Width="20" Height="20" Margin="0,10,10.2,0" VerticalAlignment="Top" Click="TileVFlipButton_Click"/>
+      <Button x:Name="TileHFlipButton" Content="&#x2194;" HorizontalAlignment="Right" Width="20" Height="20" Margin="0,38,10.2,0" VerticalAlignment="Top" Click="TileHFlipButton_Click"/>
+      <CheckBox x:Name="LinkCheck" Content="Link BTS" HorizontalAlignment="Right" VerticalAlignment="Top" Width="78" Height="20" Margin="0,70,10.2,0"/>
+      <Button x:Name="BtsVFlipButton" Content="&#x2195;" HorizontalAlignment="Right" Width="20" Height="20" Margin="0,100,10.2,0" VerticalAlignment="Top" Click="BtsVFlipButton_Click"/>
+      <Button x:Name="BtsHFlipButton" Content="&#x2194;" HorizontalAlignment="Right" Width="20" Height="20" Margin="0,128,10.2,0" VerticalAlignment="Top" Click="BtsHFlipButton_Click"/>
+      <Label Grid.Row="1" Content="BTS Type" Margin="5,-3,0,-3" />
+      <TextBox Grid.Row="1" x:Name="BtsTypeInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" MaxLength="1" Text="0" LostFocus="BtsTypeInput_LostFocus" KeyDown="BtsTypeInput_KeyDown"/>
+      <Label Grid.Row="2" Content="BTS Value" Margin="5,-3,0,-3" />
+      <TextBox Grid.Row="2" x:Name="BtsValueInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" MaxLength="2" Text="00" LostKeyboardFocus="BtsValueInput_LostFocus" KeyDown="BtsValueInput_KeyDown"/>
     </Grid>
-    
+
     <!-- CLIPBOARD -->
     <Grid x:Name="Clipboard" Visibility="Hidden">
     </Grid>

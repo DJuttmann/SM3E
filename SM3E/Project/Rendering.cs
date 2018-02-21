@@ -32,8 +32,8 @@ namespace SM3E
     public List <BlitImage> RoomTiles = new List <BlitImage> (); 
     public List <BlitImage> BtsTiles = new List <BlitImage> ();
     public List <BlitImage> BtsTilesSmall = new List <BlitImage> ();
-    public List <BlitImage> MapTiles = new List <BlitImage> ();
-    public BlitImage MapTileSheet;
+    private List <BlitImage> MapTiles = new List <BlitImage> ();
+    // public BlitImage MapTileSheet;
     public BlitImage BackgroundImage;
 
     public bool ForegroundVisible = true;
@@ -129,7 +129,7 @@ namespace SM3E
         }
       }
 
-      // Load 8x8 tiles;
+      // Load 8x8 tiles.
       BtsTilesSmall.Clear ();
       for (int y = 0; y > -tiles.Height; y -= 8)
       {
@@ -144,7 +144,7 @@ namespace SM3E
     }
 
 
-    // Load Map tiles
+    // Load Map tiles.
     private void LoadMapTiles (Rom rom)
     {
       TileSheet t = new UncompressedTileSheet ();
@@ -155,25 +155,38 @@ namespace SM3E
       p.ColorCount = 128;
       p.ReadFromROM (rom, 0x1B7000);
       
-      for (int n = 0; n < 256; n++)
+      for (int row = 0; row < 8; row++)
       {
-        byte [] b = t.RenderTile (n, p, 3);
-        MapTiles.Add (new BlitImage (b, 8));
+        for (int n = 0; n < 256; n++)
+        {
+          byte [] b = t.RenderTile (n, p, row);
+          MapTiles.Add (new BlitImage (b, 8));
+        }
       }
 
-      MapTileSheet = new BlitImage (128, 128);
+    }
+
+
+    // Render map tile sheet.
+    public BlitImage RenderMapTileSheet (int paletteRow)
+    {
+      if (paletteRow < 0 || paletteRow >= 8)
+        paletteRow = 0;
+      BlitImage MapTileSheet = new BlitImage (128, 128);
       MapTileSheet.Black ();
+      int offset = 256 * paletteRow;
       for (int y = 0; y < 16; y++)
       {
         for (int x = 0; x < 16; x++)
         {
-          MapTileSheet.Blit (MapTiles [16 * y + x], 8 * x, 8 * y, false, false);
+          MapTileSheet.Blit (MapTiles [offset + 16 * y + x], 8 * x, 8 * y, false, false);
         }
       }
+      return MapTileSheet;
     }
 
 
-    // Render Area map
+    // Render Area map.
     public BlitImage RenderAreaMap ()
     {
       BlitImage image = new BlitImage (512, 256);
@@ -187,8 +200,8 @@ namespace SM3E
         {
           for (int x = 0; x < 64; x++)
           {
-            int index = (64 * y + x);
-            int tileIndex = map.GetTile (index);
+            int index = 64 * y + x;
+            int tileIndex = 256 * map.GetPalette (index) + map.GetTile (index);
             bool hFlip = map.GetHFlip (index);
             bool vFlip = map.GetVFlip (index);
             image.Blit (MapTiles [tileIndex], 8 * x, 8 * y, hFlip, vFlip);

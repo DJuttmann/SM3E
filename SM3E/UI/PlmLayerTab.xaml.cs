@@ -43,6 +43,7 @@ namespace SM3E.UI
       MainProject.PlmSelected += PlmSelected;
       MainProject.PlmTypeSelected += LoadPlmTypeData;
       MainProject.PlmTypeSelected += PlmTypeSelected;
+      MainProject.PlmModified += LoadPlmData;
     }
 
 
@@ -93,7 +94,8 @@ namespace SM3E.UI
 
     private void LoadPlmData (object sender, EventArgs e)
     {
-      // [wip]
+      MainProject.GetPlmPosition (out int x, out int y, out int width, out int height);
+      PositionInput.Text = Tools.IntToHex (x, 2) + "," + Tools.IntToHex (y, 2);
     }
 
 
@@ -157,6 +159,20 @@ namespace SM3E.UI
     private void DeletePlm_Click (object sender, RoutedEventArgs e)
     {
       MainProject.DeletePlm ();
+    }
+
+
+    private void IdInput_LostFocus (object sender, RoutedEventArgs e)
+    {
+      MainProject.SelectPlmTypeByID (Tools.HexToInt (IdInput.Text));
+    }
+
+
+    private void IdInput_KeyDown (object sender, KeyEventArgs e)
+    {
+      if (e.Key == Key.Enter)
+        IdInput_LostFocus (sender, null);
+      UITools.ValidateHex (ref e);
     }
 
   } // partial class PlmLayerTab

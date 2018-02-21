@@ -442,6 +442,7 @@ namespace SM3E
         ScreenYmax = RoomHeightInScreens - 1
       };
       LevelDataModified (this, e);
+      PlmModified?.Invoke (this, null);
     }
 
 
@@ -476,7 +477,7 @@ namespace SM3E
     }
 
 
-    // Return position and size of selected PLM
+    // Return position and size of selected Enemy (in tiles, output is double)
     public void GetEnemyPosition (out double x, out double y,
                                   out double width, out double height)
     {
@@ -494,6 +495,14 @@ namespace SM3E
     }
 
 
+    // Return size of selected Enemy in pixels.
+    public void GetEnemyPixelSize (out int x, out int y)
+    {
+      x = ActiveEnemy?.PosX ?? 0;
+      y = ActiveEnemy?.PosY ?? 0;
+    }
+
+
     public void SetEnemyPosition (double x, double y)
     {
       ActiveEnemy.PosX = (int) Math.Round (x * 16.0);
@@ -506,6 +515,7 @@ namespace SM3E
         ScreenYmax = RoomHeightInScreens - 1
       };
       LevelDataModified (this, e);
+      EnemyModified?.Invoke (this, null);
     }
 
 
@@ -521,6 +531,7 @@ namespace SM3E
         ScreenYmax = RoomHeightInScreens - 1
       };
       LevelDataModified (this, e);
+      EnemyModified?.Invoke (this, null);
     }
 
 
@@ -545,6 +556,25 @@ namespace SM3E
       ActiveEnemy.Tilemaps = tilemaps;
       ActiveEnemy.Speed = speed;
       ActiveEnemy.Speed2 = speed2;
+    }
+
+
+    public EnemyGfxPalette GetEnemyGfxPalette ()
+    {
+      EnemyGfx e = ActiveRoomState?.MyEnemyGfx;
+      if (e != null && EnemyGfxIndex >= 0 && EnemyGfxIndex < e.EnemyGfxCount)
+      {
+        return ((EnemyGfxPalette) e.Palettes [EnemyGfxIndex]);
+      }
+      return EnemyGfxPalette.None;
+    }
+
+
+    public void SetEnemyGfxPalette (EnemyGfxPalette palette)
+    {
+      EnemyGfx e = ActiveRoomState?.MyEnemyGfx;
+      if (e != null && EnemyGfxIndex >= 0 && EnemyGfxIndex < e.EnemyGfxCount)
+        e.Palettes [EnemyGfxIndex] = (int) palette;
     }
 
 
@@ -621,6 +651,13 @@ namespace SM3E
 // Map
 
 
+    // Get the active map tile.
+    public BlitImage GetMapTile ()
+    {
+      return MapTiles [256 * MapTilePalette + MapTileType];
+    }
+
+
     // Set the map tile at position (x, y) to the currently selected map tile.
     public void SetMapTile (int xMin, int yMin, int xMax, int yMax)
     {
@@ -640,6 +677,22 @@ namespace SM3E
         }
       }
       MapDataModified?.Invoke (this, null);
+    }
+
+
+    public void SelectMapTile (int x, int y)
+    {
+      if (AreaIndex != IndexNone)
+      {
+        var map = (AreaMap) AreaMaps [AreaIndex];
+        int index = 64 * y + x;
+        mapTileType = map.GetTile (index);
+        mapTileHFlip = map.GetHFlip (index);
+        mapTileVFlip = map.GetVFlip (index);
+        mapTilePalette = map.GetPalette (index);
+        MapTileSelected?.Invoke (this, null);
+        MapPaletteSelected?.Invoke (this, null);
+      }
     }
 
 
@@ -1022,7 +1075,13 @@ namespace SM3E
       ActivePlm.SetScrollPlmData (d, out ScrollPlmData deleteData);
       ScrollPlmDatas.Remove (deleteData);
 
-      ForceSelectScrollData (0);
+      if (ActivePlm.MyScrollPlmData != null)
+      {
+        int i = ScrollDatas.FindIndex (x => x == ActivePlm.MyScrollPlmData);
+        ForceSelectScrollData (i);
+      }
+      else
+        ForceSelectScrollData (-1);
       ScrollDataListChanged (this, new ListLoadEventArgs (ScrollDataIndex));
       RoomStateDataModified?.Invoke (this, null);
       LevelDataModified?.Invoke (this, new LevelDataEventArgs () {AllScreens = true});

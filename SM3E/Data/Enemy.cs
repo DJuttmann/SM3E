@@ -124,6 +124,9 @@ namespace SM3E
     public bool Connect (List <EnemyType> enemyTypes)
     {
       MyEnemyType = enemyTypes.Find (x => x.EnemyID == EnemyID);
+      if (MyEnemyType == null)
+        MyEnemyType = enemyTypes [0];
+
       return MyEnemyType != null;
     }
 
@@ -298,6 +301,7 @@ namespace SM3E
 
   public enum EnemyGfxPalette
   {
+    None = 0x0000,
     P1 = 0x0001,
     P2 = 0x0002,
     P3 = 0x0003,

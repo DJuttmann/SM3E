@@ -50,6 +50,7 @@ namespace SM3E.UI
       MainProject.DoorSelected += DoorSelected;
       MainProject.MapTileSelected += UpdateActiveMapTile;
       MainProject.MapPaletteSelected += UpdateMapTileSelector;
+      MainProject.MapPaletteSelected += UpdateActiveMapTile;
       MainProject.MapDataModified += UpdateMapEditor;
       MainProject.DoorDataModified += UpdateDoorData;
     }
@@ -86,7 +87,8 @@ namespace SM3E.UI
 
     private void UpdateMapTileSelector (object sender, EventArgs e)
     {
-      ImageSource source = MainProject.MapTileSheet.ToBitmap ();
+      int paletteRow = MapPaletteSelect.SelectedIndex;
+      ImageSource source = MainProject.RenderMapTileSheet (paletteRow).ToBitmap ();
       MapTileSelector.Screens [0, 0].Source = source;
     }
 
@@ -112,7 +114,7 @@ namespace SM3E.UI
       double hFlip = MainProject.MapTileHFlip ? -1.0 : 1.0;
       double vFlip = MainProject.MapTileVFlip ? -1.0 : 1.0;
       if (index != -1)
-        SelectedMapTileImage.Source = MainProject.MapTiles [index].ToBitmap ();
+        SelectedMapTileImage.Source = MainProject.GetMapTile ().ToBitmap ();
       SelectedMapTileImage.RenderTransform = new ScaleTransform (hFlip, vFlip);
     }
 
@@ -213,14 +215,15 @@ namespace SM3E.UI
         if (MainProject.NavigateToMapPosition (e.TileClickX, e.TileClickY - 1,
                                                out int screenX, out int screenY))
           ScreenSelected?.Invoke (this, new RoomSelectEventArgs (screenX, screenY));
-//          LevelData.ScrollToScreen (screenX, screenY);
       }
+      else if (e.Button == MouseButton.Right)
+        MainProject.SelectMapTile (e.TileClickX, e.TileClickY);
     }
 
 
     private void MapEditor_MouseUp (object sender, TileViewerMouseEventArgs e)
     {
-      if (MapEditRadio.IsChecked == true)
+      if (MapEditRadio.IsChecked == true && e.Button == MouseButton.Left)
       {
         MainProject.SetMapTile (e.TileClickX, e.TileClickY, e.PosTileX, e.PosTileY);
       }

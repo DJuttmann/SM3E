@@ -50,7 +50,7 @@
       <Button Grid.Row="2" x:Name="MapEditHFlip" Width="20" Height="20" Content="&#x2194;" HorizontalAlignment="Left" Margin="60,0,0,0" Click="MapEditHFlip_Click"/>
       <Grid Grid.Row="3" x:Name="MapTileViewer" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="4,8,4,8"/>
       <Label Grid.Row="4" Content="Palette row" HorizontalAlignment="Stretch" Margin="4,-3,0,-3" />
-      <ComboBox Grid.Row="4" x:Name="MapPaletteSelect" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="80,-1,8,-1" SelectedIndex="3" SelectionChanged="MapPaletteSelect_SelectionChanged">
+      <ComboBox Grid.Row="4" x:Name="MapPaletteSelect" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="80,-1,8,-1" SelectedIndex="0" SelectionChanged="MapPaletteSelect_SelectionChanged">
         <ComboBoxItem Content="0"/>
         <ComboBoxItem Content="1"/>
         <ComboBoxItem Content="2"/>

@@ -242,6 +242,18 @@ namespace SM3E
     }
 
 
+    public void SelectPlmTypeByID (int PlmID)
+    {
+      int index = PlmTypes.FindIndex (x => x.PlmID == PlmID);
+      if (index == -1)
+      {
+        index = 0;
+        PlmTypes [0].PlmID = PlmID;
+      }
+      SelectPlmType (index);
+    }
+
+
     public void SelectEnemy (int index)
     {
       if (HandlingSelection)
@@ -283,6 +295,18 @@ namespace SM3E
       ForceSelectEnemyType (index);
       RaiseChangeEvents (a);
       HandlingSelection = false;
+    }
+
+
+    public void SelectEnemyTypeByID (int EnemyID)
+    {
+      int index = EnemyTypes.FindIndex (x => x.EnemyID == EnemyID);
+      if (index == -1)
+      {
+        index = 0;
+        EnemyTypes [0].EnemyID = EnemyID;
+      }
+      SelectEnemyType (index);
     }
 
 
@@ -416,17 +440,19 @@ namespace SM3E
       {
         RoomStateIndex = index;
         ActiveRoomState = ActiveRoom.RoomStates [RoomStateIndex];
+        ForceSelectScrollData (-1);
         ForceSelectPlm (0);
         ForceSelectEnemy (0);
-        ForceSelectScrollData (0);
+        ForceSelectEnemyGfx (-1);
       }
       else
       {
         RoomStateIndex = IndexNone;
         ActiveRoomState = null;
+        ForceSelectScrollData (IndexNone);
         ForceSelectPlm (IndexNone);
         ForceSelectEnemy (IndexNone);
-        ForceSelectScrollData (IndexNone);
+        ForceSelectEnemyGfx (IndexNone);
       }
     }
 
@@ -453,7 +479,16 @@ namespace SM3E
       {
         PlmIndex = index;
         ActivePlm = ActiveRoomState.MyPlmSet.Plms [PlmIndex];
+        if (ActivePlm.MyPlmType?.Index == 0)
+          ActivePlm.MyPlmType.PlmID = ActivePlm.PlmID;
         ForceSelectPlmType (ActivePlm.MyPlmType?.Index ?? IndexNone);
+        if (ActivePlm.MyScrollPlmData != null)
+        {
+          int i = ScrollDatas.FindIndex (x => x == ActivePlm.MyScrollPlmData);
+          ForceSelectScrollData (i);
+        }
+        else
+          ForceSelectScrollData (-1);
       }
       else
       {
@@ -486,6 +521,8 @@ namespace SM3E
       {
         EnemyIndex = index;
         ActiveEnemy = ActiveRoomState.MyEnemySet.Enemies [EnemyIndex];
+        if (ActiveEnemy.MyEnemyType?.Index == 0)
+          ActiveEnemy.MyEnemyType.EnemyID = ActiveEnemy.EnemyID;
         ForceSelectEnemyType (ActiveEnemy.MyEnemyType?.Index ?? IndexNone);
       }
       else

@@ -366,7 +366,9 @@ namespace SM3E
         if (ActiveRoom != null && ActiveRoom.Name != value)
         {
           ActiveRoom.Name = value;
+          HandlingSelection = true;
           RoomListChanged (this, new ListLoadEventArgs (RoomIndex));
+          HandlingSelection = false;
         }
       }
     }

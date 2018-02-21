@@ -55,6 +55,8 @@ namespace SM3E
     public event EventHandler RoomDataModified;
     public event EventHandler RoomStateDataModified;
     public event EventHandler DoorDataModified;
+    public event EventHandler PlmModified;
+    public event EventHandler EnemyModified;
 
   }
 

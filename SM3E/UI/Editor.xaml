@@ -8,7 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="750" d:DesignWidth="1000">
   
-  <Grid Grid.Row="1">
+  <Grid KeyDown="Editor_KeyDown">
     <Grid.RowDefinitions>
       <RowDefinition Height="400*"/>
       <RowDefinition Height="2"/>
@@ -81,7 +81,7 @@
       <ui:PropertiesTab Grid.Column="2" x:Name="PropertiesView" Visibility="Hidden"/>
       <ui:TileLayersTab Grid.Column="2" x:Name="TileLayersEditor" Visibility="Hidden"/>
       <ui:PlmLayerTab Grid.Column="2" x:Name="PlmLayerEditor" Visibility="Hidden"/>
-      <ui:EnemyLayer Grid.Column="2" x:Name="EnemyLayerEditor" Visibility="Hidden"/>
+      <ui:EnemyLayerTab Grid.Column="2" x:Name="EnemyLayerEditor" Visibility="Hidden"/>
       <ui:ScrollLayerTab Grid.Column="2" x:Name="ScrollLayerEditor" Visibility="Hidden"/>
       <Grid Grid.Column="2" x:Name="FxLayerEditor" Visibility="Hidden"/>
     </Grid>

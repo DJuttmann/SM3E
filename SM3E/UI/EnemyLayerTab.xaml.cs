@@ -18,7 +18,7 @@ namespace SM3E.UI
   /// <summary>
   /// Interaction logic for EnemyLayer.xaml
   /// </summary>
-  public partial class EnemyLayer : UserControl
+  public partial class EnemyLayerTab: UserControl
   {
     private Project MainProject;
 
@@ -26,7 +26,7 @@ namespace SM3E.UI
 
 
     // Constructor.
-    public EnemyLayer()
+    public EnemyLayerTab ()
     {
       InitializeComponent();
     }
@@ -116,13 +116,31 @@ namespace SM3E.UI
 
     private void LoadEnemyData (object sender, EventArgs e)
     {
-      // [wip]
+      MainProject.GetEnemyPixelSize (out int x, out int y);
+      PositionInput.Text = Tools.IntToHex (x, 4) + "," + Tools.IntToHex (y, 4);
     }
 
 
     private void LoadEnemyGfxData (object sender, EventArgs e)
     {
-      // [wip] maybe do nothing?
+      switch (MainProject.GetEnemyGfxPalette ())
+      {
+      default:
+        GfxPaletteInput.SelectedIndex = -1;
+        break;
+      case EnemyGfxPalette.P1:
+        GfxPaletteInput.SelectedIndex = 0;
+        break;
+      case EnemyGfxPalette.P2:
+        GfxPaletteInput.SelectedIndex = 1;
+        break;
+      case EnemyGfxPalette.P3:
+        GfxPaletteInput.SelectedIndex = 2;
+        break;
+      case EnemyGfxPalette.P4:
+        GfxPaletteInput.SelectedIndex = 3;
+        break;
+      }
     }
 
 
@@ -217,5 +235,19 @@ namespace SM3E.UI
     }
 
 
+    private void IdInput_LostFocus (object sender, RoutedEventArgs e)
+    {
+      MainProject.SelectEnemyTypeByID (Tools.HexToInt (IdInput.Text));
+    }
+
+
+    private void IdInput_KeyDown (object sender, KeyEventArgs e)
+    {
+      if (e.Key == Key.Enter)
+        IdInput_LostFocus (sender, null);
+      UITools.ValidateHex (ref e);
+    }
+
   }
+
 }

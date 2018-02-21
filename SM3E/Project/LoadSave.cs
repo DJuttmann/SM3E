@@ -79,15 +79,14 @@ namespace SM3E
       EnemyTypeListChanged?.Invoke (this, new ListLoadEventArgs (0));
       SelectEnemyType (0);
       ScrollColorListChanged?.Invoke (this, new ListLoadEventArgs (0));
+      MapPaletteSelected?.Invoke (this, null);
       TileIndex = 0;
       BtsType = 0;
     }
 
 
     // Read the project file in Xml format.
-    private bool ReadProjectFileXml (//out List <int> roomAddresses,
-                                     //out List <int> roomDoorCounts,
-                                     //out List <string> roomNames,
+    private bool ReadProjectFileXml (
                                      out List <Tuple <int, int, string>> rooms,
                                      out List <Tuple <int, int, string>> doorAsms,
                                      out List <Tuple <int, int, string>> setupAsms,
@@ -95,9 +94,6 @@ namespace SM3E
                                      out List <Tuple <int, string>> backgrounds)
     {
       RomFileName = null;
-      // roomAddresses = new List <int> ();
-      // roomDoorCounts = new List <int> ();
-      // roomNames = new List <string> ();
       rooms     = new List <Tuple <int, int, string>> ();
       doorAsms  = new List <Tuple <int, int, string>> ();
       setupAsms = new List <Tuple <int, int, string>> ();
