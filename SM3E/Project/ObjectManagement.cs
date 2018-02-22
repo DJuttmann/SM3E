@@ -147,6 +147,28 @@ namespace SM3E
     }
 
 
+    // Make selected room state the standard room state.
+    public void MakeRoomStateStandard ()
+    {
+      if (ActiveRoom == null || ActiveRoomState == null)
+        return;
+      int standardIndex = ActiveRoom.RoomStateCount - 1;
+      if (RoomStateIndex == standardIndex)
+        return;
+
+      var temp = ActiveRoom.RoomStates [RoomStateIndex];
+      ActiveRoom.RoomStates [RoomStateIndex] =
+        ActiveRoom.RoomStates [standardIndex];
+      ActiveRoom.RoomStates [standardIndex] = temp;
+
+      RoomStateIndex = standardIndex;
+      HandlingSelection = true;
+      RoomStateListChanged?.Invoke (this, new ListLoadEventArgs (RoomStateIndex));
+      RoomStateDataModified?.Invoke (this, null);
+      HandlingSelection = false;
+    }
+
+
     // Add new room state.
     public void AddRoomState ()
     {

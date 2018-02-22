@@ -115,7 +115,6 @@ namespace SM3E
       case StateType.SpeedBooster:
         if (!rom.Read (b, 0, 2))
           return false;
-        Value = b [0];
         RoomStatePtr = Tools.ConcatBytes (b [0], b [1], 0x8F);
         break;
       default:
@@ -583,6 +582,11 @@ namespace SM3E
         }
         return size;
       }
+    }
+
+    public int RoomStateCount
+    {
+      get {return RoomStateHeaders.Count;}
     }
 
     public int DoorsPtrPC // [wip] why does this still exist?

@@ -46,6 +46,7 @@ namespace SM3E.UI
       MainProject.EnemyGfxSelected += EnemyGfxSelected;
       MainProject.EnemyTypeSelected += LoadEnemyTypeData;
       MainProject.EnemyTypeSelected += EnemyTypeSelected;
+      MainProject.EnemyModified += LoadEnemyData;
     }
 
 
@@ -116,7 +117,7 @@ namespace SM3E.UI
 
     private void LoadEnemyData (object sender, EventArgs e)
     {
-      MainProject.GetEnemyPixelSize (out int x, out int y);
+      MainProject.GetEnemyPixelPosition (out int x, out int y);
       PositionInput.Text = Tools.IntToHex (x, 4) + "," + Tools.IntToHex (y, 4);
     }
 
@@ -246,6 +247,27 @@ namespace SM3E.UI
       if (e.Key == Key.Enter)
         IdInput_LostFocus (sender, null);
       UITools.ValidateHex (ref e);
+    }
+
+
+    private void PositionInput_LostFocus (object sender, RoutedEventArgs e)
+    {
+      string [] values = PositionInput.Text.Split (new char [] {','});
+      int x = 0;
+      int y = 0;
+      if (values.Length > 0)
+        x = Tools.HexToInt (values [0]);
+      if (values.Length > 1)
+        y = Tools.HexToInt (values [1]);
+      MainProject.SetEnemyPixelPosition (x, y);
+    }
+
+
+    private void PositionInput_KeyDown (object sender, KeyEventArgs e)
+    {
+      if (e.Key == Key.Enter)
+        PositionInput_LostFocus (sender, null);
+      UITools.ValidateHexOrComma (ref e);
     }
 
   }

@@ -432,16 +432,11 @@ namespace SM3E
 
     public void SetPlmPosition (int x, int y)
     {
+      if (ActivePlm == null)
+        return;
       ActivePlm.PosX = (byte) x;
       ActivePlm.PosY = (byte) y;
-      var e = new LevelDataEventArgs ()
-      {
-        ScreenXmin = 0,
-        ScreenXmax = RoomWidthInScreens - 1,
-        ScreenYmin = 0,
-        ScreenYmax = RoomHeightInScreens - 1
-      };
-      LevelDataModified (this, e);
+      LevelDataModified?.Invoke (this, new LevelDataEventArgs () {AllScreens = true});
       PlmModified?.Invoke (this, null);
     }
 
@@ -495,43 +490,46 @@ namespace SM3E
     }
 
 
-    // Return size of selected Enemy in pixels.
-    public void GetEnemyPixelSize (out int x, out int y)
-    {
-      x = ActiveEnemy?.PosX ?? 0;
-      y = ActiveEnemy?.PosY ?? 0;
-    }
-
-
     public void SetEnemyPosition (double x, double y)
     {
+      if (ActiveEnemy == null)
+        return;
       ActiveEnemy.PosX = (int) Math.Round (x * 16.0);
       ActiveEnemy.PosY = (int) Math.Round (y * 16.0);
-      var e = new LevelDataEventArgs ()
-      {
-        ScreenXmin = 0,
-        ScreenXmax = RoomWidthInScreens - 1,
-        ScreenYmin = 0,
-        ScreenYmax = RoomHeightInScreens - 1
-      };
-      LevelDataModified (this, e);
+      LevelDataModified?.Invoke (this, new LevelDataEventArgs () {AllScreens = true});
       EnemyModified?.Invoke (this, null);
     }
 
 
     public void SetEnemyPositionRelative (double dx, double dy)
     {
+      if (ActiveEnemy == null)
+        return;
       ActiveEnemy.PosX += (int) Math.Round (dx * 16.0);
       ActiveEnemy.PosY += (int) Math.Round (dy * 16.0);
-      var e = new LevelDataEventArgs ()
-      {
-        ScreenXmin = 0,
-        ScreenXmax = RoomWidthInScreens - 1,
-        ScreenYmin = 0,
-        ScreenYmax = RoomHeightInScreens - 1
-      };
-      LevelDataModified (this, e);
+      LevelDataModified?.Invoke (this, new LevelDataEventArgs () {AllScreens = true});
       EnemyModified?.Invoke (this, null);
+    }
+
+
+    // Return size of selected Enemy in pixels.
+    public void GetEnemyPixelPosition (out int x, out int y)
+    {
+      x = ActiveEnemy?.PosX ?? 0;
+      y = ActiveEnemy?.PosY ?? 0;
+    }
+
+
+    // Return size of selected Enemy in pixels.
+    public void SetEnemyPixelPosition (int x, int y)
+    {
+      if (ActiveEnemy != null)
+      {
+        ActiveEnemy.PosX = x;
+        ActiveEnemy.PosY = y;
+        LevelDataModified?.Invoke (this, new LevelDataEventArgs () {AllScreens = true});
+        EnemyModified?.Invoke (this, null);
+      }
     }
 
 

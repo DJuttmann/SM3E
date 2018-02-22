@@ -435,11 +435,21 @@ namespace SM3E
       }
       set
       {
-        if (RoomStateIndex != IndexNone &&
-            ActiveRoom.RoomStateHeaders [RoomStateIndex].HeaderType != value)
+        if (HandlingSelection || ActiveRoom == null || RoomStateIndex == IndexNone)
+          return;
+        StateType currentType = ActiveRoom.RoomStateHeaders [RoomStateIndex].HeaderType;
+        if (currentType != StateType.Standard && currentType != value)
         {
-          ActiveRoom.RoomStateHeaders [RoomStateIndex].HeaderType = value;
-          RoomStateDataModified?.Invoke (this, null);
+          if (value == StateType.Standard)
+            MakeRoomStateStandard ();
+          else
+          {
+            ActiveRoom.RoomStateHeaders [RoomStateIndex].HeaderType = value;
+            HandlingSelection = true;
+            RoomStateDataModified?.Invoke (this, null);
+            RoomStateListChanged?.Invoke (this, new ListLoadEventArgs (RoomStateIndex));
+            HandlingSelection = false;
+          }
         }
       }
     }

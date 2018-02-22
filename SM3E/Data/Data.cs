@@ -55,13 +55,6 @@ namespace SM3E
     SpeedBooster = 0xE676
   }
 
-
-//  class Constants
-//  {
-//    public const int ScrollSetAllBlue = 0x8F0000;
-//    public const int ScrollSetAllGreen = 0x8F0001;
-//  }
-
    
   // Interface for data classes that contains pointers to reallocatable objects.
   interface IRepointable

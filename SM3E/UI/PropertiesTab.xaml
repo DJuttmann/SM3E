@@ -39,7 +39,7 @@
       </Grid.ColumnDefinitions>
       <Label Grid.Row="0" Content="Room" HorizontalAlignment="Left" Width="100" Margin="0,-3,0,-3" FontSize="16" FontWeight="Bold" Grid.ColumnSpan="3" Grid.RowSpan="2"/>
       <Label Grid.Row="1" Margin="0,-3,0,-3" Content="Area" HorizontalAlignment="Left"/>
-      <ComboBox x:Name="RoomAreaSelect" Grid.Row="1" Grid.ColumnSpan="3" Margin="75,1,0,1" HorizontalAlignment="Stretch" SelectionChanged="RoomAreaSelect_Update">
+      <ComboBox x:Name="RoomAreaSelect" Grid.Row="1" Grid.ColumnSpan="3" Margin="75,1,0,1" HorizontalAlignment="Stretch" SelectionChanged="RoomAreaSelect_SelectionChanged">
         <ComboBoxItem>00</ComboBoxItem>
         <ComboBoxItem>01</ComboBoxItem>
         <ComboBoxItem>02</ComboBoxItem>
@@ -50,18 +50,18 @@
         <ComboBoxItem>07</ComboBoxItem>
       </ComboBox>
       <Label Grid.Row="2" Margin="0,-3,0,-3" Content="Name" HorizontalAlignment="Left"/>
-      <TextBox x:Name="RoomNameInput" Grid.Row="2" Grid.ColumnSpan="3" Margin="75,2,0,2" HorizontalAlignment="Stretch" Text="[Room name]" LostFocus="RoomNameInput_Update"/>
+      <TextBox x:Name="RoomNameInput" Grid.Row="2" Grid.ColumnSpan="3" Margin="75,2,0,2" HorizontalAlignment="Stretch" Text="[Room name]" LostFocus="RoomNameInput_LostFocus" KeyDown="RoomNameInput_KeyDown"/>
       <Label Grid.Row="3" Margin="0,-3,0,-3" Content="Up Scroller" HorizontalAlignment="Left"/>
-      <TextBox x:Name="UpScrollerInput" Grid.Row="3" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$00" LostFocus="UpScrollerInput_Update"/>
+      <TextBox x:Name="UpScrollerInput" Grid.Row="3" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="UpScrollerInput_LostFocus" KeyDown="UpScrollerInput_KeyDown"/>
       <Label Grid.Row="3" Grid.Column="2" Margin="0,-3,0,-3" Content="Down Scr." HorizontalAlignment="Left"/>
-      <TextBox x:Name="DownScrollerInput" Grid.Row="3" Grid.Column="2" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$00" LostFocus="DownScrollerInput_Update"/>
+      <TextBox x:Name="DownScrollerInput" Grid.Row="3" Grid.Column="2" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="DownScrollerInput_LostFocus" KeyDown="DownScrollerInput_KeyDown"/>
       <Label Grid.Row="4" Margin="0,-3,0,-3" Content="Special Gfx" HorizontalAlignment="Left"/>
-      <TextBox x:Name="SpecialGfxInput" Grid.Row="4" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$00" LostFocus="SpecialGfxInput_Update"/>
+      <TextBox x:Name="SpecialGfxInput" Grid.Row="4" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="SpecialGfxInput_LostFocus" KeyDown="SpecialGfxInput_KeyDown"/>
 
       <!-- STATE -->
       <Label Grid.Row="6" Content="State" HorizontalAlignment="Left" Width="100" Margin="0,-3,0,-3" FontSize="16" FontWeight="Bold" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
       <Label Grid.Row="7" Margin="0,-3,0,-3" Content="Type" HorizontalAlignment="Left"/>
-      <ComboBox x:Name="StateTypeSelect" Grid.Row="7" Margin="75,1,-50,1" HorizontalAlignment="Stretch">
+      <ComboBox x:Name="StateTypeSelect" Grid.Row="7" Grid.ColumnSpan="3" Margin="75,1,50,1" HorizontalAlignment="Stretch" SelectionChanged="StateTypeSelect_SelectionChanged">
         <ComboBoxItem>Event</ComboBoxItem>
         <ComboBoxItem>Boss</ComboBoxItem>
         <ComboBoxItem>Tourian Boss</ComboBoxItem>
@@ -69,17 +69,17 @@
         <ComboBoxItem>Morph + Missiles</ComboBoxItem>
         <ComboBoxItem>Power Bombs</ComboBoxItem>
         <ComboBoxItem>Speed Booster</ComboBoxItem>
+        <ComboBoxItem>Standard</ComboBoxItem>
       </ComboBox>
-      <Label Grid.Row="7" Grid.Column="2" Margin="50,-3,40,-3" Content="#" HorizontalAlignment="Left"/>
-      <TextBox x:Name="StateEventNumberInput" Grid.Row="7" Grid.Column="3" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$00" LostFocus="StateEventNumberInput_Update"/>
+      <TextBox x:Name="StateEventNumberInput" Grid.Row="7" Grid.Column="3" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="StateEventNumberInput_LostFocus" KeyDown="StateEventNumberInput_KeyDown"/>
       <Label Grid.Row="8" Margin="0,-3,0,-3" Content="Song Set" HorizontalAlignment="Left"/>
-      <TextBox x:Name="StateSongeSetInput" Grid.Row="8" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$00" LostFocus="StateSongeSetInput_Update"/>
+      <TextBox x:Name="StateSongeSetInput" Grid.Row="8" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="StateSongeSetInput_LostFocus" KeyDown="StateSongeSetInput_KeyDown"/>
       <Label Grid.Row="8" Grid.Column="2" Margin="0,-3,40,-3" Content="Index" HorizontalAlignment="Left"/>
-      <TextBox x:Name="StatePlayIndexInput" Grid.Row="8" Grid.Column="2" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$00" LostFocus="StatePlayIndexInput_Update"/>
+      <TextBox x:Name="StatePlayIndexInput" Grid.Row="8" Grid.Column="2" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="StatePlayIndexInput_LostFocus" KeyDown="StatePlayIndexInput_KeyDown"/>
       <Label Grid.Row="9" Margin="0,-3,0,-3" Content="Bg Scrolling" HorizontalAlignment="Left"/>
-      <TextBox x:Name="StateBgScrollingInput" Grid.Row="9" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$0000" LostFocus="StateBgScrollingInput_Update"/>
+      <TextBox x:Name="StateBgScrollingInput" Grid.Row="9" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4" LostFocus="StateBgScrollingInput_LostFocus"/>
       <Label Grid.Row="9" Grid.Column="2" Margin="0,-3,0,-3" Content="Tileset" HorizontalAlignment="Left"/>
-      <ComboBox x:Name="StateTileSetInput" Grid.Row="9" Grid.Column="2" Margin="75,1,0,1" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="$0000" SelectionChanged="StateTileSetInput_Update"/>
+      <ComboBox x:Name="StateTileSetSelect" Grid.Row="9" Grid.Column="2" Margin="75,1,0,1" HorizontalAlignment="Stretch" FontFamily="Courier New" SelectionChanged="StateTileSetSelect_SelectionChanged" KeyDown="StateBgScrollingInput_KeyDown"/>
     </Grid>
 
     <!-- POINTERS -->

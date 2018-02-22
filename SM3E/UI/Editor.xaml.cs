@@ -57,7 +57,9 @@ namespace SM3E.UI
       MainProject.LevelDataSelected += NewLevelData;
       MainProject.LevelDataModified += LevelDataModified;
       MainProject.PlmSelected += PlmEnemySelected;
+      MainProject.PlmModified += PlmEnemySelected;
       MainProject.EnemySelected += PlmEnemySelected;
+      MainProject.EnemyModified += PlmEnemySelected;
 
       NavigateView.ScreenSelected += LevelDataScrollToScreen;
 

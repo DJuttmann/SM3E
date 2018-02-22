@@ -25,8 +25,6 @@ namespace SM3E.UI
 
     private UITileViewer RoomSizeEditor;
 
-    bool QuietSelect = false;
-
 
     public PropertiesTab()
     {
@@ -90,12 +88,12 @@ namespace SM3E.UI
 
     private void LoadRoomStateData (object sender, EventArgs e)
     {
-      StateTypeSelect.SelectedIndex = 0; // [wip]
+      UpdateStateTypeSelect ();
       StateEventNumberInput.Text = Tools.IntToHex (MainProject.RoomStateEventNumber, 2);
       StateSongeSetInput.Text = Tools.IntToHex (MainProject.SongSet, 2);
       StatePlayIndexInput.Text = Tools.IntToHex (MainProject.PlayIndex, 2);
       StateBgScrollingInput.Text = Tools.IntToHex (MainProject.BackgroundScrolling, 4);
-      StateTileSetInput.SelectedIndex = MainProject.TileSetIndex;
+      StateTileSetSelect.SelectedIndex = MainProject.TileSetIndex;
 
       List <string> names = MainProject.PointerNames;
       LavelDataPtrInput.Text = names [0];
@@ -118,18 +116,46 @@ namespace SM3E.UI
       FxRefCount.Content = refCounts [6];
       SetupAsmRefCount.Content = refCounts [7];
       MainAsmRefCount.Content = refCounts [8];
+    }
 
-      /*
-      LavelDataPtrInput.Text = Tools.IntToHex (MainProject.LevelDataPtr, 6);
-      ScrollsPtrInput.Text = Tools.IntToHex (MainProject.RoomScrollsPtr, 6);
-      PlmSetPtrInput.Text = Tools.IntToHex (MainProject.PlmSetPtr, 6);
-      EnemySetPtrInput.Text = Tools.IntToHex (MainProject.EnemySetPtr, 6);
-      EnemyGfxPtrInput.Text = Tools.IntToHex (MainProject.EnemyGfxPtr, 6);
-      BackgroundInput.Text = Tools.IntToHex (MainProject.BackgroundPtr, 6);
-      FxPtrInput.Text = Tools.IntToHex (MainProject.FxPtr, 6);
-      SetupAsmPtrInput.Text = Tools.IntToHex (MainProject.SetupAsmPtr, 6);
-      MainAsmPtrInput.Text = Tools.IntToHex (MainProject.MainAsmPtr, 6);
-      */
+
+    private void UpdateStateTypeSelect ()
+    {
+      StateTypeSelect.IsEnabled = true;
+      StateEventNumberInput.IsEnabled = false;
+      switch (MainProject.RoomStateType)
+      {
+      case StateType.Standard:
+        StateTypeSelect.SelectedIndex = 7;
+        StateTypeSelect.IsEnabled = false;
+        break;
+      case StateType.Events:
+        StateTypeSelect.SelectedIndex = 0;
+        StateEventNumberInput.IsEnabled = true;
+        break;
+      case StateType.Bosses:
+        StateTypeSelect.SelectedIndex = 1;
+        StateEventNumberInput.IsEnabled = true;
+        break;
+      case StateType.TourianBoss:
+        StateTypeSelect.SelectedIndex = 2;
+        break;
+      case StateType.Morph:
+        StateTypeSelect.SelectedIndex = 3;
+        break;
+      case StateType.MorphMissiles:
+        StateTypeSelect.SelectedIndex = 4;
+        break;
+      case StateType.PowerBombs:
+        StateTypeSelect.SelectedIndex = 5;
+        break;
+      case StateType.SpeedBooster:
+        StateTypeSelect.SelectedIndex = 6;
+        break;
+      default:
+        StateTypeSelect.SelectedIndex = -1;
+        break;
+      }
     }
 
 
@@ -145,7 +171,7 @@ namespace SM3E.UI
     private void LoadTileSetSelect (object sender, ListLoadEventArgs e)
     {
       List <string> names = MainProject.TileSetNames;
-      StateTileSetInput.ItemsSource = names;
+      StateTileSetSelect.ItemsSource = names;
     }
 
 
@@ -154,63 +180,158 @@ namespace SM3E.UI
 // Event handlers
 
     
-    private void RoomAreaSelect_Update (object sender, SelectionChangedEventArgs e)
+    private void RoomAreaSelect_SelectionChanged (object sender, SelectionChangedEventArgs e)
     {
       MainProject.RoomArea = RoomAreaSelect.SelectedIndex;
     }
 
 
-    private void RoomNameInput_Update (object sender, RoutedEventArgs e)
+    private void RoomNameInput_LostFocus (object sender, RoutedEventArgs e)
     {
       MainProject.RoomName = RoomNameInput.Text;
     }
 
 
-    private void UpScrollerInput_Update (object sender, RoutedEventArgs e)
+    private void RoomNameInput_KeyDown (object sender, KeyEventArgs e)
+    {
+      if (e.Key == Key.Enter)
+        RoomNameInput_LostFocus (sender, null);
+    }
+
+
+    private void UpScrollerInput_LostFocus (object sender, RoutedEventArgs e)
     {
       MainProject.UpScroller = Tools.HexToInt (UpScrollerInput.Text);
     }
 
+    
+    private void UpScrollerInput_KeyDown (object sender, KeyEventArgs e)
+    {
+      if (e.Key == Key.Enter)
+        UpScrollerInput_LostFocus (sender, null);
+      UITools.ValidateHex (ref e);
+    }
 
-    private void DownScrollerInput_Update (object sender, RoutedEventArgs e)
+
+    private void DownScrollerInput_LostFocus (object sender, RoutedEventArgs e)
     {
       MainProject.DownScroller = Tools.HexToInt (DownScrollerInput.Text);
     }
 
 
-    private void SpecialGfxInput_Update (object sender, RoutedEventArgs e)
+    private void DownScrollerInput_KeyDown (object sender, KeyEventArgs e)
+    {
+      if (e.Key == Key.Enter)
+        DownScrollerInput_LostFocus (sender, null);
+      UITools.ValidateHex (ref e);
+    }
+
+
+    private void SpecialGfxInput_LostFocus (object sender, RoutedEventArgs e)
     {
       MainProject.SpecialGfx = Tools.HexToInt (SpecialGfxInput.Text);
     }
 
 
-    private void StateEventNumberInput_Update (object sender, RoutedEventArgs e)
+    private void SpecialGfxInput_KeyDown (object sender, KeyEventArgs e)
+    {
+      if (e.Key == Key.Enter)
+        SpecialGfxInput_LostFocus (sender, null);
+      UITools.ValidateHex (ref e);
+    }
+
+    
+    private void StateTypeSelect_SelectionChanged (object sender, SelectionChangedEventArgs e)
+    {
+      switch (StateTypeSelect.SelectedIndex)
+      {
+      case 0:
+        MainProject.RoomStateType = StateType.Events;
+        break;
+      case 1:
+        MainProject.RoomStateType = StateType.Bosses;
+        break;
+      case 2:
+        MainProject.RoomStateType = StateType.TourianBoss;
+        break;
+      case 3:
+        MainProject.RoomStateType = StateType.Morph;
+        break;
+      case 4:
+        MainProject.RoomStateType = StateType.MorphMissiles;
+        break;
+      case 5:
+        MainProject.RoomStateType = StateType.PowerBombs;
+        break;
+      case 6:
+        MainProject.RoomStateType = StateType.SpeedBooster;
+        break;
+      case 7:
+        MainProject.RoomStateType = StateType.Standard;
+        break;
+      }
+    }
+
+
+    private void StateEventNumberInput_LostFocus (object sender, RoutedEventArgs e)
     {
       MainProject.RoomStateEventNumber = Tools.HexToInt (StateEventNumberInput.Text);
     }
 
 
-    private void StateSongeSetInput_Update (object sender, RoutedEventArgs e)
+    private void StateEventNumberInput_KeyDown (object sender, KeyEventArgs e)
+    {
+      if (e.Key == Key.Enter)
+        StateEventNumberInput_LostFocus (sender, null);
+      UITools.ValidateHex (ref e);
+    }
+
+
+    private void StateSongeSetInput_LostFocus (object sender, RoutedEventArgs e)
     {
       MainProject.SongSet = Tools.HexToInt (StateSongeSetInput.Text);
     }
 
 
-    private void StatePlayIndexInput_Update (object sender, RoutedEventArgs e)
+    private void StateSongeSetInput_KeyDown (object sender, KeyEventArgs e)
+    {
+      if (e.Key == Key.Enter)
+        StateSongeSetInput_LostFocus (sender, null);
+      UITools.ValidateHex (ref e);
+    }
+
+
+    private void StatePlayIndexInput_LostFocus (object sender, RoutedEventArgs e)
     {
       MainProject.PlayIndex = Tools.HexToInt (StatePlayIndexInput.Text);
     }
 
 
-    private void StateBgScrollingInput_Update (object sender, RoutedEventArgs e)
+    private void StatePlayIndexInput_KeyDown (object sender, KeyEventArgs e)
+    {
+      if (e.Key == Key.Enter)
+        StatePlayIndexInput_LostFocus (sender, null);
+      UITools.ValidateHex (ref e);
+    }
+
+
+    private void StateBgScrollingInput_LostFocus (object sender, RoutedEventArgs e)
     {
       MainProject.BackgroundScrolling = Tools.HexToInt (StateBgScrollingInput.Text);
     }
 
 
-    private void StateTileSetInput_Update (object sender, SelectionChangedEventArgs e)
+    private void StateBgScrollingInput_KeyDown (object sender, KeyEventArgs e)
     {
-      MainProject.RoomStateTileSet = StateTileSetInput.SelectedIndex;
+      if (e.Key == Key.Enter)
+        StateBgScrollingInput_LostFocus (sender, null);
+      UITools.ValidateHex (ref e);
+    }
+
+
+    private void StateTileSetSelect_SelectionChanged (object sender, SelectionChangedEventArgs e)
+    {
+      MainProject.RoomStateTileSet = StateTileSetSelect.SelectedIndex;
     }
 
 //----------------------------------------------------------------------------------------

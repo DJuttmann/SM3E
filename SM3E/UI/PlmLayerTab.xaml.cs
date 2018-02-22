@@ -175,6 +175,27 @@ namespace SM3E.UI
       UITools.ValidateHex (ref e);
     }
 
+    
+    private void PositionInput_LostFocus (object sender, RoutedEventArgs e)
+    {
+      string [] values = PositionInput.Text.Split (new char [] {','});
+      int x = 0;
+      int y = 0;
+      if (values.Length > 0)
+        x = Tools.HexToInt (values [0]);
+      if (values.Length > 1)
+        y = Tools.HexToInt (values [1]);
+      MainProject.SetPlmPosition (x, y);
+    }
+
+
+    private void PositionInput_KeyDown (object sender, KeyEventArgs e)
+    {
+      if (e.Key == Key.Enter)
+        PositionInput_LostFocus (sender, null);
+      UITools.ValidateHexOrComma (ref e);
+    }
+
   } // partial class PlmLayerTab
 
 }
