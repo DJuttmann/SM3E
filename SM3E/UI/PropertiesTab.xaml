@@ -18,28 +18,20 @@
     <Rectangle Grid.Column="3" Fill="#FFE0E0E0" HorizontalAlignment="Stretch" Stroke="#00000000" VerticalAlignment="Stretch" Margin="0,4,0,4" Grid.RowSpan="2"/>
 
     <!-- ROOM -->
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" Grid.RowSpan="2" Margin="8,0,8,8">
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="0" Grid.RowSpan="2">
       <Grid.RowDefinitions>
         <RowDefinition Height="25"/>
         <RowDefinition Height="22"/>
         <RowDefinition Height="22"/>
         <RowDefinition Height="22"/>
         <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
         <RowDefinition Height="10"/>
-        <RowDefinition Height="25"/>
-        <RowDefinition Height="22"/>
-        <RowDefinition Height="22"/>
-        <RowDefinition Height="22"/>
-        <RowDefinition Height="1*"/>
       </Grid.RowDefinitions>
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="1*"/>
-        <ColumnDefinition Width="10"/>
-        <ColumnDefinition Width="1*"/>
-      </Grid.ColumnDefinitions>
-      <Label Grid.Row="0" Content="Room" HorizontalAlignment="Left" Width="100" Margin="0,-3,0,-3" FontSize="16" FontWeight="Bold" Grid.ColumnSpan="3" Grid.RowSpan="2"/>
-      <Label Grid.Row="1" Margin="0,-3,0,-3" Content="Area" HorizontalAlignment="Left"/>
-      <ComboBox x:Name="RoomAreaSelect" Grid.Row="1" Grid.ColumnSpan="3" Margin="75,1,0,1" HorizontalAlignment="Stretch" SelectionChanged="RoomAreaSelect_SelectionChanged">
+      <Label Grid.Row="0" Content="Room" HorizontalAlignment="Left" Width="100" Margin="4,-3,0,-3" FontSize="16" FontWeight="Bold" Grid.ColumnSpan="3" Grid.RowSpan="2"/>
+      <Label Grid.Row="1" Margin="4,-3,0,-3" Content="Area" HorizontalAlignment="Left"/>
+      <ComboBox Grid.Row="1" x:Name="RoomAreaSelect" Margin="75,1,8,1" HorizontalAlignment="Stretch" SelectionChanged="RoomAreaSelect_SelectionChanged">
         <ComboBoxItem>00</ComboBoxItem>
         <ComboBoxItem>01</ComboBoxItem>
         <ComboBoxItem>02</ComboBoxItem>
@@ -49,19 +41,38 @@
         <ComboBoxItem>06</ComboBoxItem>
         <ComboBoxItem>07</ComboBoxItem>
       </ComboBox>
-      <Label Grid.Row="2" Margin="0,-3,0,-3" Content="Name" HorizontalAlignment="Left"/>
-      <TextBox x:Name="RoomNameInput" Grid.Row="2" Grid.ColumnSpan="3" Margin="75,2,0,2" HorizontalAlignment="Stretch" Text="[Room name]" LostFocus="RoomNameInput_LostFocus" KeyDown="RoomNameInput_KeyDown"/>
-      <Label Grid.Row="3" Margin="0,-3,0,-3" Content="Up Scroller" HorizontalAlignment="Left"/>
-      <TextBox x:Name="UpScrollerInput" Grid.Row="3" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="UpScrollerInput_LostFocus" KeyDown="UpScrollerInput_KeyDown"/>
-      <Label Grid.Row="3" Grid.Column="2" Margin="0,-3,0,-3" Content="Down Scr." HorizontalAlignment="Left"/>
-      <TextBox x:Name="DownScrollerInput" Grid.Row="3" Grid.Column="2" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="DownScrollerInput_LostFocus" KeyDown="DownScrollerInput_KeyDown"/>
-      <Label Grid.Row="4" Margin="0,-3,0,-3" Content="Special Gfx" HorizontalAlignment="Left"/>
-      <TextBox x:Name="SpecialGfxInput" Grid.Row="4" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="SpecialGfxInput_LostFocus" KeyDown="SpecialGfxInput_KeyDown"/>
-
+      <Label Grid.Row="2" Margin="4,-3,0,-3" Content="Name" HorizontalAlignment="Left"/>
+      <TextBox Grid.Row="2" x:Name="RoomNameInput" Grid.ColumnSpan="3" Margin="75,2,8,2" HorizontalAlignment="Stretch" Text="[Room name]" LostFocus="RoomNameInput_LostFocus" KeyDown="RoomNameInput_KeyDown"/>
+      <Label Grid.Row="3" Margin="4,-3,0,-3" Content="Up Scroller" HorizontalAlignment="Left"/>
+      <TextBox Grid.Row="3" x:Name="UpScrollerInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="UpScrollerInput_LostFocus" KeyDown="UpScrollerInput_KeyDown"/>
+      <Label Grid.Row="4" Margin="4,-3,0,-3" Content="Down Scr." HorizontalAlignment="Left"/>
+      <TextBox Grid.Row="4" x:Name="DownScrollerInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="DownScrollerInput_LostFocus" KeyDown="DownScrollerInput_KeyDown"/>
+      <Label Grid.Row="5" Margin="4,-3,0,-3" Content="Special Gfx" HorizontalAlignment="Left"/>
+      <TextBox Grid.Row="5" x:Name="SpecialGfxInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="SpecialGfxInput_LostFocus" KeyDown="SpecialGfxInput_KeyDown"/>
+      <Grid Grid.Row="6">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="1*"/>
+          <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Button Grid.Column="0" Margin="4,1,8,1" Content="Map Position" Click="MapPosition_Click"/>
+        <Button Grid.Column="1" Margin="8,1,4,1" Content="Room Size" Click="RoomSize_Click"/>
+      </Grid>
+    </Grid>
+    
+    <Grid Grid.Column="2">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="25"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="1*"/>
+      </Grid.RowDefinitions>
       <!-- STATE -->
-      <Label Grid.Row="6" Content="State" HorizontalAlignment="Left" Width="100" Margin="0,-3,0,-3" FontSize="16" FontWeight="Bold" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
-      <Label Grid.Row="7" Margin="0,-3,0,-3" Content="Type" HorizontalAlignment="Left"/>
-      <ComboBox x:Name="StateTypeSelect" Grid.Row="7" Grid.ColumnSpan="3" Margin="75,1,50,1" HorizontalAlignment="Stretch" SelectionChanged="StateTypeSelect_SelectionChanged">
+      <Label Grid.Row="0" Content="State" HorizontalAlignment="Left" Width="100" Margin="4,-3,0,-3" FontSize="16" FontWeight="Bold" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+      <Label Grid.Row="1" Margin="4,-3,0,-3" Content="Type" HorizontalAlignment="Left"/>
+      <ComboBox Grid.Row="1" Grid.ColumnSpan="3" x:Name="StateTypeSelect" Margin="75,1,50,1" HorizontalAlignment="Stretch" SelectionChanged="StateTypeSelect_SelectionChanged">
         <ComboBoxItem>Event</ComboBoxItem>
         <ComboBoxItem>Boss</ComboBoxItem>
         <ComboBoxItem>Tourian Boss</ComboBoxItem>
@@ -71,19 +82,19 @@
         <ComboBoxItem>Speed Booster</ComboBoxItem>
         <ComboBoxItem>Standard</ComboBoxItem>
       </ComboBox>
-      <TextBox x:Name="StateEventNumberInput" Grid.Row="7" Grid.Column="3" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="StateEventNumberInput_LostFocus" KeyDown="StateEventNumberInput_KeyDown"/>
-      <Label Grid.Row="8" Margin="0,-3,0,-3" Content="Song Set" HorizontalAlignment="Left"/>
-      <TextBox x:Name="StateSongeSetInput" Grid.Row="8" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="StateSongeSetInput_LostFocus" KeyDown="StateSongeSetInput_KeyDown"/>
-      <Label Grid.Row="8" Grid.Column="2" Margin="0,-3,40,-3" Content="Index" HorizontalAlignment="Left"/>
-      <TextBox x:Name="StatePlayIndexInput" Grid.Row="8" Grid.Column="2" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="StatePlayIndexInput_LostFocus" KeyDown="StatePlayIndexInput_KeyDown"/>
-      <Label Grid.Row="9" Margin="0,-3,0,-3" Content="Bg Scrolling" HorizontalAlignment="Left"/>
-      <TextBox x:Name="StateBgScrollingInput" Grid.Row="9" Margin="75,2,0,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4" LostFocus="StateBgScrollingInput_LostFocus"/>
-      <Label Grid.Row="9" Grid.Column="2" Margin="0,-3,0,-3" Content="Tileset" HorizontalAlignment="Left"/>
-      <ComboBox x:Name="StateTileSetSelect" Grid.Row="9" Grid.Column="2" Margin="75,1,0,1" HorizontalAlignment="Stretch" FontFamily="Courier New" SelectionChanged="StateTileSetSelect_SelectionChanged" KeyDown="StateBgScrollingInput_KeyDown"/>
+      <TextBox Grid.Row="1" x:Name="StateEventNumberInput" Margin="0,2,8,2" Width="30" HorizontalAlignment="Right" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="StateEventNumberInput_LostFocus" KeyDown="StateEventNumberInput_KeyDown"/>
+      <Label Grid.Row="2" Margin="4,-3,0,-3" Content="Song Set" HorizontalAlignment="Left"/>
+      <TextBox Grid.Row="2" x:Name="StateSongeSetInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="StateSongeSetInput_LostFocus" KeyDown="StateSongeSetInput_KeyDown"/>
+      <Label Grid.Row="3" Margin="4,-3,40,-3" Content="Play Index" HorizontalAlignment="Left"/>
+      <TextBox Grid.Row="3" x:Name="StatePlayIndexInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="StatePlayIndexInput_LostFocus" KeyDown="StatePlayIndexInput_KeyDown"/>
+      <Label Grid.Row="4" Margin="4,-3,0,-3" Content="Bg Scrolling" HorizontalAlignment="Left"/>
+      <TextBox Grid.Row="4" x:Name="StateBgScrollingInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4" LostFocus="StateBgScrollingInput_LostFocus"/>
+      <Label Grid.Row="5" Margin="4,-3,0,-3" Content="Tileset" HorizontalAlignment="Left"/>
+      <ComboBox Grid.Row="5" x:Name="StateTileSetSelect" Margin="75,1,8,1" HorizontalAlignment="Stretch" FontFamily="Courier New" SelectionChanged="StateTileSetSelect_SelectionChanged" KeyDown="StateBgScrollingInput_KeyDown"/>
     </Grid>
 
     <!-- POINTERS -->
-    <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="2" Margin="8,8,8,8" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="4" Margin="8,8,8,8" VerticalScrollBarVisibility="Auto">
       <Grid>
         <Grid.RowDefinitions>
           <RowDefinition Height="22"/>
@@ -149,19 +160,6 @@
         <Label Grid.Row="8" x:Name="MainAsmRefCount" Grid.Column="3" Margin="0,-3,0,-3" Content="0" HorizontalAlignment="Left"/>
       </Grid>
     </ScrollViewer>
-
-    <!-- SIZE & POSITION -->
-    <Grid Grid.Column="5" Grid.RowSpan="2" Margin="8,8,8,8">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="50"/>
-        <ColumnDefinition Width="1*"/>
-      </Grid.ColumnDefinitions>
-      <Button Content="&#x2194;" HorizontalAlignment="Left" Height="32" Margin="4,0,0,0" VerticalAlignment="Top" Width="32" FontSize="20"/>
-      <Button Content="&#x21F2;" HorizontalAlignment="Left" Height="32" Margin="4,40,0,0" VerticalAlignment="Top" Width="32" FontSize="20"/>
-      <Button Content="&#x2714;" HorizontalAlignment="Left" Height="32" Margin="4,0,0,40" VerticalAlignment="Bottom" Width="32"/>
-      <Button Content="&#x2716;" HorizontalAlignment="Left" Height="32" Margin="4,0,0,0" VerticalAlignment="Bottom" Width="32"/>
-      <ScrollViewer x:Name="RoomSizeViewer" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Visible"/>
-    </Grid>
 
   </Grid>
 </UserControl>

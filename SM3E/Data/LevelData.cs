@@ -20,7 +20,7 @@ namespace SM3E
 
     public List <UInt16> Layer1;
     public List <UInt16> Layer2;
-    public List <byte> BTS;
+    public List <byte> Bts;
 
     public List <RoomState> MyRoomStates;
 
@@ -63,7 +63,7 @@ namespace SM3E
 
       Layer1 = new List <UInt16> ();
       Layer2 = new List <UInt16> ();
-      BTS = new List <byte> ();
+      Bts = new List <byte> ();
 
       MyRoomStates = new List <RoomState> ();
       CompressedData = new List <byte> ();
@@ -77,11 +77,11 @@ namespace SM3E
 
       Layer1 = new List <UInt16> ();
       Layer2 = new List <UInt16> ();
-      BTS = new List <byte> ();
+      Bts = new List <byte> ();
       int tileCount = ScreenCount * 256;
       for (int n = 0; n < tileCount; n++)
         Layer1.Add (0x805F);
-        BTS.Add (0x00);
+        Bts.Add (0x00);
 
       MyRoomStates = new List <RoomState> ();
       CompressedData = new List <byte> ();
@@ -95,7 +95,7 @@ namespace SM3E
 
       Layer1 = new List <UInt16> (source.Layer1);
       Layer2 = new List <UInt16> (source.Layer2);
-      BTS = new List <byte> (source.BTS);
+      Bts = new List <byte> (source.Bts);
 
       MyRoomStates = new List <RoomState> ();
       CompressedData = new List <byte> ();
@@ -129,7 +129,7 @@ namespace SM3E
       for (int n = 0; n < BtsSize; n++) {
         Layer1.Add ((ushort) Tools.ConcatBytes (buffer [Layer1Counter], 
                                                 buffer [Layer1Counter + 1]));
-        BTS.Add (buffer [BtsCounter]);
+        Bts.Add (buffer [BtsCounter]);
         if (Layer2Size > 0)
           Layer2.Add ((ushort) Tools.ConcatBytes (buffer [Layer2Counter],
                                                   buffer [Layer2Counter + 1]));
@@ -149,7 +149,7 @@ namespace SM3E
       if (CompressionUpToDate)
         return true;
       int L1Size = 2 * Layer1.Count;
-      int UncompressedSize = 2 + 2 * Layer1.Count + BTS.Count + 2 * Layer2.Count;
+      int UncompressedSize = 2 + 2 * Layer1.Count + Bts.Count + 2 * Layer2.Count;
       byte [] buffer = new byte [UncompressedSize];
 
       Tools.CopyBytes (L1Size, buffer, 0, 2);
@@ -158,8 +158,8 @@ namespace SM3E
         Tools.CopyBytes (Layer1 [n], buffer, index, 2);
         index += 2;
       }
-      for (int n = 0; n < BTS.Count; n++) {
-        Tools.CopyBytes (BTS [n], buffer, index, 1);
+      for (int n = 0; n < Bts.Count; n++) {
+        Tools.CopyBytes (Bts [n], buffer, index, 1);
         index ++;
       }
       for (int n = 0; n < Layer2.Count; n++) {
@@ -193,10 +193,10 @@ namespace SM3E
       int Layer1Size = 16 * 16;
       Layer1.Clear ();
       Layer2.Clear ();
-      BTS.Clear ();
+      Bts.Clear ();
       for (int n = 0; n < Layer1Size; n++) {
         Layer1.Add (0x805F);
-        BTS.Add (0);
+        Bts.Add (0);
       }
 
       startAddressPC = DefaultStartAddress;
@@ -294,9 +294,9 @@ namespace SM3E
 
 
     public int GetBtsValue (int index) {
-      if (index < 0 || index >= BTS.Count)
+      if (index < 0 || index >= Bts.Count)
         return 0;
-      return BTS [index];
+      return Bts [index];
     }
 
 
@@ -349,11 +349,57 @@ namespace SM3E
 
 
     public void SetBts (int index, int type, int value) {
-      if (index < 0 || index >= BTS.Count)
+      if (index < 0 || index >= Bts.Count)
         return;
       Layer1 [index] &= 0xFFF;
       Layer1 [index] |= (ushort) (type << 12);
-      BTS [index] = (byte) value;
+      Bts [index] = (byte) value;
+      CompressionUpToDate = false;
+    }
+
+
+    // Resize level data; (x,y) is new top left corner relative to current corner.
+    // Current width must be provided so room size can be infered.
+    public void SetSize (int currentWidth, int newX, int newY, int newW, int newH)
+    {
+      if (newW < 1 || newH < 1 || newW > 15 || newH > 15 || newW * newH > 50)
+        return;
+      List <ushort> newLayer1 = new List <ushort> ();
+      List <ushort> newLayer2 = new List <ushort> ();
+      List <byte> newBts = new List <byte> ();
+      bool L2 = HasLayer2;
+
+      currentWidth *= 16;
+      int currentHeight = Layer1.Count / currentWidth;
+      newX *= 16;
+      newY *= 16;
+      newW *= 16;
+      newH *= 16;
+      for (int y = newY; y < newY + newH; y++)
+      {
+        for (int x = newX; x < newX + newW; x++)
+        {
+          // int indexNew = newW * (y - newY) + (x - newX);
+          if (x >= 0 && x < currentWidth && y >= 0 && y < currentHeight)
+          {
+            int indexOld = (currentWidth * y + x);
+            newLayer1.Add (Layer1 [indexOld]);
+            newBts.Add (Bts [indexOld]);
+            if (L2)
+              newLayer2.Add (Layer2 [indexOld]);
+          }
+          else {
+            newLayer1.Add (0x805F);
+            newBts.Add (0);
+            if (L2)
+              newLayer2.Add (0x0FF);
+          }
+        }
+      }
+      Layer1 = newLayer1;
+      Layer2 = newLayer2;
+      Bts = newBts;
+
       CompressionUpToDate = false;
     }
 

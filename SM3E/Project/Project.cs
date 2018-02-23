@@ -1024,10 +1024,26 @@ namespace SM3E
     public int RoomX
     {
       get {return ActiveRoom?.MapX ?? 0;}
+      set
+      {
+        if (ActiveRoom != null && value >= 0 && value < 64)
+        {
+          ActiveRoom.MapX = (byte) value;
+          RoomPositionChanged?.Invoke (this, null);
+        }
+      }
     }
     public int RoomY
     {
       get {return ActiveRoom?.MapY ?? 0;}
+      set
+      {
+        if (ActiveRoom != null && value >= 0 && value < 32)
+        {
+          ActiveRoom.MapY = (byte) value;
+          RoomPositionChanged?.Invoke (this, null);
+        }
+      }
     }
 
   } // class Project

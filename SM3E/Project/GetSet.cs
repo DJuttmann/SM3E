@@ -95,6 +95,46 @@ namespace SM3E
     }
 
 
+    public void SetRoomSize (int x, int y, int width, int height)
+    {
+      if (ActiveRoom != null &&
+          x >= 0 && x < 64 && y >= 0 && y < 32 &&
+          width > 0 && width < 16 && height > 0 && height < 16 && 
+          width * height <= 50)
+      {
+        var l = new List <LevelData> ();
+        var p = new List <PlmSet> ();
+        var e = new List <EnemySet> ();
+        int dx = x - ActiveRoom.MapX;
+        int dy = y - ActiveRoom.MapY;
+        foreach (RoomState s in ActiveRoom.RoomStates)
+        {
+          if (!l.Contains (s.MyLevelData))
+          {
+            s.MyLevelData?.SetSize (ActiveRoom.Width, dx, dy, width, height);
+            l.Add (s.MyLevelData);
+          }
+          if (!p.Contains (s.MyPlmSet))
+          {
+            s.MyPlmSet?.Shift (dx * -16, dy * -16);
+            p.Add (s.MyPlmSet);
+          }
+          if (!e.Contains (s.MyEnemySet))
+          {
+            s.MyEnemySet?.Shift (dx * -256, dy * -256);
+            e.Add (s.MyEnemySet);
+          }
+        }
+        ActiveRoom.MapX = (byte) x;
+        ActiveRoom.MapY = (byte) y;
+        ActiveRoom.Width = (byte) width;
+        ActiveRoom.Height = (byte) height;
+        RoomPositionChanged?.Invoke (this, null);
+        LevelDataSelected (this, null); // stronger than modified because of size change
+      }
+    }
+
+
 //========================================================================================
 // Level data
 

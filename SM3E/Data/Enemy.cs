@@ -287,8 +287,8 @@ namespace SM3E
 
     public void Shift (int dx, int dy)
     {
-      for (int n = 0; n < Enemies.Count; n++)
-        Enemies [n].Shift (dx, dy);
+      foreach (Enemy e in Enemies)
+        e.Shift (dx, dy);
     }
 
   } // class EnemySet

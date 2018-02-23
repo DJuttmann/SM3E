@@ -53,6 +53,7 @@ namespace SM3E.UI
       MainProject.MapPaletteSelected += UpdateActiveMapTile;
       MainProject.MapDataModified += UpdateMapEditor;
       MainProject.DoorDataModified += UpdateDoorData;
+      MainProject.RoomPositionChanged += UpdateMapMarker;
     }
 
 
@@ -76,6 +77,7 @@ namespace SM3E.UI
       MapEditor.MouseUp += MapEditor_MouseUp;
       MapViewer.Children.Add (MapEditor.Element);
       SelectedMapTileImage.RenderTransformOrigin = new Point (0.5, 0.5);
+      MapEditor.Element.SetValue (Grid.CursorProperty, Cursors.Hand);
     }
 
 

@@ -104,6 +104,9 @@
     <Compile Include="UI\EditPlmWindow.xaml.cs">
       <DependentUpon>EditPlmWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\EditRoomPositionWindow.xaml.cs">
+      <DependentUpon>EditRoomPositionWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\SelectAsmWindow.xaml.cs">
       <DependentUpon>SelectAsmWindow.xaml</DependentUpon>
     </Compile>
@@ -178,6 +181,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="UI\EditPlmWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\EditRoomPositionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -308,6 +308,14 @@ namespace SM3E
         r.SetPlmSet (null, out var ignore);
     }
 
+//----------------------------------------------------------------------------------------
+
+    public void Shift (int dx, int dy)
+    {
+      foreach (Plm p in Plms)
+        p.Shift (dx, dy);
+    }
+
   } // Class PlmSet
 
 

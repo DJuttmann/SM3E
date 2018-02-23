@@ -23,14 +23,12 @@ namespace SM3E.UI
 
     private Project MainProject;
 
-    private UITileViewer RoomSizeEditor;
-
 
     public PropertiesTab()
     {
       InitializeComponent();
 
-      SetupRoomSizeEditor ();
+      // SetupRoomSizeEditor ();
     }
 
 
@@ -40,10 +38,8 @@ namespace SM3E.UI
 
       MainProject.AreaListChanged += LoadRoomAreaSelect;
       MainProject.TileSetListChanged += LoadTileSetSelect;
-      MainProject.AreaSelected += UpdateRoomSizeEditor;
       MainProject.RoomSelected += LoadRoomData;
       MainProject.RoomStateSelected += LoadRoomStateData;
-      MainProject.MapDataModified += UpdateRoomSizeEditor;
       MainProject.RoomDataModified += LoadRoomData;
       MainProject.RoomStateDataModified += LoadRoomStateData;
     }
@@ -53,25 +49,6 @@ namespace SM3E.UI
 // Setup & Updating
 
 
-    private void SetupRoomSizeEditor ()
-    {
-      RoomSizeEditor = new UITileViewer (16.0, 64, 32, 64, 32, RoomSizeViewer);
-      RoomSizeEditor.MarkerVisible = true;
-      RoomSizeEditor.Screens [0, 0].SetValue (RenderOptions.BitmapScalingModeProperty,
-                                              BitmapScalingMode.NearestNeighbor);
-      RoomSizeViewer.Content = RoomSizeEditor.Element;
-    }
-
-
-    private void UpdateRoomSizeEditor (object sender, EventArgs e)
-    {
-      // [wip] this line does the same as UpdateMapEditor () in NavigateTab.xaml.cs
-      // Streamline this to avoid redundant work?
-      ImageSource source = MainProject.RenderAreaMap ().ToBitmap ();
-      RoomSizeEditor.Screens [0, 0].Source = source;
-    }
-
-
     private void LoadRoomData (object sender, EventArgs e)
     {
       RoomAreaSelect.SelectedIndex = MainProject.RoomArea;
@@ -79,10 +56,6 @@ namespace SM3E.UI
       UpScrollerInput.Text = Tools.IntToHex (MainProject.UpScroller, 2);
       DownScrollerInput.Text = Tools.IntToHex (MainProject.DownScroller, 2);
       SpecialGfxInput.Text = Tools.IntToHex (MainProject.SpecialGfx, 2);
-      RoomSizeEditor.SetMarker (MainProject.RoomX, MainProject.RoomY + 1,
-                                MainProject.RoomWidthInScreens, 
-                                MainProject.RoomHeightInScreens);
-      RoomSizeEditor.ScrollToMarker ();
     }
 
 
@@ -238,6 +211,22 @@ namespace SM3E.UI
       if (e.Key == Key.Enter)
         SpecialGfxInput_LostFocus (sender, null);
       UITools.ValidateHex (ref e);
+    }
+
+
+    private void MapPosition_Click (object sender, RoutedEventArgs e)
+    {
+      var window = new UI.EditRoomPositionWindow (MainProject, false);
+      window.Owner = Window.GetWindow (this);
+      window.ShowDialog ();
+    }
+
+
+    private void RoomSize_Click (object sender, RoutedEventArgs e)
+    {
+      var window = new UI.EditRoomPositionWindow (MainProject, true);
+      window.Owner = Window.GetWindow (this);
+      window.ShowDialog ();
     }
 
     

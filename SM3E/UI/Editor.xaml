@@ -11,12 +11,12 @@
   <Grid KeyDown="Editor_KeyDown">
     <Grid.RowDefinitions>
       <RowDefinition Height="400*"/>
-      <RowDefinition Height="2"/>
+      <RowDefinition Height="3"/>
       <RowDefinition Height="200*"/>
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="50*"/>
-      <ColumnDefinition Width="2"/>
+      <ColumnDefinition Width="3"/>
       <ColumnDefinition Width="200*"/>
     </Grid.ColumnDefinitions>
 
@@ -69,12 +69,12 @@
     <Grid Grid.Row="2" Grid.ColumnSpan="3">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="125"/>
-        <ColumnDefinition Width="3"/>
+        <ColumnDefinition Width="4"/>
         <ColumnDefinition Width="1*"/>
       </Grid.ColumnDefinitions>
       
       <!-- LAYER SELECTOR -->
-      <ListBox x:Name="LayerSelect" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,8,8,8" SelectedIndex="0" SelectionChanged="LayerSelect_SelectionChanged" />
+      <ListBox x:Name="LayerSelect" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,8,8,8" SelectedIndex="0" SelectionChanged="LayerSelect_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
       <Rectangle Grid.Column="1" Fill="#FFF0F0F0" HorizontalAlignment="Stretch" Stroke="#00000000" VerticalAlignment="Stretch" Margin="0,-1,0,-1" Grid.RowSpan="2"/>
 
       <ui:NavigateTab Grid.Column="2" x:Name="NavigateView" Visibility="Visible"/>
