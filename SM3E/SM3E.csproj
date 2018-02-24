@@ -101,58 +101,61 @@
     <Compile Include="Tools\BtsConvert.cs" />
     <Compile Include="Tools\DataStructures.cs" />
     <Compile Include="Tools\Rom.cs" />
-    <Compile Include="UI\EditPlmWindow.xaml.cs">
+    <Compile Include="UI\MainEditor\ChildWindows\EditPlmWindow.xaml.cs">
       <DependentUpon>EditPlmWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\EditRoomPositionWindow.xaml.cs">
+    <Compile Include="UI\MainEditor\ChildWindows\EditRoomPositionWindow.xaml.cs">
       <DependentUpon>EditRoomPositionWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\SelectAsmWindow.xaml.cs">
+    <Compile Include="UI\MainEditor\ChildWindows\SelectAsmWindow.xaml.cs">
       <DependentUpon>SelectAsmWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\EditDoorWindow.xaml.cs">
+    <Compile Include="UI\MainEditor\ChildWindows\EditDoorWindow.xaml.cs">
       <DependentUpon>EditDoorWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\EditEnemyWindow.xaml.cs">
+    <Compile Include="UI\MainEditor\ChildWindows\EditEnemyWindow.xaml.cs">
       <DependentUpon>EditEnemyWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Editor.xaml.cs">
+    <Compile Include="UI\MainEditor\Editor.xaml.cs">
       <DependentUpon>Editor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\EnemyLayerTab.xaml.cs">
+    <Compile Include="UI\MainEditor\EnemyLayerTab.xaml.cs">
       <DependentUpon>EnemyLayerTab.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\NavigateTab.xaml.cs">
+    <Compile Include="UI\MainEditor\NavigateTab.xaml.cs">
       <DependentUpon>NavigateTab.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\PlmLayerTab.xaml.cs">
+    <Compile Include="UI\MainEditor\PlmLayerTab.xaml.cs">
       <DependentUpon>PlmLayerTab.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\PropertiesTab.xaml.cs">
+    <Compile Include="UI\MainEditor\PropertiesTab.xaml.cs">
       <DependentUpon>PropertiesTab.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\ScrollLayerTab.xaml.cs">
+    <Compile Include="UI\MainEditor\ScrollLayerTab.xaml.cs">
       <DependentUpon>ScrollLayerTab.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\SelectBackgroundWindow.xaml.cs">
+    <Compile Include="UI\MainEditor\ChildWindows\SelectBackgroundWindow.xaml.cs">
       <DependentUpon>SelectBackgroundWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\SelectDataWindow.xaml.cs">
+    <Compile Include="UI\MainEditor\ChildWindows\SelectDataWindow.xaml.cs">
       <DependentUpon>SelectDataWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\SelectDoorAsmWindow.xaml.cs">
+    <Compile Include="UI\MainEditor\ChildWindows\SelectDoorAsmWindow.xaml.cs">
       <DependentUpon>SelectDoorAsmWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\SelectScrollPlmDataWindow.xaml.cs">
+    <Compile Include="UI\MainEditor\ChildWindows\SelectScrollPlmDataWindow.xaml.cs">
       <DependentUpon>SelectScrollPlmDataWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\TileLayersTab.xaml.cs">
+    <Compile Include="UI\MainEditor\TileLayersTab.xaml.cs">
       <DependentUpon>TileLayersTab.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\UIElements\HexBox.xaml.cs">
+    <Compile Include="UI\LoadSave\NewProjectWindow.xaml.cs">
+      <DependentUpon>NewProjectWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\UITools\HexBox.xaml.cs">
       <DependentUpon>HexBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\UIElements\Tools.cs" />
+    <Compile Include="UI\UITools\UITools.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -175,48 +178,48 @@
     <Compile Include="Data\Graphics.cs" />
     <Compile Include="Tools\Logging.cs" />
     <Compile Include="Tools\Tools.cs" />
-    <Compile Include="UI\CustomElements.cs" />
+    <Compile Include="UI\UITools\UITileViewer.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="UI\EditPlmWindow.xaml">
+    <Page Include="UI\MainEditor\ChildWindows\EditPlmWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\EditRoomPositionWindow.xaml">
+    <Page Include="UI\MainEditor\ChildWindows\EditRoomPositionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\SelectAsmWindow.xaml">
+    <Page Include="UI\MainEditor\ChildWindows\SelectAsmWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\EditDoorWindow.xaml">
+    <Page Include="UI\MainEditor\ChildWindows\EditDoorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\EditEnemyWindow.xaml">
+    <Page Include="UI\MainEditor\ChildWindows\EditEnemyWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Editor.xaml">
+    <Page Include="UI\MainEditor\Editor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\EnemyLayerTab.xaml">
+    <Page Include="UI\MainEditor\EnemyLayerTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\NavigateTab.xaml">
+    <Page Include="UI\MainEditor\NavigateTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\PlmLayerTab.xaml">
+    <Page Include="UI\MainEditor\PlmLayerTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\PropertiesTab.xaml">
+    <Page Include="UI\MainEditor\PropertiesTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -224,31 +227,35 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\ScrollLayerTab.xaml">
+    <Page Include="UI\MainEditor\ScrollLayerTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\SelectBackgroundWindow.xaml">
+    <Page Include="UI\MainEditor\ChildWindows\SelectBackgroundWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\SelectDataWindow.xaml">
+    <Page Include="UI\MainEditor\ChildWindows\SelectDataWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\SelectDoorAsmWindow.xaml">
+    <Page Include="UI\MainEditor\ChildWindows\SelectDoorAsmWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\SelectScrollPlmDataWindow.xaml">
+    <Page Include="UI\MainEditor\ChildWindows\SelectScrollPlmDataWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\TileLayersTab.xaml">
+    <Page Include="UI\MainEditor\TileLayersTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\UIElements\HexBox.xaml">
+    <Page Include="UI\LoadSave\NewProjectWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\UITools\HexBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

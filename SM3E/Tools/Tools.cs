@@ -253,15 +253,27 @@ namespace SM3E
 
 //----------------------------------------------------------------------------------------
 
-    // Extract a filename from a full path.
+    // Extract a filename from a full path to a file.
     public static string FilenameFromPath (string path)
     {
       int i = path.Length - 1;
-      while (i >= 0 && path [i] != '\\')
+      while (i > 0 && path [i] != '\\')
         i--;
       if (path [i] == '\\')
         i++;
       return path.Substring (i, path.Length - i);
+    }
+
+
+    // Extract folder from a full path to a file.
+    public static string FolderFromPath (string path)
+    {
+      int i = path.Length - 1;
+      while (i > 0 && path [i] != '\\')
+        i--;
+      if (path [i] == '\\')
+        i++;
+      return path.Substring (0, i);
     }
 
 

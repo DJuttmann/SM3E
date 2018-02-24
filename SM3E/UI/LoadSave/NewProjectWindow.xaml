@@ -1,0 +1,28 @@
+﻿<Window x:Class="SM3E.UI.NewProjectWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SM3E.UI"
+        mc:Ignorable="d"
+        Title="NewProjectWindow" Height="300" Width="300">
+
+  <Grid Background="#C0C0C0">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="25"/>
+      <RowDefinition Height="1*"/>
+      <RowDefinition Height="22"/>
+      <RowDefinition Height="22"/>
+      <RowDefinition Height="25"/>
+      <RowDefinition Height="8"/>
+    </Grid.RowDefinitions>
+    <Label   Grid.Row="0" Content="Select template" HorizontalAlignment="Stretch" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
+    <ListBox Grid.Row="1" x:Name="TemplateSelect" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,8" ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
+    <Button  Grid.Row="2" x:Name="PathSelect" Content="Save as" HorizontalAlignment="Left" Width="66" Margin="8,2,8,2" Click="SelectPath_Click"/>
+    <TextBox Grid.Row="2" x:Name="PathInput" Margin="80,2,8,2" HorizontalAlignment="Stretch" IsReadOnly="True" Background="LightGray"/>
+    <Label   Grid.Row="3" Content="Rom file" Margin="4,-3,0,-3" />
+    <TextBox Grid.Row="3" x:Name="RomFileInput" Margin="80,2,8,2" HorizontalAlignment="Stretch" />
+    <Button  Grid.Row="4" Content="Cancel" Width="50" Height="20" Margin="0,0,60,0" Click="Cancel_Click"/>
+    <Button  Grid.Row="4" Content="Create" Width="50" Height="20" Margin="60,0,0,0" Click="Create_Click"/>
+  </Grid>
+</Window>

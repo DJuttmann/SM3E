@@ -19,9 +19,11 @@ namespace SM3E
 
     // The rom that is being edited.
     private Rom CurrentRom;
-    private string RomFileName;
-    private string ProjectFileName;
+    public string ProjectPath;
+    public string RomFileName;
+    public string ProjectFileName;
 
+    public bool ProjectLoaded {get; private set;}
 
 //========================================================================================
 // Reading ROM data.
@@ -30,7 +32,8 @@ namespace SM3E
     // Read all data from the ROM, guided by data from the projectfile.
     public void Load (string projectFile)
     {
-      ProjectFileName = projectFile;
+      ProjectPath = Tools.FolderFromPath (projectFile);
+      ProjectFileName = Tools.FilenameFromPath (projectFile);
       ReadProjectFileXml (out List <Tuple <int, int, string>> rooms,
                           out List <Tuple <int, int, string>> doorAsms,
                           out List <Tuple <int, int, string>> setupAsms,
@@ -82,6 +85,8 @@ namespace SM3E
       MapPaletteSelected?.Invoke (this, null);
       TileIndex = 0;
       BtsType = 0;
+
+      ProjectLoaded = true;
     }
 
 
@@ -101,7 +106,7 @@ namespace SM3E
       backgrounds = new List <Tuple <int, string>> ();
 
       Stream stream;
-      try {stream = new FileStream (ProjectFileName, FileMode.Open, 
+      try {stream = new FileStream (ProjectPath + ProjectFileName, FileMode.Open, 
                                     FileAccess.Read, FileShare.Read);}
       catch {return false;}
       var reader = XmlReader.Create (stream);
@@ -111,7 +116,7 @@ namespace SM3E
       RomFileName = root.Attribute ("rom")?.Value;
       if (root.Name != "Project" || RomFileName == null)
         return false;
-      CurrentRom = new Rom (RomFileName);
+      CurrentRom = new Rom (ProjectPath + RomFileName);
       foreach (XElement x in root.Elements ())
       {
         switch (x.Name.ToString ())
@@ -701,7 +706,7 @@ namespace SM3E
     // [test] Write project file as XML.
     private void WriteProjectFileXml ()
     {
-      var stream = new FileStream (ProjectFileName, FileMode.Create);
+      var stream = new FileStream (ProjectPath + ProjectFileName, FileMode.Create);
       var settings = new XmlWriterSettings ()
       {
         NewLineChars = Environment.NewLine,
@@ -804,11 +809,14 @@ namespace SM3E
     // Write all data to the Rom.
     public void Save ()
     {
+      if (!ProjectLoaded)
+        return;
+
       // [wip] TESTING ONLY - don't overwrite source files.
-      Tools.TrimFileExtension (ref RomFileName, out string extension);
-      RomFileName += "_out.sfc";
-      Tools.TrimFileExtension (ref ProjectFileName, out extension);
-      ProjectFileName += "_out.xml";
+      // Tools.TrimFileExtension (ref RomFileName, out string extension);
+      // RomFileName += "_out.sfc";
+      // Tools.TrimFileExtension (ref ProjectFileName, out extension);
+      // ProjectFileName += "_out.xml";
       // [wip] END OF TEST
       
       ReallocateAll ();
@@ -816,7 +824,7 @@ namespace SM3E
       List <Data> objects = CurrentRom.AllData;
       objects.Sort ((x, y) => x.StartAddressPC - y.StartAddressPC);
       
-      Stream output = new FileStream (RomFileName, FileMode.Create);
+      Stream output = new FileStream (ProjectPath + RomFileName, FileMode.Create);
       int address = 0;
       for (int n = 0; n < objects.Count; n++)
       {

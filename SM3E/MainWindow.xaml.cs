@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
 
 namespace SM3E
 {
@@ -37,7 +38,6 @@ namespace SM3E
 
       EditorView.SetProject (MainProject);
 
-      MainProject.Load ("SuperMetroid.xml");
 
     }
 
@@ -46,6 +46,34 @@ namespace SM3E
     {
       MainProject.Save ();
       Logging.Close ();
+    }
+
+   
+    private void NewProject_Click (object sender, RoutedEventArgs e)
+    {
+      var window = new UI.NewProjectWindow (MainProject);
+      window.Owner = Window.GetWindow (this);
+      window.ShowDialog ();
+    }
+
+
+    private void OpenProject_Click (object sender, RoutedEventArgs e)
+    {
+      var Open = new Microsoft.Win32.OpenFileDialog ()
+      {
+        Filter = "Project files (*.sm3p)|*.sm3p"
+        // InitialDirectory = Directory.GetCurrentDirectory ()
+      };
+      if (Open.ShowDialog (Window.GetWindow (this)) ?? false)
+      {
+        MainProject.Load (Open.FileName);
+      }
+    }
+
+
+    private void SaveProject_Click (object sender, RoutedEventArgs e)
+    {
+
     }
 
   } // partial class MainWindow

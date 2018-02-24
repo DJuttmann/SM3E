@@ -352,7 +352,7 @@ namespace SM3E.UI
       {
         for (int x = e.StartScreenX; x <= e.EndScreenX; x++)
           for (int y = e.StartScreenY; y <= e.EndScreenY; y++)
-            viewer.Screens [x, y].Source = MainRenderer.GetScreen (x, y);
+            viewer.Screens [x, y].Source = MainRenderer?.GetScreen (x, y);
       }
     }
 
