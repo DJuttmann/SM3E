@@ -360,7 +360,7 @@ namespace SM3E
 
     // Resize level data; (x,y) is new top left corner relative to current corner.
     // Current width must be provided so room size can be infered.
-    public void SetSize (int currentWidth, int newX, int newY, int newW, int newH)
+    public void Resize (int currentWidth, int newX, int newY, int newW, int newH)
     {
       if (newW < 1 || newH < 1 || newW > 15 || newH > 15 || newW * newH > 50)
         return;
@@ -379,7 +379,6 @@ namespace SM3E
       {
         for (int x = newX; x < newX + newW; x++)
         {
-          // int indexNew = newW * (y - newY) + (x - newX);
           if (x >= 0 && x < currentWidth && y >= 0 && y < currentHeight)
           {
             int indexOld = (currentWidth * y + x);

@@ -102,27 +102,48 @@ namespace SM3E
           width > 0 && width < 16 && height > 0 && height < 16 && 
           width * height <= 50)
       {
-        var l = new List <LevelData> ();
-        var p = new List <PlmSet> ();
-        var e = new List <EnemySet> ();
+        var resizedData = new HashSet <Data> ();
         int dx = x - ActiveRoom.MapX;
         int dy = y - ActiveRoom.MapY;
         foreach (RoomState s in ActiveRoom.RoomStates)
         {
-          if (!l.Contains (s.MyLevelData))
+          if (!resizedData.Contains (s.MyLevelData))
           {
-            s.MyLevelData?.SetSize (ActiveRoom.Width, dx, dy, width, height);
-            l.Add (s.MyLevelData);
+            s.MyLevelData?.Resize (ActiveRoom.Width, dx, dy, width, height);
+            resizedData.Add (s.MyLevelData);
           }
-          if (!p.Contains (s.MyPlmSet))
+          if (!resizedData.Contains (s.MyPlmSet))
           {
             s.MyPlmSet?.Shift (dx * -16, dy * -16);
-            p.Add (s.MyPlmSet);
+            resizedData.Add (s.MyPlmSet);
           }
-          if (!e.Contains (s.MyEnemySet))
+          if (!resizedData.Contains (s.MyEnemySet))
           {
             s.MyEnemySet?.Shift (dx * -256, dy * -256);
-            e.Add (s.MyEnemySet);
+            resizedData.Add (s.MyEnemySet);
+          }
+          if (!resizedData.Contains (s.MyScrollSet))
+          {
+            s.MyScrollSet?.Resize (ActiveRoom.Width, dx, dy, width, height);
+            resizedData.Add (s.MyScrollSet);
+          }
+          foreach (Plm p in s.MyPlmSet.Plms)
+          {
+            if (!resizedData.Contains (p.MyScrollPlmData))
+            {
+              p.MyScrollPlmData?.Resize (ActiveRoom.Width, ActiveRoom.Height,
+                                         dx, dy, width, height);
+              resizedData.Add (p.MyScrollPlmData);
+            }
+          }
+        }
+        foreach (Door d in ActiveRoom.MyIncomingDoors)
+        {
+          if (!resizedData.Contains (d.MyScrollAsm))
+          {
+            d.MyScrollAsm?.Resize (ActiveRoom.Width, ActiveRoom.Height,
+                                   dx, dy, width, height);
+            resizedData.Add (d.MyScrollAsm);
           }
         }
         ActiveRoom.MapX = (byte) x;

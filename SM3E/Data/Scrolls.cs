@@ -116,6 +116,25 @@ namespace SM3E
         r.SetScrollSet (null, out var ignore);
     }
 
+//----------------------------------------------------------------------------------------
+
+    public void Resize (int currentWidth, int newX, int newY, int newW, int newH)
+    {
+      var newBytes = new List <byte> ();
+      int currentHeight = Bytes.Count / currentWidth;
+      for (int y = newY; y < newY + newH; y++)
+      {
+        for (int x = newX; x < newX + newW; x++)
+        {
+          if (x >= 0 && x < currentWidth && y >= 0 && y < currentHeight)
+            newBytes.Add (Bytes [currentWidth * y + x]);
+          else
+            newBytes.Add ((byte) ScrollColor.Red);
+        }
+      }
+      Bytes = newBytes;
+    }
+
   } // class ScrollSet
 
 
@@ -162,6 +181,23 @@ namespace SM3E
           Entries.Add (((byte) value << 8) + scrollIndex);
         }
       }
+    }
+
+//----------------------------------------------------------------------------------------
+
+    public void Resize (int currentWidth, int currentHeight,
+                        int newX, int newY, int newW, int newH)
+    {
+      var newEntries = new List <int> ();
+      foreach (int scrollMod in Entries)
+      {
+        int index = scrollMod & 0xFF;
+        int x = index % currentWidth - newX;
+        int y = index / currentWidth - newY;
+        if (x >= 0 && x < newW && y >= 0 && y < newH)
+          newEntries.Add ((scrollMod & 0xFF00) | y * newW + x); 
+      }
+      Entries = newEntries;
     }
 
   } // abstract class ScrollModification
