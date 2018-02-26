@@ -24,6 +24,7 @@ namespace SM3E
     private EnemyType ActiveEnemyGfx = null;
     private IScrollData ActiveScrollData = null;
     private ScrollColor ActiveScrollColor = ScrollColor.None;
+    private FxData ActiveFxData = null;
 
     private TileSet ActiveTileSet
     {
@@ -56,6 +57,10 @@ namespace SM3E
       get {return ActiveRoomState?.MyBackground;}
     }
 
+    private Fx ActiveFx
+    {
+      get {return ActiveRoomState?.MyFx;}
+    }
 
     // Indices of selected items.
     public int AreaIndex {get; private set;} = IndexNone;
@@ -69,6 +74,7 @@ namespace SM3E
     public int EnemyTypeIndex {get; private set;} = IndexNone;
     public int ScrollDataIndex {get; private set;} = IndexNone;
     public int ScrollColorIndex {get; private set;} = IndexNone;
+    public int FxDataIndex {get; private set;} = IndexNone;
     public int TileSetIndex
     {
       get {return ActiveRoomState?.TileSet ?? -1;}
@@ -129,6 +135,8 @@ namespace SM3E
       public EnemyType ActiveEnemyType;
       public IScrollData ActiveScrollData;
       public ScrollColor ActiveScrollColor;
+      public Fx ActiveFx;
+      public FxData ActiveFxData;
       public Background ActiveBackground;
 
       public ActiveItems (Project p)
@@ -146,6 +154,8 @@ namespace SM3E
         ActiveEnemyType = p.ActiveEnemyType;
         ActiveScrollData = p.ActiveScrollData;
         ActiveScrollColor = p.ActiveScrollColor;
+        ActiveFx = p.ActiveFx;
+        ActiveFxData = p.ActiveFxData;
         ActiveBackground = p.ActiveBackground;
       }
     }
@@ -338,6 +348,21 @@ namespace SM3E
     }
 
 
+    public void SelectFxData (int index)
+    {
+      if (HandlingSelection)
+        return;
+      if (ActiveFx == null || index == FxDataIndex || index < -1 ||
+          index >= ActiveFx.FxDataCount)
+        return;
+      HandlingSelection = true;
+      var a = new ActiveItems (this);
+      ForceSelectFxData (index);
+      RaiseChangeEvents (a);
+      HandlingSelection = false;
+    }
+
+
     // Checks which selected items have changed and raises the corresponding events.
     // [wip] Order the statements according to call hierarchy?
     private void RaiseChangeEvents (ActiveItems a)
@@ -393,6 +418,13 @@ namespace SM3E
         var e = new LevelDataEventArgs () {AllScreens = true};
         LevelDataModified?.Invoke (this, e);
       }
+      if (a.ActiveFx != ActiveFx)
+      {
+        FxSelected?.Invoke (this, null);
+        FxDataListChanged?.Invoke (this, new ListLoadEventArgs (FxDataIndex));
+      }
+      if (a.ActiveFxData != ActiveFxData)
+        FxDataSelected?.Invoke (this, null);
     }
     
 
@@ -444,6 +476,7 @@ namespace SM3E
         ForceSelectPlm (0);
         ForceSelectEnemy (0);
         ForceSelectEnemyGfx (-1);
+        ForceSelectFxData (ActiveFx.FxDataCount - 1);
       }
       else
       {
@@ -453,6 +486,7 @@ namespace SM3E
         ForceSelectPlm (IndexNone);
         ForceSelectEnemy (IndexNone);
         ForceSelectEnemyGfx (IndexNone);
+        ForceSelectFxData (IndexNone);
       }
     }
 
@@ -594,6 +628,21 @@ namespace SM3E
       {
         ScrollDataIndex = IndexNone;
         ActiveScrollColor = ScrollColor.None;
+      }
+    }
+
+
+    private void ForceSelectFxData (int index)
+    {
+      if (ActiveFx != null & index >= 0 && index < ActiveFx.FxDataCount)
+      {
+        FxDataIndex = index;
+        ActiveFxData = ActiveFx.FxDatas [index];
+      }
+      else
+      {
+        FxDataIndex = IndexNone;
+        ActiveFxData = null;
       }
     }
 

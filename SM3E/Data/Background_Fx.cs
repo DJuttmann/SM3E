@@ -81,8 +81,13 @@ namespace SM3E
           return false;
         for (int i = 0; i < blockSize; i++)
           Bytes.Add (b [i]);
-        if (blockSize == 7 && addressPC != 0x07B815) // [wip] skip Kraid bg for now
-          TilesPtr = Tools.ConcatBytes (b [2], b [3], b [4]);
+        if (type == 0x0004)
+        {
+          if (TilesPtr == 0)
+            TilesPtr = Tools.ConcatBytes (b [2], b [3], b [4]);
+          else
+            TilesPtr = 0; // [wip] still an ugly hack to skip Kraid background
+        }
         totalSize += blockSize;
         if (!rom.Read (b, 0, 2))
           return false;
@@ -235,17 +240,33 @@ namespace SM3E
 
 
 //========================================================================================
-// CLASS FX 
+// CLASS FX DATA
 //========================================================================================
 
 
-  class Fx: Data, IRepointable, IReusable, IReferenceableBy <RoomState>
+  public enum FxType: byte
+  {
+    None        = 0x00,
+    Lava        = 0x02,
+    Acid        = 0x04,
+    Water       = 0x06,
+    Spores      = 0x08,
+    Rain        = 0x0A,
+    Fog         = 0x0C,
+    BgScroll    = 0x20,
+    BgGlow      = 0x24,
+    Statues     = 0x26,
+    CeresRidley = 0x28,
+    CeresMode7  = 0x2A,
+    Haze        = 0x2C,
+    Unknown     = 0xFF
+  }
+
+
+  class FxData: Data
   {
     public const int DefaultSize = 16;
-    public const int NullSize = 2;
-    public const byte TerminatorByte = 0xFF;
 
-    public bool NotNull;
     public int DoorPtr; // LoROM address
     public int LiquidSurfaceStart;
     public int LiquidSurfaceNew;
@@ -259,21 +280,16 @@ namespace SM3E
     public byte TileAnimationBitflags;
     public byte PaletteBlend;
 
-    public Door MyDoor;
-    public HashSet <RoomState> MyRoomStates;
 
     public override int Size
     {
-      get {return NotNull ? DefaultSize : NullSize;}
+      get {return DefaultSize;}
     }
-    
-    public int ReferenceCount {get {return MyRoomStates.Count;}}
 
 
     // Constructor.
-    public Fx (): base ()
+    public FxData (): base ()
     {
-      NotNull = false;
       DoorPtr               = 0xCCCC;
       LiquidSurfaceStart    = 0;
       LiquidSurfaceNew      = 0;
@@ -286,16 +302,11 @@ namespace SM3E
       PaletteFxBitflags     = 0;
       TileAnimationBitflags = 0;
       PaletteBlend          = 0;
-
-      MyDoor = null;
-      MyRoomStates = new HashSet <RoomState> ();
     }
 
-    
-    // Constructor, copy from existing Fx.
-    public Fx (Fx source): base ()
+
+    public FxData (FxData source): base ()
     {
-      NotNull = false;
       DoorPtr               = source.DoorPtr;
       LiquidSurfaceStart    = source.LiquidSurfaceStart;
       LiquidSurfaceNew      = source.LiquidSurfaceNew;
@@ -308,9 +319,6 @@ namespace SM3E
       PaletteFxBitflags     = source.PaletteFxBitflags;
       TileAnimationBitflags = source.TileAnimationBitflags;
       PaletteBlend          = source.PaletteBlend;
-
-      MyDoor = null;
-      MyRoomStates = new HashSet <RoomState> ();
     }
 
 
@@ -319,19 +327,10 @@ namespace SM3E
     {
       byte [] b = new byte [DefaultSize];
       rom.Seek (addressPC);
-      if (!rom.Read (b, 0, 2))
-        return false;
-      if (b [0] == TerminatorByte && b [1] == TerminatorByte)
-      {
-        NotNull = false;
-        startAddressPC = addressPC;
-        return true;
-      }
 
-      if (!rom.Read (b, 2, DefaultSize - 2))
+      if (!rom.Read (b, 0, DefaultSize))
         return false;
-      NotNull = true;
-      DoorPtr               = Tools.ConcatBytes (b [0], b [1]); // [wip] no bank arg?
+      DoorPtr               = Tools.ConcatBytes (b [0], b [1], 0x83);
       LiquidSurfaceStart    = Tools.ConcatBytes (b [2], b [3]);
       LiquidSurfaceNew      = Tools.ConcatBytes (b [4], b [5]);
       LiquidSurfaceSpeed    = Tools.ConcatBytes (b [6], b [7]);
@@ -352,25 +351,20 @@ namespace SM3E
     // Write data to ROM at current position (addressPC), which is updated.
     public override bool WriteToROM (Stream rom, ref int addressPC)
     {
-      if (NotNull)
-      {
-        byte [] b = new byte [DefaultSize];
-        Tools.CopyBytes (DoorPtr              , b,  0, 2);
-        Tools.CopyBytes (LiquidSurfaceStart   , b,  2, 2);
-        Tools.CopyBytes (LiquidSurfaceNew     , b,  4, 2);
-        Tools.CopyBytes (LiquidSurfaceSpeed   , b,  6, 2);
-        Tools.CopyBytes (LiquidSurfaceDelay   , b,  8, 1);
-        Tools.CopyBytes (FxType               , b,  9, 1);
-        Tools.CopyBytes (FxBitA               , b, 10, 1);
-        Tools.CopyBytes (FxBitB               , b, 11, 1);
-        Tools.CopyBytes (FxBitC               , b, 12, 1);
-        Tools.CopyBytes (PaletteFxBitflags    , b, 13, 1);
-        Tools.CopyBytes (TileAnimationBitflags, b, 14, 1);
-        Tools.CopyBytes (PaletteBlend         , b, 15, 1);
-        rom.Write (b, 0, DefaultSize);
-      }
-      else
-        rom.Write (new byte [] {TerminatorByte, TerminatorByte}, 0, 2);
+      byte [] b = new byte [DefaultSize];
+      Tools.CopyBytes (DoorPtr              , b,  0, 2);
+      Tools.CopyBytes (LiquidSurfaceStart   , b,  2, 2);
+      Tools.CopyBytes (LiquidSurfaceNew     , b,  4, 2);
+      Tools.CopyBytes (LiquidSurfaceSpeed   , b,  6, 2);
+      Tools.CopyBytes (LiquidSurfaceDelay   , b,  8, 1);
+      Tools.CopyBytes (FxType               , b,  9, 1);
+      Tools.CopyBytes (FxBitA               , b, 10, 1);
+      Tools.CopyBytes (FxBitB               , b, 11, 1);
+      Tools.CopyBytes (FxBitC               , b, 12, 1);
+      Tools.CopyBytes (PaletteFxBitflags    , b, 13, 1);
+      Tools.CopyBytes (TileAnimationBitflags, b, 14, 1);
+      Tools.CopyBytes (PaletteBlend         , b, 15, 1);
+      rom.Write (b, 0, DefaultSize);
 
       addressPC += Size;
       return true;
@@ -380,8 +374,6 @@ namespace SM3E
     // Set default values.
     public override void SetDefault ()
     {
-      NotNull = false;
-
       DoorPtr               = 0x830000;
       LiquidSurfaceStart    = 0xFFFF;
       LiquidSurfaceNew      = 0xFFFF;
@@ -398,22 +390,147 @@ namespace SM3E
       startAddressPC = DefaultStartAddress;
     }
 
+  } // class FxData
+
+
+//========================================================================================
+// CLASS FX 
+//========================================================================================
+
+
+  class Fx: Data, IRepointable, IReusable, IReferenceableBy <RoomState>
+  {
+    public const int NullSize = 2;
+    public const byte TerminatorByte = 0xFF;
+
+    public bool NotNull;
+    public List <Door> FxDoors;
+    public List <FxData> FxDatas;
+
+    public HashSet <RoomState> MyRoomStates;
+
+    public override int Size
+    {
+      get {return NotNull ? FxDatas.Count * FxData.DefaultSize : NullSize;}
+    }
+    
+    public int FxDataCount
+    {
+      get {return FxDoors.Count;}
+    }
+
+    public int ReferenceCount {get {return MyRoomStates.Count;}}
+
+
+    // Constructor.
+    public Fx (): base ()
+    {
+      NotNull = false;
+      FxDatas = new List <FxData> ();
+      FxDoors = new List <Door> ();
+
+      MyRoomStates = new HashSet <RoomState> ();
+    }
+
+    
+    // Constructor, copy from existing Fx.
+    public Fx (Fx source): base ()
+    {
+      NotNull = source.NotNull;
+      if (NotNull)
+      {
+        for (int i = 0; i < source.FxDoors.Count; i++)
+        {
+          if (source.FxDoors [i].ReferenceMe (this))
+          {
+            FxDoors.Add (source.FxDoors [i]);
+            FxDatas.Add (new FxData (source.FxDatas [i]));
+          }
+        }
+      }
+
+      MyRoomStates = new HashSet <RoomState> ();
+    }
+
+
+    // Read data from ROM at given PC address.
+    public override bool ReadFromROM (Rom rom, int addressPC)
+    {
+      int startAddress = addressPC;
+      byte [] b = new byte [2];
+      rom.Seek (addressPC);
+      if (!rom.Read (b, 0, 2))
+        return false;
+      if (b [0] == TerminatorByte && b [1] == TerminatorByte)
+      {
+        NotNull = false;
+        startAddressPC = addressPC;
+        return true;
+      }
+
+      NotNull = true;
+      FxData newFxData;
+      int adPC = addressPC;
+      do
+      {
+        newFxData = new FxData ();
+        rom.Seek (adPC);
+        newFxData.ReadFromROM (rom, adPC);
+        FxDatas.Add (newFxData);
+        adPC += newFxData.Size;
+      }
+      while (newFxData.DoorPtr != 0x830000);
+
+      startAddressPC = startAddress;
+      return true;
+    }
+
+
+    // Write data to ROM at current position (addressPC), which is updated.
+    public override bool WriteToROM (Stream rom, ref int addressPC)
+    {
+      if (NotNull)
+      {
+        foreach (FxData d in FxDatas)
+          d.WriteToROM (rom, ref addressPC);
+      }
+      else
+      {
+        rom.Write (new byte [] {TerminatorByte, TerminatorByte}, 0, 2);
+        addressPC += 2;
+      }
+
+      return true;
+    }
+
+
+    // Set default values.
+    public override void SetDefault ()
+    {
+      NotNull = false;
+
+      FxDoors.Clear ();
+      FxDatas.Clear ();
+
+      startAddressPC = DefaultStartAddress;
+    }
+
 
     public bool Connect (List <Data> Doors)
     {
-      if (NotNull && DoorPtr >= 0x8F8000) {     // != 0x8F0000) {
-        MyDoor = (Door) Doors.Find (x => x.StartAddressLR == DoorPtr);
-        return (MyDoor != null);
+      FxDoors.Clear ();
+      if (NotNull) {
+        foreach (FxData d in FxDatas)
+          FxDoors.Add ((Door) Doors.Find (x => x.StartAddressLR == d.DoorPtr));
       }
-      MyDoor = null;
       return true;
     }
 
 
     public void Repoint ()
     {
-      if (MyDoor != null)
-        DoorPtr = MyDoor.StartAddressLR;
+      for (int i = 0; i < FxDatas.Count; i++)
+        FxDatas [i].DoorPtr = FxDoors [i]?.StartAddressLR ?? 0x830000;
     }
 
 
@@ -435,6 +552,25 @@ namespace SM3E
     {
       foreach (RoomState r in MyRoomStates)
         r.SetFx (null, out var ignore);
+    }
+
+//----------------------------------------------------------------------------------------
+
+    public void DeleteDoorFx (Door d)
+    {
+      if (NotNull)
+      {
+        for (int i = 0; i < FxDoors.Count;)
+        {
+          if (FxDoors [i] == d)
+          {
+            FxDoors.RemoveAt (i);
+            FxDatas.RemoveAt (i);
+          }
+          else
+            i++;
+        }
+      }
     }
 
   } // class Fx

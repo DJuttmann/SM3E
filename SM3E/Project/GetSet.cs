@@ -638,6 +638,62 @@ namespace SM3E
 
 
 //========================================================================================
+// Effects
+
+
+    public bool GetFxState ()
+    {
+      return ActiveFx?.NotNull ?? false;
+    }
+
+
+    public void GetFxData (out int doorIndex,
+                           out int surfaceStart,
+                           out int surfaceNew,
+                           out int surfaceSpeed,
+                           out int surfaceDelay,
+                           out FxType fxType,
+                           out int fxBitA,
+                           out int fxBitB,
+                           out int fxBitC,
+                           out int paletteFxBitflags,
+                           out int tileAnimationBitflags,
+                           out int paletteBlend)
+    {
+      if (ActiveFxData != null)
+      {
+        surfaceStart          = ActiveFxData.LiquidSurfaceStart;
+        surfaceNew            = ActiveFxData.LiquidSurfaceNew;
+        surfaceSpeed          = ActiveFxData.LiquidSurfaceSpeed;
+        surfaceDelay          = ActiveFxData.LiquidSurfaceDelay;
+        fxType                = (FxType) ActiveFxData.FxType;
+        fxBitA                = ActiveFxData.FxBitA;
+        fxBitB                = ActiveFxData.FxBitB;
+        fxBitC                = ActiveFxData.FxBitC;
+        paletteFxBitflags     = ActiveFxData.PaletteFxBitflags;
+        tileAnimationBitflags = ActiveFxData.TileAnimationBitflags;
+        paletteBlend          = ActiveFxData.PaletteBlend;
+        doorIndex             = FxDataIndex;
+      }
+      else
+      {
+        doorIndex             = -1;
+        surfaceStart          = 0;
+        surfaceNew            = 0;
+        surfaceSpeed          = 0;
+        surfaceDelay          = 0;
+        fxType                = 0;
+        fxBitA                = 0;
+        fxBitB                = 0;
+        fxBitC                = 0;
+        paletteFxBitflags     = 0;
+        tileAnimationBitflags = 0;
+        paletteBlend          = 0;
+      }
+    }
+
+
+//========================================================================================
 // Doors
 
 

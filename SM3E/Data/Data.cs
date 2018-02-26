@@ -71,12 +71,18 @@ namespace SM3E
 
 
   // Interface for data classes that may be referenced by other data classes.
-  interface IReferenceableBy <T> where T: Data
+  interface IReferenceableBy <T>: IReferenceable where T: Data
   {
     bool ReferenceMe (T source);   // return value indicates success/failure
     int  UnreferenceMe (T source); // return value is number of remaining references
+  }
+
+
+  interface IReferenceable
+  {
     void DetachAllReferences ();   // removes all references from all implemented types T
   }
+
 
 
   // Interface for data classes that may be referenced by multiple other data classes.

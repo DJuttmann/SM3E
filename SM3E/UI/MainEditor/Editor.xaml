@@ -83,7 +83,7 @@
       <ui:PlmLayerTab Grid.Column="2" x:Name="PlmLayerEditor" Visibility="Hidden"/>
       <ui:EnemyLayerTab Grid.Column="2" x:Name="EnemyLayerEditor" Visibility="Hidden"/>
       <ui:ScrollLayerTab Grid.Column="2" x:Name="ScrollLayerEditor" Visibility="Hidden"/>
-      <Grid Grid.Column="2" x:Name="FxLayerEditor" Visibility="Hidden"/>
+      <ui:EffectsLayerTab Grid.Column="2" x:Name="FxLayerEditor" Visibility="Hidden"/>
     </Grid>
 
   </Grid>

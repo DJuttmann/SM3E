@@ -69,6 +69,7 @@ namespace SM3E.UI
       PlmLayerEditor.SetProject (MainProject);
       EnemyLayerEditor.SetProject (MainProject);
       ScrollLayerEditor.SetProject (MainProject);
+      FxLayerEditor.SetProject (MainProject);
     }
 
 

@@ -691,6 +691,32 @@ namespace SM3E
       }
     }
 
+    // List of incoming door names for active room.
+    public List <string> IncomingDoorNames
+    {
+      get
+      {
+        var names = new List <string> ();
+        if (ActiveRoom != null)
+        {
+          foreach (Door d in ActiveRoom.MyIncomingDoors)
+          {
+            if (d.MyDoorSets.Count > 0)
+            {
+              DoorSet doorset =  d.MyDoorSets.First <DoorSet> ();
+              string name = "Door ";
+              name += Tools.IntToHex (doorset.MyDoors.FindIndex (x => x == d));
+              name += " " + d.MyDoorSets.First <DoorSet> ().MyRoom.Name;
+              names.Add (name);
+            }
+            else
+              names.Add ("[unused door]");
+          }
+        }
+        return names;
+      }
+    }
+    
     // List of Plm names for active room state.
     public List <string> PlmNames
     {
@@ -978,7 +1004,7 @@ namespace SM3E
 
 
     // Door ASM name
-    public String DoorAsmName
+    public string DoorAsmName
     {
       get
       {
@@ -989,6 +1015,35 @@ namespace SM3E
         if (ActiveDoor.MyDoorAsm != null)
           return ActiveDoor.MyDoorAsm.Name;
         return String.Empty;
+      }
+    }
+
+
+    // Fx data names
+    public List <string> FxDataNames
+    {
+      get
+      {
+        var names = new List <string> ();
+        if (ActiveFx != null)
+        {
+          foreach (Door d in ActiveFx.FxDoors)
+          {
+            if (d == null)
+              names.Add ("[Default]");
+            else if (d.MyDoorSets.Count > 0)
+            {
+              DoorSet doorset =  d.MyDoorSets.First <DoorSet> ();
+              string name = "Door ";
+              name += Tools.IntToHex (doorset.MyDoors.FindIndex (x => x == d));
+              name += " " + d.MyDoorSets.First <DoorSet> ().MyRoom.Name;
+              names.Add (name);
+            }
+            else
+              names.Add ("[Unused door]");
+          }
+        }
+        return names;
       }
     }
 

@@ -798,9 +798,9 @@ namespace SM3E
       foreach (Asm a in data)
       {
         XElement asm = new XElement (name);
-        asm.SetAttributeValue ("Address", Tools.IntToHex (a.StartAddressPC));
-        asm.SetAttributeValue ("End", Tools.IntToHex (a.EndAddressPC));
-        asm.SetAttributeValue ("Name", a.Name);
+        asm.SetAttributeValue ("address", Tools.IntToHex (a.StartAddressPC));
+        asm.SetAttributeValue ("end", Tools.IntToHex (a.EndAddressPC));
+        asm.SetAttributeValue ("name", a.Name);
         asmElement.Add (asm);
       }
     }

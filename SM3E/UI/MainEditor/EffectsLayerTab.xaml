@@ -1,0 +1,160 @@
+﻿<UserControl x:Class="SM3E.UI.EffectsLayerTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SM3E.UI"
+             mc:Ignorable="d" 
+             d:DesignHeight="250" d:DesignWidth="850">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="1*"/>
+      <ColumnDefinition Width="1*"/>
+      <ColumnDefinition Width="1*"/>
+    </Grid.ColumnDefinitions>
+
+    <!-- EFFECTS OPTIONS -->
+    <Grid x:Name="EffectsGrid" Grid.Column="0">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="25"/>
+        <RowDefinition Height="1*"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="8"/>
+      </Grid.RowDefinitions>
+      <Label Grid.Row="0" Content="Effects Data" HorizontalAlignment="Stretch" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
+      <ListBox Grid.Row="1" x:Name="FxDataSelect" Margin="8,4,8,4" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="FxDataSelect_SelectionChanged"/>
+      <Label   Grid.Row="2" Content="Type" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
+      <ComboBox Grid.Row="2" x:Name="TypeSelect" Margin="100,1,8,1" HorizontalAlignment="Stretch">
+        <ComboBoxItem Content="00 None"/>
+        <ComboBoxItem Content="02 Lava"/>
+        <ComboBoxItem Content="04 Acid"/>
+        <ComboBoxItem Content="06 Water"/>
+        <ComboBoxItem Content="08 Spores"/>
+        <ComboBoxItem Content="0A Rain"/>
+        <ComboBoxItem Content="0C Fog"/>
+        <ComboBoxItem Content="20 Bg Scroll"/>
+        <ComboBoxItem Content="24 Bg Glow"/>
+        <ComboBoxItem Content="26 Statues"/>
+        <ComboBoxItem Content="28 Ceres Ridley"/>
+        <ComboBoxItem Content="2A Ceres Mode 7"/>
+        <ComboBoxItem Content="2C Haze"/>
+      </ComboBox>
+      <Label   Grid.Row="3" Content="Palette blend" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
+      <TextBox Grid.Row="3" x:Name="PaletteBlendInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2"/>
+      <Label   Grid.Row="4" Content="Fx bit A" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
+      <TextBox Grid.Row="4" x:Name="FxBitAInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2"/>
+      <Label   Grid.Row="5" Content="Fx bit B" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
+      <TextBox Grid.Row="5" x:Name="FxBitBInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2"/>
+    </Grid>
+
+    <!-- LIQUID OPTIONS -->
+    <Grid x:Name="LiquidGrid" Grid.Column="1">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="25"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="4"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="1*"/>
+      </Grid.RowDefinitions>
+      <Label Grid.Row="0" Content="Liquid" HorizontalAlignment="Stretch" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
+      <Label   Grid.Row="1" Content="Surface start" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
+      <TextBox Grid.Row="1" x:Name="SurfaceStartInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4"/>
+      <Label   Grid.Row="2" Content="Surface end" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
+      <TextBox Grid.Row="2" x:Name="SurfaceNewInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4"/>
+      <Label   Grid.Row="3" Content="Surface speed" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
+      <TextBox Grid.Row="3" x:Name="SurfaceSpeedInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4"/>
+      <Label   Grid.Row="4" Content="Surface delay" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
+      <TextBox Grid.Row="4" x:Name="SurfaceDelayInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2"/>
+
+      <Label   Grid.Row="6" Content="Liquid options" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
+      <Grid    Grid.Row="7" Margin="20,0,0,0">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="1*"/>
+          <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="22"/>
+          <RowDefinition Height="22"/>
+          <RowDefinition Height="22"/>
+          <RowDefinition Height="22"/>
+        </Grid.RowDefinitions>
+        <CheckBox Grid.Row="0" Grid.Column="0" x:Name="L0Check" Margin="8,2,0,0" Content="Flowing left"/>
+        <CheckBox Grid.Row="0" Grid.Column="1" x:Name="L1Check" Margin="8,2,0,0" Content="Bg Heat effects"/>
+        <CheckBox Grid.Row="1" Grid.Column="0" x:Name="L2Check" Margin="8,2,0,0" Content="Bg Liquid"/>
+        <CheckBox Grid.Row="1" Grid.Column="1" x:Name="L3Check" Margin="8,2,0,0" Content="-"/>
+        <CheckBox Grid.Row="2" Grid.Column="0" x:Name="L4Check" Margin="8,2,0,0" Content="-"/>
+        <CheckBox Grid.Row="2" Grid.Column="1" x:Name="L5Check" Margin="8,2,0,0" Content="-"/>
+        <CheckBox Grid.Row="3" Grid.Column="0" x:Name="L6Check" Margin="8,2,0,0" Content="Large tide"/>
+        <CheckBox Grid.Row="3" Grid.Column="1" x:Name="L7Check" Margin="8,2,0,0" Content="Small tide"/>
+      </Grid>
+      <TextBox Grid.Row="6" x:Name="LiquidOptionsInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" TextChanged="LiquidOptions_TextChanged"/>
+    </Grid>
+
+    <!-- MISC OPTIONS -->
+    <Grid x:Name="MiscGrid" Grid.Column="2">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="8"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="22"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="1*"/>
+      </Grid.RowDefinitions>
+      <Label   Grid.Row="1" Content="Anim. options" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
+      <Grid    Grid.Row="2" Margin="20,0,0,0">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="1*"/>
+          <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="22"/>
+          <RowDefinition Height="22"/>
+          <RowDefinition Height="22"/>
+          <RowDefinition Height="22"/>
+        </Grid.RowDefinitions>
+        <CheckBox Grid.Row="0" Grid.Column="0" x:Name="A0Check" Margin="8,2,0,0" Content="Spikes (H)"/>
+        <CheckBox Grid.Row="0" Grid.Column="1" x:Name="A1Check" Margin="8,2,0,0" Content="Spikes (V)"/>
+        <CheckBox Grid.Row="1" Grid.Column="0" x:Name="A2Check" Margin="8,2,0,0" Content="Ocean"/>
+        <CheckBox Grid.Row="1" Grid.Column="1" x:Name="A3Check" Margin="8,2,0,0" Content="Lava"/>
+        <CheckBox Grid.Row="2" Grid.Column="0" x:Name="A4Check" Margin="8,2,0,0" Content="-"/>
+        <CheckBox Grid.Row="2" Grid.Column="1" x:Name="A5Check" Margin="8,2,0,0" Content="-"/>
+        <CheckBox Grid.Row="3" Grid.Column="0" x:Name="A6Check" Margin="8,2,0,0" Content="-"/>
+        <CheckBox Grid.Row="3" Grid.Column="1" x:Name="A7Check" Margin="8,2,0,0" Content="-"/>
+      </Grid>
+      <TextBox Grid.Row="1" x:Name="AnimationOptionsInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" TextChanged="AnimationOptions_TextChanged"/>
+
+      <Label   Grid.Row="3" Content="Palette options" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
+      <Grid    Grid.Row="4" Margin="20,0,0,0">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="1*"/>
+          <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="22"/>
+          <RowDefinition Height="22"/>
+          <RowDefinition Height="22"/>
+          <RowDefinition Height="22"/>
+        </Grid.RowDefinitions>
+        <CheckBox Grid.Row="0" Grid.Column="0" x:Name="P0Check" Margin="8,2,0,0" Content="P0"/>
+        <CheckBox Grid.Row="0" Grid.Column="1" x:Name="P1Check" Margin="8,2,0,0" Content="P1"/>
+        <CheckBox Grid.Row="1" Grid.Column="0" x:Name="P2Check" Margin="8,2,0,0" Content="P2"/>
+        <CheckBox Grid.Row="1" Grid.Column="1" x:Name="P3Check" Margin="8,2,0,0" Content="P3"/>
+        <CheckBox Grid.Row="2" Grid.Column="0" x:Name="P4Check" Margin="8,2,0,0" Content="P4"/>
+        <CheckBox Grid.Row="2" Grid.Column="1" x:Name="P5Check" Margin="8,2,0,0" Content="-"/>
+        <CheckBox Grid.Row="3" Grid.Column="0" x:Name="P6Check" Margin="8,2,0,0" Content="-"/>
+        <CheckBox Grid.Row="3" Grid.Column="1" x:Name="P7Check" Margin="8,2,0,0" Content="-"/>
+      </Grid>
+      <TextBox Grid.Row="3" x:Name="PaletteOptionsInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" TextChanged="PaletteOptions_TextChanged"/>
+    </Grid>
+
+    <CheckBox x:Name="NotNullCheck" Margin="0,8,8,0" Content="Active" HorizontalAlignment="Right" VerticalAlignment="Top" Checked="NotNull_Checked" Unchecked="NotNull_UnChecked"/>
+
+  </Grid>
+</UserControl>

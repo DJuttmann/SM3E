@@ -22,7 +22,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class Door: Data, IRepointable, IReferenceableBy <DoorSet>
+  class Door: Data, IRepointable, IReferenceableBy <DoorSet>, IReferenceableBy <Fx>
   {
     public const int DefaultSize = 12;
     public const int ElevatorPadSize = 2;
@@ -42,6 +42,7 @@ namespace SM3E
     public ScrollAsm MyScrollAsm;
     public Asm MyDoorAsm;
     public HashSet <DoorSet> MyDoorSets;
+    public HashSet <Data> MyReferringData;
 
     public override int Size
     {
@@ -182,10 +183,35 @@ namespace SM3E
     }
 
 
+    public bool ReferenceMe (Fx source)
+    {
+      MyReferringData.Add (source);
+      return true;
+    }
+
+
+    public int UnreferenceMe (Fx source)
+    {
+      MyReferringData.Remove (source);
+      return MyReferringData.Count;
+    }
+
+
     public void DetachAllReferences ()
     {
       foreach (DoorSet d in MyDoorSets)
         d.RemoveDoor (this);
+      foreach (Data d in MyReferringData)
+      {
+        switch (d)
+        {
+        case Fx f:
+          f.DeleteDoorFx (this);
+          break;
+        default:
+          break;
+        }
+      }
     }
 
 //----------------------------------------------------------------------------------------

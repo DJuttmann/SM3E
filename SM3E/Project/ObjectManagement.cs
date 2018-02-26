@@ -607,7 +607,7 @@ namespace SM3E
         return false;
       ActiveDoor.MyDoorSets.Remove (ActiveRoom.MyDoorSet);
       if (ActiveDoor.MyDoorSets.Count == 0)
-        Doors.Remove (ActiveDoor);
+        DeleteData (ActiveDoor);
       ActiveRoom.MyDoorSet.MyDoors.Remove (ActiveDoor);
       ActiveRoom.MyDoorSet.DoorPtrs.RemoveAt (DoorIndex);
       return true;
@@ -893,6 +893,80 @@ namespace SM3E
       return true;
     }
 
+
+//========================================================================================
+// Object management - tools.
+
+
+    private void DeleteData (Data data)
+    {
+      if (data is IReferenceable refdata)
+        refdata.DetachAllReferences ();
+      switch (data)
+      {
+      case Room d:
+        // Rooms         .Remove (d); [wip] // implement delete method for ListArray <T>
+        break;
+      case DoorSet d:
+        DoorSets      .Remove (d);
+        break;
+      case Door d:
+        Doors         .Remove (d);
+        break;
+      case ScrollSet d:
+        ScrollSets    .Remove (d);
+        break;
+      case PlmSet d:
+        PlmSets       .Remove (d);
+        break;
+      case ScrollPlmData d:
+        ScrollPlmDatas.Remove (d);
+        break;
+      case Background d:
+        Backgrounds   .Remove (d);
+        break;
+      case Fx d:
+        Fxs           .Remove (d);
+        break;
+      case SaveRoom d:
+        SaveRooms     .Remove (d);
+        break;
+      case LevelData d:
+        LevelDatas    .Remove (d);
+        break;
+      case EnemySet d:
+        EnemySets     .Remove (d);
+        break;
+      case EnemyGfx d:
+        EnemyGfxs     .Remove (d);
+        break;
+      case ScrollAsm d:
+        ScrollAsms    .Remove (d);
+        break;
+      case Asm d:
+        DoorAsms      .Remove (d);
+        SetupAsms     .Remove (d);
+        MainAsms      .Remove (d);
+        break;
+      case TileSet d:
+        TileSets      .Remove (d);
+        break;
+      case TileTable d:
+        TileTables    .Remove (d);
+        break;
+      case TileSheet d:
+        TileSheets    .Remove (d);
+        break;
+      case Palette d:
+        Palettes      .Remove (d);
+        break;
+      case AreaMap d:
+        AreaMaps      .Remove (d);
+        break;
+      default:
+        break;
+      }
+    }
 
   } // partial class Project
 
