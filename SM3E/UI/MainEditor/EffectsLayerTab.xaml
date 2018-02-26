@@ -25,9 +25,11 @@
         <RowDefinition Height="8"/>
       </Grid.RowDefinitions>
       <Label Grid.Row="0" Content="Effects Data" HorizontalAlignment="Stretch" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
+      <Button  Grid.Row="0" Content="&#x2795;" HorizontalAlignment="Right" Height="20" Margin="0,5,33.2,0" VerticalAlignment="Top" Width="20" Click="AddFxData_Click"/>
+      <Button  Grid.Row="0" Content="&#x2716;" HorizontalAlignment="Right" Height="20" Margin="0,0,8,0" VerticalAlignment="Bottom" Width="20" Click="DeleteFxData_Click"/>
       <ListBox Grid.Row="1" x:Name="FxDataSelect" Margin="8,4,8,4" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="FxDataSelect_SelectionChanged"/>
       <Label   Grid.Row="2" Content="Type" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
-      <ComboBox Grid.Row="2" x:Name="TypeSelect" Margin="100,1,8,1" HorizontalAlignment="Stretch">
+      <ComboBox Grid.Row="2" x:Name="TypeSelect" Margin="100,1,8,1" HorizontalAlignment="Stretch" SelectionChanged="Type_SelectionChanged">
         <ComboBoxItem Content="00 None"/>
         <ComboBoxItem Content="02 Lava"/>
         <ComboBoxItem Content="04 Acid"/>
@@ -43,11 +45,11 @@
         <ComboBoxItem Content="2C Haze"/>
       </ComboBox>
       <Label   Grid.Row="3" Content="Palette blend" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
-      <TextBox Grid.Row="3" x:Name="PaletteBlendInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2"/>
+      <TextBox Grid.Row="3" x:Name="PaletteBlendInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="PaletteBlend_LostFocus" KeyDown="PaletteBlend_KeyDown"/>
       <Label   Grid.Row="4" Content="Fx bit A" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
-      <TextBox Grid.Row="4" x:Name="FxBitAInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2"/>
+      <TextBox Grid.Row="4" x:Name="FxBitAInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="FxBitA_LostFocus" KeyDown="FxBitA_KeyDown"/>
       <Label   Grid.Row="5" Content="Fx bit B" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
-      <TextBox Grid.Row="5" x:Name="FxBitBInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2"/>
+      <TextBox Grid.Row="5" x:Name="FxBitBInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="FxBitB_LostFocus" KeyDown="FxBitB_KeyDown"/>
     </Grid>
 
     <!-- LIQUID OPTIONS -->
@@ -65,13 +67,13 @@
       </Grid.RowDefinitions>
       <Label Grid.Row="0" Content="Liquid" HorizontalAlignment="Stretch" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
       <Label   Grid.Row="1" Content="Surface start" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
-      <TextBox Grid.Row="1" x:Name="SurfaceStartInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4"/>
+      <TextBox Grid.Row="1" x:Name="SurfaceStartInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4" LostFocus="SurfaceStart_LostFocus" KeyDown="SurfaceStart_KeyDown"/>
       <Label   Grid.Row="2" Content="Surface end" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
-      <TextBox Grid.Row="2" x:Name="SurfaceNewInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4"/>
+      <TextBox Grid.Row="2" x:Name="SurfaceNewInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4" LostFocus="SurfaceNew_LostFocus" KeyDown="SurfaceNew_KeyDown"/>
       <Label   Grid.Row="3" Content="Surface speed" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
-      <TextBox Grid.Row="3" x:Name="SurfaceSpeedInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4"/>
+      <TextBox Grid.Row="3" x:Name="SurfaceSpeedInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4" LostFocus="SurfaceSpeed_LostFocus" KeyDown="SurfaceSpeed_KeyDown"/>
       <Label   Grid.Row="4" Content="Surface delay" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
-      <TextBox Grid.Row="4" x:Name="SurfaceDelayInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2"/>
+      <TextBox Grid.Row="4" x:Name="SurfaceDelayInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="SurfaceDelay_LostFocus" KeyDown="SurfaceDelay_KeyDown"/>
 
       <Label   Grid.Row="6" Content="Liquid options" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
       <Grid    Grid.Row="7" Margin="20,0,0,0">
@@ -85,16 +87,16 @@
           <RowDefinition Height="22"/>
           <RowDefinition Height="22"/>
         </Grid.RowDefinitions>
-        <CheckBox Grid.Row="0" Grid.Column="0" x:Name="L0Check" Margin="8,2,0,0" Content="Flowing left"/>
-        <CheckBox Grid.Row="0" Grid.Column="1" x:Name="L1Check" Margin="8,2,0,0" Content="Bg Heat effects"/>
-        <CheckBox Grid.Row="1" Grid.Column="0" x:Name="L2Check" Margin="8,2,0,0" Content="Bg Liquid"/>
-        <CheckBox Grid.Row="1" Grid.Column="1" x:Name="L3Check" Margin="8,2,0,0" Content="-"/>
-        <CheckBox Grid.Row="2" Grid.Column="0" x:Name="L4Check" Margin="8,2,0,0" Content="-"/>
-        <CheckBox Grid.Row="2" Grid.Column="1" x:Name="L5Check" Margin="8,2,0,0" Content="-"/>
-        <CheckBox Grid.Row="3" Grid.Column="0" x:Name="L6Check" Margin="8,2,0,0" Content="Large tide"/>
-        <CheckBox Grid.Row="3" Grid.Column="1" x:Name="L7Check" Margin="8,2,0,0" Content="Small tide"/>
+        <CheckBox Grid.Row="0" Grid.Column="0" x:Name="L0Check" Click="LCheck_Click" Margin="8,2,0,0" Content="Flowing left"/>
+        <CheckBox Grid.Row="0" Grid.Column="1" x:Name="L1Check" Click="LCheck_Click" Margin="8,2,0,0" Content="Bg Heat effects"/>
+        <CheckBox Grid.Row="1" Grid.Column="0" x:Name="L2Check" Click="LCheck_Click" Margin="8,2,0,0" Content="Bg Liquid"/>
+        <CheckBox Grid.Row="1" Grid.Column="1" x:Name="L3Check" Click="LCheck_Click" Margin="8,2,0,0" Content="-"/>
+        <CheckBox Grid.Row="2" Grid.Column="0" x:Name="L4Check" Click="LCheck_Click" Margin="8,2,0,0" Content="-"/>
+        <CheckBox Grid.Row="2" Grid.Column="1" x:Name="L5Check" Click="LCheck_Click" Margin="8,2,0,0" Content="-"/>
+        <CheckBox Grid.Row="3" Grid.Column="0" x:Name="L6Check" Click="LCheck_Click" Margin="8,2,0,0" Content="Large tide"/>
+        <CheckBox Grid.Row="3" Grid.Column="1" x:Name="L7Check" Click="LCheck_Click" Margin="8,2,0,0" Content="Small tide"/>
       </Grid>
-      <TextBox Grid.Row="6" x:Name="LiquidOptionsInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" TextChanged="LiquidOptions_TextChanged"/>
+      <TextBox Grid.Row="6" x:Name="LiquidOptionsInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="LiquidOptions_LostFocus" KeyDown="LiquidOptions_KeyDown"/>
     </Grid>
 
     <!-- MISC OPTIONS -->
@@ -119,16 +121,16 @@
           <RowDefinition Height="22"/>
           <RowDefinition Height="22"/>
         </Grid.RowDefinitions>
-        <CheckBox Grid.Row="0" Grid.Column="0" x:Name="A0Check" Margin="8,2,0,0" Content="Spikes (H)"/>
-        <CheckBox Grid.Row="0" Grid.Column="1" x:Name="A1Check" Margin="8,2,0,0" Content="Spikes (V)"/>
-        <CheckBox Grid.Row="1" Grid.Column="0" x:Name="A2Check" Margin="8,2,0,0" Content="Ocean"/>
-        <CheckBox Grid.Row="1" Grid.Column="1" x:Name="A3Check" Margin="8,2,0,0" Content="Lava"/>
-        <CheckBox Grid.Row="2" Grid.Column="0" x:Name="A4Check" Margin="8,2,0,0" Content="-"/>
-        <CheckBox Grid.Row="2" Grid.Column="1" x:Name="A5Check" Margin="8,2,0,0" Content="-"/>
-        <CheckBox Grid.Row="3" Grid.Column="0" x:Name="A6Check" Margin="8,2,0,0" Content="-"/>
-        <CheckBox Grid.Row="3" Grid.Column="1" x:Name="A7Check" Margin="8,2,0,0" Content="-"/>
+        <CheckBox Grid.Row="0" Grid.Column="0" x:Name="A0Check" Click="ACheck_Click" Margin="8,2,0,0" Content="Spikes (H)"/>
+        <CheckBox Grid.Row="0" Grid.Column="1" x:Name="A1Check" Click="ACheck_Click" Margin="8,2,0,0" Content="Spikes (V)"/>
+        <CheckBox Grid.Row="1" Grid.Column="0" x:Name="A2Check" Click="ACheck_Click" Margin="8,2,0,0" Content="~"/>
+        <CheckBox Grid.Row="1" Grid.Column="1" x:Name="A3Check" Click="ACheck_Click" Margin="8,2,0,0" Content="~"/>
+        <CheckBox Grid.Row="2" Grid.Column="0" x:Name="A4Check" Click="ACheck_Click" Margin="8,2,0,0" Content="-"/>
+        <CheckBox Grid.Row="2" Grid.Column="1" x:Name="A5Check" Click="ACheck_Click" Margin="8,2,0,0" Content="-"/>
+        <CheckBox Grid.Row="3" Grid.Column="0" x:Name="A6Check" Click="ACheck_Click" Margin="8,2,0,0" Content="-"/>
+        <CheckBox Grid.Row="3" Grid.Column="1" x:Name="A7Check" Click="ACheck_Click" Margin="8,2,0,0" Content="-"/>
       </Grid>
-      <TextBox Grid.Row="1" x:Name="AnimationOptionsInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" TextChanged="AnimationOptions_TextChanged"/>
+      <TextBox Grid.Row="1" x:Name="AnimationOptionsInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="AnimationOptions_LostFocus" KeyDown="AnimationOptions_KeyDown"/>
 
       <Label   Grid.Row="3" Content="Palette options" Margin="4,-3,0,-3" HorizontalAlignment="Left"/>
       <Grid    Grid.Row="4" Margin="20,0,0,0">
@@ -142,19 +144,17 @@
           <RowDefinition Height="22"/>
           <RowDefinition Height="22"/>
         </Grid.RowDefinitions>
-        <CheckBox Grid.Row="0" Grid.Column="0" x:Name="P0Check" Margin="8,2,0,0" Content="P0"/>
-        <CheckBox Grid.Row="0" Grid.Column="1" x:Name="P1Check" Margin="8,2,0,0" Content="P1"/>
-        <CheckBox Grid.Row="1" Grid.Column="0" x:Name="P2Check" Margin="8,2,0,0" Content="P2"/>
-        <CheckBox Grid.Row="1" Grid.Column="1" x:Name="P3Check" Margin="8,2,0,0" Content="P3"/>
-        <CheckBox Grid.Row="2" Grid.Column="0" x:Name="P4Check" Margin="8,2,0,0" Content="P4"/>
-        <CheckBox Grid.Row="2" Grid.Column="1" x:Name="P5Check" Margin="8,2,0,0" Content="-"/>
-        <CheckBox Grid.Row="3" Grid.Column="0" x:Name="P6Check" Margin="8,2,0,0" Content="-"/>
-        <CheckBox Grid.Row="3" Grid.Column="1" x:Name="P7Check" Margin="8,2,0,0" Content="-"/>
+        <CheckBox Grid.Row="0" Grid.Column="0" x:Name="P0Check" Click="PCheck_Click" Margin="8,2,0,0" Content="P0"/>
+        <CheckBox Grid.Row="0" Grid.Column="1" x:Name="P1Check" Click="PCheck_Click" Margin="8,2,0,0" Content="P1"/>
+        <CheckBox Grid.Row="1" Grid.Column="0" x:Name="P2Check" Click="PCheck_Click" Margin="8,2,0,0" Content="P2"/>
+        <CheckBox Grid.Row="1" Grid.Column="1" x:Name="P3Check" Click="PCheck_Click" Margin="8,2,0,0" Content="P3"/>
+        <CheckBox Grid.Row="2" Grid.Column="0" x:Name="P4Check" Click="PCheck_Click" Margin="8,2,0,0" Content="P4"/>
+        <CheckBox Grid.Row="2" Grid.Column="1" x:Name="P5Check" Click="PCheck_Click" Margin="8,2,0,0" Content="-"/>
+        <CheckBox Grid.Row="3" Grid.Column="0" x:Name="P6Check" Click="PCheck_Click" Margin="8,2,0,0" Content="-"/>
+        <CheckBox Grid.Row="3" Grid.Column="1" x:Name="P7Check" Click="PCheck_Click" Margin="8,2,0,0" Content="-"/>
       </Grid>
-      <TextBox Grid.Row="3" x:Name="PaletteOptionsInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" TextChanged="PaletteOptions_TextChanged"/>
+      <TextBox Grid.Row="3" x:Name="PaletteOptionsInput" Margin="100,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="00" MaxLength="2" LostFocus="PaletteOptions_LostFocus" KeyDown="PaletteOptions_KeyDown"/>
     </Grid>
-
-    <CheckBox x:Name="NotNullCheck" Margin="0,8,8,0" Content="Active" HorizontalAlignment="Right" VerticalAlignment="Top" Checked="NotNull_Checked" Unchecked="NotNull_UnChecked"/>
 
   </Grid>
 </UserControl>

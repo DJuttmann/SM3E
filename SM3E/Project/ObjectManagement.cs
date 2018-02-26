@@ -289,10 +289,10 @@ namespace SM3E
     {
       if (ActivePlmSet == null || ActivePlm == null)
         return;
+      var a = new ActiveItems (this);
       if (ForceDeletePlm ())
       {
         HandlingSelection = true;
-        var a = new ActiveItems (this);
         int newIndex = Math.Min (PlmIndex, ActivePlmSet.PlmCount - 1);
         ForceSelectPlm (newIndex);
         PlmListChanged?.Invoke (this, new ListLoadEventArgs (PlmIndex));
@@ -382,10 +382,10 @@ namespace SM3E
     {
       if (ActiveEnemySet == null)
         return;
+      var a = new ActiveItems (this);
       if (ForceAddEnemy (x, y))
       {
         HandlingSelection = true;
-        var a = new ActiveItems (this);
         ForceSelectEnemy (ActiveEnemySet.EnemyCount - 1);
         EnemyListChanged?.Invoke (this, new ListLoadEventArgs (EnemyIndex));
         var e = new LevelDataEventArgs ()
@@ -504,14 +504,47 @@ namespace SM3E
     {
       if (ActiveRoomState?.MyEnemyGfx == null || EnemyGfxIndex == IndexNone)
         return;
+      var a = new ActiveItems (this);
       if (ForceDeleteEnemyGfx ())
       {
         HandlingSelection = true;
-        var a = new ActiveItems (this);
         int newIndex = Math.Min (EnemyGfxIndex,
                                  ActiveRoomState.MyEnemyGfx.EnemyGfxCount - 1);
         ForceSelectEnemyGfx (newIndex);
         EnemyGfxListChanged?.Invoke (this, new ListLoadEventArgs (EnemyGfxIndex));
+        RaiseChangeEvents (a);
+        HandlingSelection = false;
+      }
+    }
+
+
+    public void AddFxData (int doorIndex)
+    {
+      if (ActiveFx == null)
+        return;
+      var a = new ActiveItems (this);
+      if (ForceAddFxData (doorIndex))
+      {
+        HandlingSelection = true;
+        ForceSelectFxData (0);
+        FxDataListChanged?.Invoke (this, new ListLoadEventArgs (FxDataIndex));
+        RaiseChangeEvents (a);
+        HandlingSelection = false;
+      }
+    }
+
+
+    public void DeleteFxData ()
+    {
+      if (ActiveFx == null || FxDataIndex == IndexNone)
+        return;
+      var a = new ActiveItems (this);
+      if (ForceDeleteFxData ())
+      {
+        HandlingSelection = true;
+        int newIndex = Math.Min (FxDataIndex, ActiveFx.FxDataCount - 1);
+        ForceSelectFxData (newIndex);
+        FxDataListChanged?.Invoke (this, new ListLoadEventArgs (FxDataIndex));
         RaiseChangeEvents (a);
         HandlingSelection = false;
       }
@@ -563,7 +596,7 @@ namespace SM3E
         ForceSelectRoomState (ActiveRoom.RoomStates.Count - 1);
         ForceDeleteRoomState ();
       }
-      Rooms [AreaIndex].Remove (ActiveRoom);
+      DeleteData (ActiveRoom);
       return true;
     }
 
@@ -579,7 +612,7 @@ namespace SM3E
         ForceSelectDoor (ActiveRoom.MyDoorSet.MyDoors.Count - 1);
         ForceRemoveDoor ();
       }
-      DoorSets.Remove (ActiveRoom.MyDoorSet);
+      DeleteData (ActiveRoom.MyDoorSet);
       ActiveRoom.MyDoorSet = null;
       return true;
     }
@@ -686,7 +719,7 @@ namespace SM3E
         return false;
       ActiveLevelData.MyRoomStates.Remove (ActiveRoomState);
       if (ActiveLevelData.MyRoomStates.Count == 0)
-        LevelDatas.Remove (ActiveLevelData);
+        DeleteData (ActiveLevelData);
       ActiveRoomState.MyLevelData = null;
       return true;
     }
@@ -700,7 +733,7 @@ namespace SM3E
         return false;
       ActiveRoomState.MyScrollSet.MyRoomStates.Remove (ActiveRoomState);
       if (ActiveRoomState.MyScrollSet.MyRoomStates.Count == 0)
-        ScrollSets.Remove (ActiveRoomState.MyScrollSet);
+        DeleteData (ActiveRoomState.MyScrollSet);
       ActiveRoomState.MyScrollSet = null;
       return true;
     }
@@ -720,7 +753,7 @@ namespace SM3E
           ForceSelectPlm (ActivePlmSet.PlmCount - 1);
           ForceDeletePlm ();
         }
-        PlmSets.Remove (ActivePlmSet);
+        DeleteData (ActivePlmSet);
       }
       ActiveRoomState.MyPlmSet = null;
       return true;
@@ -741,7 +774,7 @@ namespace SM3E
           ForceSelectEnemy (ActiveEnemySet.EnemyCount - 1);
           ForceDeleteEnemy ();
         }
-        EnemySets.Remove (ActiveEnemySet);
+        DeleteData (ActiveEnemySet);
       }
       ActiveRoomState.MyEnemySet = null;
       return true;
@@ -756,7 +789,7 @@ namespace SM3E
         return false;
       ActiveRoomState.MyEnemyGfx.MyRoomStates.Remove (ActiveRoomState);
       if (ActiveRoomState.MyEnemyGfx.MyRoomStates.Count == 0)
-        EnemyGfxs.Remove (ActiveRoomState.MyEnemyGfx);
+        DeleteData (ActiveRoomState.MyEnemyGfx);
       ActiveRoomState.MyEnemyGfx = null;
       return true;
     }
@@ -771,7 +804,7 @@ namespace SM3E
         return false;
       ActiveRoomState.MyFx.MyRoomStates.Remove (ActiveRoomState);
       if (ActiveRoomState.MyFx.MyRoomStates.Count == 0)
-        Fxs.Remove (ActiveRoomState.MyFx);
+        DeleteData (ActiveRoomState.MyFx);
       ActiveRoomState.MyFx = null;
       return true;
     }
@@ -838,7 +871,7 @@ namespace SM3E
       {
         ActivePlm.MyScrollPlmData.MyPlms.Remove (ActivePlm);
         if (ActivePlm.MyScrollPlmData.MyPlms.Count == 0)
-          ScrollPlmDatas.Remove (ActivePlm.MyScrollPlmData);
+          DeleteData (ActivePlm.MyScrollPlmData);
         ActivePlm.MyScrollPlmData = null;
         return true;
       }
@@ -894,6 +927,28 @@ namespace SM3E
     }
 
 
+    private bool ForceAddFxData (int doorIndex)
+    {
+      if (ActiveRoom == null || ActiveFx == null || doorIndex < -1 ||
+          doorIndex >= ActiveRoom.MyIncomingDoors.Count)
+        return false;
+      if (doorIndex == -1)
+        ActiveFx.AddFxData (null);
+      else
+        ActiveFx.AddFxData (ActiveRoom.MyIncomingDoors.ToList () [doorIndex]);
+      return true;
+    }
+
+
+    private bool ForceDeleteFxData ()
+    {
+      if (ActiveFx == null || FxDataIndex < 0 || FxDataIndex >= ActiveFx.FxDataCount)
+        return false;
+      ActiveFx.DeleteFxData (FxDataIndex);
+      return true;
+    }
+
+
 //========================================================================================
 // Object management - tools.
 
@@ -905,7 +960,7 @@ namespace SM3E
       switch (data)
       {
       case Room d:
-        // Rooms         .Remove (d); [wip] // implement delete method for ListArray <T>
+        Rooms         .Remove (d);
         break;
       case DoorSet d:
         DoorSets      .Remove (d);

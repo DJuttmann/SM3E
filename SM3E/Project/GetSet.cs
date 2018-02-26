@@ -641,23 +641,16 @@ namespace SM3E
 // Effects
 
 
-    public bool GetFxState ()
-    {
-      return ActiveFx?.NotNull ?? false;
-    }
-
-
-    public void GetFxData (out int doorIndex,
-                           out int surfaceStart,
+    public void GetFxData (out int surfaceStart,
                            out int surfaceNew,
                            out int surfaceSpeed,
                            out int surfaceDelay,
                            out FxType fxType,
                            out int fxBitA,
                            out int fxBitB,
-                           out int fxBitC,
-                           out int paletteFxBitflags,
-                           out int tileAnimationBitflags,
+                           out int liquidOptions,
+                           out int paletteOptions,
+                           out int animationOptions,
                            out int paletteBlend)
     {
       if (ActiveFxData != null)
@@ -669,15 +662,13 @@ namespace SM3E
         fxType                = (FxType) ActiveFxData.FxType;
         fxBitA                = ActiveFxData.FxBitA;
         fxBitB                = ActiveFxData.FxBitB;
-        fxBitC                = ActiveFxData.FxBitC;
-        paletteFxBitflags     = ActiveFxData.PaletteFxBitflags;
-        tileAnimationBitflags = ActiveFxData.TileAnimationBitflags;
+        liquidOptions         = ActiveFxData.FxBitC;
+        paletteOptions        = ActiveFxData.PaletteFxBitflags;
+        animationOptions      = ActiveFxData.TileAnimationBitflags;
         paletteBlend          = ActiveFxData.PaletteBlend;
-        doorIndex             = FxDataIndex;
       }
       else
       {
-        doorIndex             = -1;
         surfaceStart          = 0;
         surfaceNew            = 0;
         surfaceSpeed          = 0;
@@ -685,11 +676,110 @@ namespace SM3E
         fxType                = 0;
         fxBitA                = 0;
         fxBitB                = 0;
-        fxBitC                = 0;
-        paletteFxBitflags     = 0;
-        tileAnimationBitflags = 0;
+        liquidOptions         = 0;
+        paletteOptions        = 0;
+        animationOptions      = 0;
         paletteBlend          = 0;
       }
+    }
+
+    
+    public void SetFxSurfaceStart (int surfaceStart)
+    {
+      if (HandlingSelection || ActiveFxData == null)
+        return;
+      ActiveFxData.LiquidSurfaceStart = surfaceStart;
+      FxDataModified?.Invoke (this, null);
+    }
+
+
+    public void SetFxSurfaceNew (int surfaceNew)
+    {
+      if (HandlingSelection || ActiveFxData == null)
+        return;
+      ActiveFxData.LiquidSurfaceNew = surfaceNew;
+      FxDataModified?.Invoke (this, null);
+    }
+
+
+    public void SetFxSurfaceSpeed (int surfaceSpeed)
+    {
+      if (HandlingSelection || ActiveFxData == null)
+        return;
+      ActiveFxData.LiquidSurfaceSpeed = surfaceSpeed;
+      FxDataModified?.Invoke (this, null);
+    }
+
+
+    public void SetFxSurfaceDelay (int surfaceDelay)
+    {
+      if (HandlingSelection || ActiveFxData == null)
+        return;
+      ActiveFxData.LiquidSurfaceDelay = (byte) surfaceDelay;
+      FxDataModified?.Invoke (this, null);
+    }
+
+
+    public void SetFxType (FxType fxType)
+    {
+      if (HandlingSelection || ActiveFxData == null)
+        return;
+      ActiveFxData.FxType = (byte) fxType;
+      FxDataModified?.Invoke (this, null);
+    }
+
+
+    public void SetFxBitA (int fxBitA)
+    {
+      if (HandlingSelection || ActiveFxData == null)
+        return;
+      ActiveFxData.FxBitA = (byte) fxBitA;
+      FxDataModified?.Invoke (this, null);
+    }
+
+
+    public void SetFxBitB (int fxBitB)
+    {
+      if (HandlingSelection || ActiveFxData == null)
+        return;
+      ActiveFxData.FxBitB = (byte) fxBitB;
+      FxDataModified?.Invoke (this, null);
+    }
+
+
+    public void SetFxLiquidOptions (int liquidOptions)
+    {
+      if (HandlingSelection || ActiveFxData == null)
+        return;
+      ActiveFxData.FxBitC = (byte) liquidOptions;
+      FxDataModified?.Invoke (this, null);
+    }
+
+
+    public void SetFxPaletteOptions (int paletteOptions)
+    {
+      if (HandlingSelection || ActiveFxData == null)
+        return;
+      ActiveFxData.PaletteFxBitflags = (byte) paletteOptions;
+      FxDataModified?.Invoke (this, null);
+    }
+
+
+    public void SetFxAnimationOptions (int animationOptions)
+    {
+      if (HandlingSelection || ActiveFxData == null)
+        return;
+      ActiveFxData.TileAnimationBitflags = (byte) animationOptions;
+      FxDataModified?.Invoke (this, null);
+    }
+
+
+    public void SetFxPaletteBlend (int paletteBlend)
+    {
+      if (HandlingSelection || ActiveFxData == null)
+        return;
+      ActiveFxData.PaletteBlend = (byte) paletteBlend;
+      FxDataModified?.Invoke (this, null);
     }
 
 

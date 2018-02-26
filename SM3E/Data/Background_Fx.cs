@@ -403,7 +403,7 @@ namespace SM3E
     public const int NullSize = 2;
     public const byte TerminatorByte = 0xFF;
 
-    public bool NotNull;
+    // public bool NotNull;
     public List <Door> FxDoors;
     public List <FxData> FxDatas;
 
@@ -411,7 +411,7 @@ namespace SM3E
 
     public override int Size
     {
-      get {return NotNull ? FxDatas.Count * FxData.DefaultSize : NullSize;}
+      get {return FxDataCount > 0 ? FxDataCount * FxData.DefaultSize : NullSize;}
     }
     
     public int FxDataCount
@@ -425,7 +425,6 @@ namespace SM3E
     // Constructor.
     public Fx (): base ()
     {
-      NotNull = false;
       FxDatas = new List <FxData> ();
       FxDoors = new List <Door> ();
 
@@ -436,16 +435,12 @@ namespace SM3E
     // Constructor, copy from existing Fx.
     public Fx (Fx source): base ()
     {
-      NotNull = source.NotNull;
-      if (NotNull)
+      for (int i = 0; i < source.FxDoors.Count; i++)
       {
-        for (int i = 0; i < source.FxDoors.Count; i++)
+        if (source.FxDoors [i].ReferenceMe (this))
         {
-          if (source.FxDoors [i].ReferenceMe (this))
-          {
-            FxDoors.Add (source.FxDoors [i]);
-            FxDatas.Add (new FxData (source.FxDatas [i]));
-          }
+          FxDoors.Add (source.FxDoors [i]);
+          FxDatas.Add (new FxData (source.FxDatas [i]));
         }
       }
 
@@ -463,12 +458,10 @@ namespace SM3E
         return false;
       if (b [0] == TerminatorByte && b [1] == TerminatorByte)
       {
-        NotNull = false;
         startAddressPC = addressPC;
         return true;
       }
 
-      NotNull = true;
       FxData newFxData;
       int adPC = addressPC;
       do
@@ -489,7 +482,7 @@ namespace SM3E
     // Write data to ROM at current position (addressPC), which is updated.
     public override bool WriteToROM (Stream rom, ref int addressPC)
     {
-      if (NotNull)
+      if (FxDataCount > 0)
       {
         foreach (FxData d in FxDatas)
           d.WriteToROM (rom, ref addressPC);
@@ -507,10 +500,11 @@ namespace SM3E
     // Set default values.
     public override void SetDefault ()
     {
-      NotNull = false;
-
       FxDoors.Clear ();
       FxDatas.Clear ();
+      FxDoors.Add (null);
+      FxDatas.Add (new FxData ());
+      FxDatas [0].SetDefault ();
 
       startAddressPC = DefaultStartAddress;
     }
@@ -519,10 +513,8 @@ namespace SM3E
     public bool Connect (List <Data> Doors)
     {
       FxDoors.Clear ();
-      if (NotNull) {
-        foreach (FxData d in FxDatas)
-          FxDoors.Add ((Door) Doors.Find (x => x.StartAddressLR == d.DoorPtr));
-      }
+      foreach (FxData d in FxDatas)
+        FxDoors.Add ((Door) Doors.Find (x => x.StartAddressLR == d.DoorPtr));
       return true;
     }
 
@@ -556,22 +548,52 @@ namespace SM3E
 
 //----------------------------------------------------------------------------------------
 
-    public void DeleteDoorFx (Door d)
+    // Add new fx data.
+    public bool AddFxData (Door target)
     {
-      if (NotNull)
+      if ((FxDataCount == 0 && target != null) ||
+          (FxDataCount >  0 && target == null))
+        return false;
+      if (target == null || target.ReferenceMe (this))
       {
-        for (int i = 0; i < FxDoors.Count;)
+        FxDoors.Insert (0, target);
+        FxDatas.Insert (0, new FxData ());
+        FxDatas [0].SetDefault ();
+        return true;
+      }
+      return false;
+    }
+
+
+    // Delete all fx for given door.
+    public void DeleteFxData (Door target)
+    {
+      for (int i = 0; i < FxDoors.Count;)
+      {
+        if (FxDoors [i] == target)
         {
-          if (FxDoors [i] == d)
-          {
-            FxDoors.RemoveAt (i);
-            FxDatas.RemoveAt (i);
-          }
-          else
-            i++;
+          target.UnreferenceMe (this);
+          FxDoors.RemoveAt (i);
+          FxDatas.RemoveAt (i);
         }
+        else
+          i++;
       }
     }
+
+
+    // Delete Fx data at index.
+    public void DeleteFxData (int index)
+    {
+      if (index < 0 && index > FxDataCount)
+        return;
+      if (FxDataCount > 1 && index == FxDataCount - 1)
+        return;
+      FxDoors [index]?.UnreferenceMe (this);
+      FxDoors.RemoveAt (index);
+      FxDatas.RemoveAt (index);
+    }
+
 
   } // class Fx
 

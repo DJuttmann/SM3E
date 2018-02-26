@@ -67,6 +67,7 @@ namespace SM3E
       MyTargetRoom = null;
       MyScrollAsm = null;
       MyDoorSets = new HashSet <DoorSet> ();
+      MyReferringData = new HashSet <Data> ();
     }
 
 
@@ -206,7 +207,7 @@ namespace SM3E
         switch (d)
         {
         case Fx f:
-          f.DeleteDoorFx (this);
+          f.DeleteFxData (this);
           break;
         default:
           break;

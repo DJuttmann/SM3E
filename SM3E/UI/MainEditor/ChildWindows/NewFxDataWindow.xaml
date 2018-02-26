@@ -1,0 +1,27 @@
+﻿<Window x:Class="SM3E.UI.NewFxDataWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SM3E.UI"
+        mc:Ignorable="d"
+        Title="New effects data" Height="300" Width="300" WindowStartupLocation="CenterOwner">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="25"/>
+      <RowDefinition Height="1*"/>
+      <RowDefinition Height="25"/>
+      <RowDefinition Height="8"/>
+    </Grid.RowDefinitions>
+    <Label Grid.Row="0" Content="Select Door" HorizontalAlignment="Stretch" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
+    <ListBox Grid.Row="1" x:Name="DoorSelect" Margin="8,4,8,4" SelectionChanged="DoorSelect_SelectionChanged"/>
+    <Grid Grid.Row="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*"/>
+        <ColumnDefinition Width="1*"/>
+      </Grid.ColumnDefinitions>
+      <Button Grid.Column="0" Margin="8,0,4,0" Height="20" Content="Cancel" Click="Cancel_Click"/>
+      <Button Grid.Column="1" Margin="4,0,8,0" Height="20" Content="Create" x:Name="CreateButton" Click="Create_Click"/>
+    </Grid>
+  </Grid>
+</Window>

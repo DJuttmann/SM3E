@@ -156,6 +156,9 @@
     <Compile Include="UI\LoadSave\NewProjectWindow.xaml.cs">
       <DependentUpon>NewProjectWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\MainEditor\ChildWindows\NewFxDataWindow.xaml.cs">
+      <DependentUpon>NewFxDataWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\UITools\HexBox.xaml.cs">
       <DependentUpon>HexBox.xaml</DependentUpon>
     </Compile>
@@ -260,6 +263,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\LoadSave\NewProjectWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\MainEditor\ChildWindows\NewFxDataWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

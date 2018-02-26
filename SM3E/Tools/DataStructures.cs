@@ -63,6 +63,16 @@ namespace SM3E
     }
 
 
+    // Remove the first instance of an item
+    public bool Remove (T item)
+    {
+      for (int i = 0; i < Data.Length; i++)
+        if (Data [i].Remove (item))
+          return true;
+      return false;
+    }
+
+
 //========================================================================================
 // class Enumerator
 
