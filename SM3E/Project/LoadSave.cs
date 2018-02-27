@@ -25,6 +25,7 @@ namespace SM3E
 
     public bool ProjectLoaded {get; private set;}
 
+
 //========================================================================================
 // Reading ROM data.
 
@@ -32,13 +33,28 @@ namespace SM3E
     // Read all data from the ROM, guided by data from the projectfile.
     public void Load (string projectFile)
     {
+      List <Tuple <int, int, string>> rooms;
+      List <Tuple <int, int, string>> doorAsms;
+      List <Tuple <int, int, string>> setupAsms;
+      List <Tuple <int, int, string>> mainAsms;
+      List <Tuple <int, string>> backgrounds;
+
+      ProjectStartLoading?.Invoke (this, null);
       ProjectPath = Tools.FolderFromPath (projectFile);
       ProjectFileName = Tools.FilenameFromPath (projectFile);
-      ReadProjectFileXml (out List <Tuple <int, int, string>> rooms,
-                          out List <Tuple <int, int, string>> doorAsms,
-                          out List <Tuple <int, int, string>> setupAsms,
-                          out List <Tuple <int, int, string>> mainAsms,
-                          out List <Tuple <int, string>> backgrounds);
+      try
+      {
+        ReadProjectFileXml (out rooms,
+                            out doorAsms,
+                            out setupAsms,
+                            out mainAsms,
+                            out backgrounds);
+      }
+      catch (ProjectLoadException ex)
+      {
+        ProjectFailedLoading?.Invoke (this, new LoadFailEventArgs (ex.ExceptionType));
+        return;
+      }
 
       // Read uncompressed data from ROM.
       ReadRooms (CurrentRom, rooms, out List <RoomState> roomStates);
@@ -73,6 +89,14 @@ namespace SM3E
       Connect (roomStates);
       LoadRoomTiles (0); //
 
+
+      ProjectLoaded = true;
+      ProjectFinishedLoading?.Invoke (this, null);
+    }
+
+
+    public void StartProject ()
+    {
       // Raise events.
       TileSetListChanged?.Invoke (this, new ListLoadEventArgs (-1));
       AreaListChanged?.Invoke (this, new ListLoadEventArgs (0));
@@ -85,8 +109,6 @@ namespace SM3E
       MapPaletteSelected?.Invoke (this, null);
       TileIndex = 0;
       BtsType = 0;
-
-      ProjectLoaded = true;
     }
 
 
@@ -108,15 +130,34 @@ namespace SM3E
       Stream stream;
       try {stream = new FileStream (ProjectPath + ProjectFileName, FileMode.Open, 
                                     FileAccess.Read, FileShare.Read);}
-      catch {return false;}
+      catch
+      {
+        throw new ProjectLoadException (ProjectLoadException.Type.ProjectFileNotAccessible,
+                                        ProjectPath + ProjectFileName);
+      }
       var reader = XmlReader.Create (stream);
       XElement root = XElement.Load (reader);
       stream.Close ();
 
       RomFileName = root.Attribute ("rom")?.Value;
       if (root.Name != "Project" || RomFileName == null)
-        return false;
-      CurrentRom = new Rom (ProjectPath + RomFileName);
+        throw new ProjectLoadException (ProjectLoadException.Type.RomFileNotSpecified,
+                                        ProjectPath + ProjectFileName);
+      try
+      {
+        CurrentRom = new Rom (ProjectPath + RomFileName);
+      }
+      catch (FileNotFoundException)
+      {
+        throw new ProjectLoadException (ProjectLoadException.Type.RomFileNotFound,
+                                        ProjectPath + RomFileName);
+      }
+      catch
+      {
+        throw new ProjectLoadException (ProjectLoadException.Type.RomFileNotAccessible,
+                                        ProjectPath + RomFileName);
+      }
+
       foreach (XElement x in root.Elements ())
       {
         switch (x.Name.ToString ())
@@ -868,5 +909,69 @@ namespace SM3E
     }
 
   } // partial class project
+
+
+//========================================================================================
+// Exceptions
+
+
+  public class ProjectLoadException: Exception
+  {
+    public enum Type
+    {
+      ProjectFileNotAccessible,
+      RomFileNotSpecified,
+      RomFileNotFound,
+      RomFileNotAccessible,
+    }
+
+    public Type ExceptionType;
+    public string Filename = string.Empty;
+
+
+    public ProjectLoadException () {}
+
+    
+    public ProjectLoadException (Type type, string filename):
+      base (GenerateMessage(type, filename))
+    {
+      ExceptionType = type;
+      Filename = filename;
+    }
+
+
+    public ProjectLoadException (Type type, string filename, Exception inner):
+      base (GenerateMessage(type, filename), inner)
+    {
+      ExceptionType = type;
+      Filename = filename;
+    }
+
+
+    public static string GenerateMessage (Type t, string filename)
+    {
+      string message;
+      switch (t)
+      {
+      case Type.ProjectFileNotAccessible:
+        message = "Project file is not accessible:" + Environment.NewLine + filename;
+        break;
+      case Type.RomFileNotSpecified:
+        message = "ROM file not specified in project file:" + Environment.NewLine + filename;
+        break;
+      case Type.RomFileNotFound:
+        message = "ROM file not found:" + Environment.NewLine + filename;
+        break;
+      case Type.RomFileNotAccessible:
+        message = "ROM file is not accessible:" + Environment.NewLine + filename;
+        break;
+      default:
+        message = "Unknown error loading file:" + Environment.NewLine + filename;
+        break;
+      }
+      return message;
+    }
+
+  }
 
 }

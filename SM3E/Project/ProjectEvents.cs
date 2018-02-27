@@ -15,6 +15,12 @@ namespace SM3E
 //========================================================================================
 // Events.
 
+    // Load and close
+    public event EventHandler ProjectStartLoading;
+    public event EventHandler ProjectFinishedLoading;
+    public event LoadFailEventHandler ProjectFailedLoading;
+    public event EventHandler ProjectClosed;
+
     // Area/room/state/... list changes.
     public event ListLoadEventHandler AreaListChanged;
     public event ListLoadEventHandler RoomListChanged;
@@ -100,6 +106,21 @@ namespace SM3E
     public int ScreenYmax;
 
     public LevelDataEventArgs () {}
+  }
+
+
+  // Delegate for errors during rom loading.
+  public delegate void LoadFailEventHandler (object sender, LoadFailEventArgs e);
+
+  // Contains type of failure.
+  public class LoadFailEventArgs: EventArgs
+  {
+    public ProjectLoadException.Type LoadFailType;
+
+    public LoadFailEventArgs (ProjectLoadException.Type type)
+    {
+      LoadFailType = type;
+    }
   }
 
 }

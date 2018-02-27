@@ -24,6 +24,11 @@ namespace SM3E.UI
     Project MainProject;
     FileInfo [] TemplateFiles;
 
+    public string TemplateFileName = String.Empty;
+    public string ProjectPath = String.Empty;
+    public string ProjectFileName = String.Empty;
+    public string RomFileName = String.Empty;
+
 
     public NewProjectWindow (Project p)
     {
@@ -81,12 +86,16 @@ namespace SM3E.UI
       if (TemplateSelect.SelectedIndex == -1)
         return;
       FileInfo loadTemplate = TemplateFiles [TemplateSelect.SelectedIndex];
-      MainProject.Load (loadTemplate.FullName);
 
+      TemplateFileName = loadTemplate.FullName;
+      ProjectPath = Tools.FolderFromPath (PathInput.Text);
+      ProjectFileName = Tools.FilenameFromPath (PathInput.Text);
+      RomFileName = RomFileInput.Text;
 
-      MainProject.ProjectPath = Tools.FolderFromPath (PathInput.Text);
-      MainProject.ProjectFileName = Tools.FilenameFromPath (PathInput.Text);
-      MainProject.RomFileName = RomFileInput.Text;
+      // MainProject.Load (loadTemplate.FullName);
+      // MainProject.ProjectPath = Tools.FolderFromPath (PathInput.Text);
+      // MainProject.ProjectFileName = Tools.FilenameFromPath (PathInput.Text);
+      // MainProject.RomFileName = RomFileInput.Text;
 
       DialogResult = true;
       Close ();

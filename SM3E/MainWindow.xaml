@@ -29,7 +29,13 @@
       </MenuItem>
     </Menu>
 
-    <ui:Editor x:Name="EditorView" Grid.Row="1"/>
+    <ui:Editor x:Name="EditorView" Grid.Row="1" IsEnabled="False"/>
+
+    <Grid x:Name="LoadIndicator" Grid.Row="1" Width="200" Height="60" Background="#FFFFFF" Visibility="Hidden">
+      <Border BorderBrush="#000000" BorderThickness="2">
+        <Label x:Name="LoadText" HorizontalAlignment="Left" Margin="30,0,0,0" VerticalAlignment="Center" Content="Loading..." FontSize="30"/>
+      </Border>
+    </Grid>
     
   </Grid>
 </Window>
