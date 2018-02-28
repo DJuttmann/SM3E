@@ -57,6 +57,8 @@ namespace SM3E
     private double PanningOriginY;
     private double PanningStartX;
     private double PanningStartY;
+//    public double CenterX {get; private set;}
+//    public double CenterY {get; private set;}
 
     public event ViewportEventHandler ViewportChanged;
     public event TileViewerMouseEventHandler MouseDown;
@@ -223,6 +225,31 @@ namespace SM3E
       Parent.ScrollToHorizontalOffset ((x + 0.5) * w - Parent.ViewportWidth / 2);
       Parent.ScrollToVerticalOffset ((y + 0.5) * h - Parent.ViewportHeight / 2);
     }
+
+
+    // Get center of view.
+    public void GetCenter (out double x, out double y)
+    {
+      x = Parent.ViewportWidth / 2;
+      y = Parent.ViewportHeight / 2;
+      if (Parent != null)
+      {
+        x += Parent.HorizontalOffset;
+        y += Parent.VerticalOffset;
+      }
+      x /= TileSize;
+      y /= TileSize;
+    }
+
+
+    // Get center of view, int version.
+    public void GetCenter (out int x, out int y)
+    {
+      GetCenter (out double xd, out double yd);
+      x = Convert.ToInt32 (Math.Floor (xd));
+      y = Convert.ToInt32 (Math.Floor (yd));
+    }
+
 
 
 //========================================================================================

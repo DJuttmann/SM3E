@@ -7,7 +7,7 @@
     xmlns:ui="clr-namespace:SM3E.UI"
     mc:Ignorable="d"
     WindowStartupLocation="CenterScreen"
-    Title="SM&#x00B3;E" Height="750" Width="1000" Closed="MainWindow_Close">
+    Title="SM&#x00B3;E" Height="750" Width="1000" Closing="MainWindow_Close">
 
 
   <!-- MAIN GRID -->
@@ -21,13 +21,18 @@
     <!-- MENU BAR -->
     <Menu HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0">
       <MenuItem Header="_File">
-        <MenuItem Header="_New Project" Click="NewProject_Click"/>
-        <MenuItem Header="_Open" Click="OpenProject_Click"/>
-        <MenuItem Header="_Save" Click="SaveProject_Click"/>
+        <MenuItem x:Name="MenuNew"   Header="_New Project" Click="NewProject_Click"/>
+        <MenuItem x:Name="MenuOpen"  Header="_Open" Click="OpenProject_Click"/>
+        <MenuItem x:Name="MenuSave"  Header="_Save" Click="SaveProject_Click" IsEnabled="False"/>
+        <MenuItem x:Name="MenuClose" Header="_Close Project" Click="CloseProject_Click" IsEnabled="False"/>
+        <Separator/>
+        <MenuItem Header="_Quit" Click="Quit_Click"/>
       </MenuItem>
-      <MenuItem Header="_Settings">
+      <MenuItem Header="_Edit">
+        <MenuItem x:Name="MenuSaveStations" Header="_Save Stations" Click="SaveStations_Click" IsEnabled="false"/>
       </MenuItem>
     </Menu>
+    <Label x:Name="StatusMessage" HorizontalAlignment="Stretch" HorizontalContentAlignment="Right" Margin="200,-5,0,-5" Foreground="#666666"/>
 
     <ui:Editor x:Name="EditorView" Grid.Row="1" IsEnabled="False"/>
 

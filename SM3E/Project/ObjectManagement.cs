@@ -118,6 +118,7 @@ namespace SM3E
         HandlingSelection = true;
         RoomStateListChanged?.Invoke (this, new ListLoadEventArgs (RoomStateIndex));
         HandlingSelection = false;
+        ChangesMade = true;
       }
     }
 
@@ -143,6 +144,7 @@ namespace SM3E
         HandlingSelection = true;
         RoomStateListChanged?.Invoke (this, new ListLoadEventArgs (RoomStateIndex));
         HandlingSelection = false;
+        ChangesMade = true;
       }
     }
 
@@ -166,6 +168,7 @@ namespace SM3E
       RoomStateListChanged?.Invoke (this, new ListLoadEventArgs (RoomStateIndex));
       RoomStateDataModified?.Invoke (this, null);
       HandlingSelection = false;
+      ChangesMade = true;
     }
 
 
@@ -237,6 +240,7 @@ namespace SM3E
         HandlingSelection = true;
         PlmListChanged?.Invoke (this, new ListLoadEventArgs (PlmIndex));
         HandlingSelection = false;
+        ChangesMade = true;
       }
     }
 
@@ -255,6 +259,7 @@ namespace SM3E
         HandlingSelection = true;
         PlmListChanged?.Invoke (this, new ListLoadEventArgs (PlmIndex));
         HandlingSelection = false;
+        ChangesMade = true;
       }
     }
 
@@ -357,6 +362,7 @@ namespace SM3E
         HandlingSelection = true;
         EnemyListChanged?.Invoke (this, new ListLoadEventArgs (EnemyIndex));
         HandlingSelection = false;
+        ChangesMade = true;
       }
     }
 
@@ -374,6 +380,7 @@ namespace SM3E
         HandlingSelection = true;
         EnemyListChanged?.Invoke (this, new ListLoadEventArgs (EnemyIndex));
         HandlingSelection = false;
+        ChangesMade = true;
       }
     }
 
@@ -453,6 +460,7 @@ namespace SM3E
         HandlingSelection = true;
         EnemyGfxListChanged?.Invoke (this, new ListLoadEventArgs (EnemyGfxIndex));
         HandlingSelection = false;
+        ChangesMade = true;
       }
     }
 
@@ -482,6 +490,7 @@ namespace SM3E
         HandlingSelection = true;
         EnemyGfxListChanged?.Invoke (this, new ListLoadEventArgs (EnemyGfxIndex));
         HandlingSelection = false;
+        ChangesMade = true;
       }
     }
 
@@ -579,6 +588,7 @@ namespace SM3E
       DoorSets.Add (newDoorSet);
       ForceSelectRoom (Rooms [AreaIndex].Count - 1);
       ForceAddRoomState (StateType.Standard);
+      ChangesMade = true;
       return true;
     }
 
@@ -597,6 +607,7 @@ namespace SM3E
         ForceDeleteRoomState ();
       }
       DeleteData (ActiveRoom);
+      ChangesMade = true;
       return true;
     }
 
@@ -614,6 +625,7 @@ namespace SM3E
       }
       DeleteData (ActiveRoom.MyDoorSet);
       ActiveRoom.MyDoorSet = null;
+      ChangesMade = true;
       return true;
     }
 
@@ -628,6 +640,7 @@ namespace SM3E
       newDoor.MyDoorSets.Add (ActiveRoom.MyDoorSet);
       ActiveRoom.MyDoorSet.MyDoors.Add (newDoor);
       ActiveRoom.MyDoorSet.DoorPtrs.Add (0);
+      ChangesMade = true;
       return true;
     }
 
@@ -643,6 +656,7 @@ namespace SM3E
         DeleteData (ActiveDoor);
       ActiveRoom.MyDoorSet.MyDoors.Remove (ActiveDoor);
       ActiveRoom.MyDoorSet.DoorPtrs.RemoveAt (DoorIndex);
+      ChangesMade = true;
       return true;
     }
 
@@ -687,6 +701,7 @@ namespace SM3E
       EnemySets.Add (newState.MyEnemySet);
       EnemyGfxs.Add (newState.MyEnemyGfx);
       Fxs.Add (newState.MyFx);
+      ChangesMade = true;
       return true;
     }
 
@@ -707,6 +722,7 @@ namespace SM3E
       ActiveRoomState.MyRoom = null;
       ActiveRoom.RoomStateHeaders.RemoveAt (RoomStateIndex);
       ActiveRoom.RoomStates.RemoveAt (RoomStateIndex);
+      ChangesMade = true;
       return true;
     }
 
@@ -721,6 +737,7 @@ namespace SM3E
       if (ActiveLevelData.MyRoomStates.Count == 0)
         DeleteData (ActiveLevelData);
       ActiveRoomState.MyLevelData = null;
+      ChangesMade = true;
       return true;
     }
 
@@ -735,6 +752,7 @@ namespace SM3E
       if (ActiveRoomState.MyScrollSet.MyRoomStates.Count == 0)
         DeleteData (ActiveRoomState.MyScrollSet);
       ActiveRoomState.MyScrollSet = null;
+      ChangesMade = true;
       return true;
     }
 
@@ -756,6 +774,7 @@ namespace SM3E
         DeleteData (ActivePlmSet);
       }
       ActiveRoomState.MyPlmSet = null;
+      ChangesMade = true;
       return true;
     }
 
@@ -777,6 +796,7 @@ namespace SM3E
         DeleteData (ActiveEnemySet);
       }
       ActiveRoomState.MyEnemySet = null;
+      ChangesMade = true;
       return true;
     }
 
@@ -791,6 +811,7 @@ namespace SM3E
       if (ActiveRoomState.MyEnemyGfx.MyRoomStates.Count == 0)
         DeleteData (ActiveRoomState.MyEnemyGfx);
       ActiveRoomState.MyEnemyGfx = null;
+      ChangesMade = true;
       return true;
     }
 
@@ -806,6 +827,7 @@ namespace SM3E
       if (ActiveRoomState.MyFx.MyRoomStates.Count == 0)
         DeleteData (ActiveRoomState.MyFx);
       ActiveRoomState.MyFx = null;
+      ChangesMade = true;
       return true;
     }
 
@@ -819,6 +841,7 @@ namespace SM3E
       ActiveRoomState.MyBackground.MyRoomStates.Remove (ActiveRoomState);
       // Do not delete background if unreferenced
       ActiveRoomState.MyBackground = null;
+      ChangesMade = true;
       return true;
     }
 
@@ -835,6 +858,7 @@ namespace SM3E
       newPlm.PosX = (byte) col;
       newPlm.PosY = (byte) row;
       ActivePlmSet.Plms.Add (newPlm);
+      ChangesMade = true;
       return true;
     }
 
@@ -845,6 +869,7 @@ namespace SM3E
         return false;
       ForceRemoveScrollPlmData ();
       ActivePlmSet.Plms.RemoveAt (PlmIndex);
+      ChangesMade = true;
       return true;
     }
 
@@ -857,6 +882,7 @@ namespace SM3E
         newData.MyPlms.Add (ActivePlm);
         ScrollPlmDatas.Add (newData);
         ActivePlm.MyScrollPlmData = null;
+        ChangesMade = true;
         return true;
       }
       return false;
@@ -873,6 +899,7 @@ namespace SM3E
         if (ActivePlm.MyScrollPlmData.MyPlms.Count == 0)
           DeleteData (ActivePlm.MyScrollPlmData);
         ActivePlm.MyScrollPlmData = null;
+        ChangesMade = true;
         return true;
       }
       return false;
@@ -890,6 +917,7 @@ namespace SM3E
       newEnemy.PosX = x;
       newEnemy.PosY = y;
       ActiveEnemySet.Enemies.Add (newEnemy);
+      ChangesMade = true;
       return true;
     }
 
@@ -899,6 +927,7 @@ namespace SM3E
       if (ActiveEnemySet == null || ActiveEnemy == null)
         return false;
       ActiveEnemySet.Enemies.RemoveAt (EnemyIndex);
+      ChangesMade = true;
       return true;
     }
 
@@ -912,6 +941,7 @@ namespace SM3E
       ActiveRoomState.MyEnemyGfx.EnemyIDs.Add (ActiveEnemyType.EnemyID);
       ActiveRoomState.MyEnemyGfx.Palettes.Add (0x0000);
       ActiveRoomState.MyEnemyGfx.MyEnemyTypes.Add (ActiveEnemyType);
+      ChangesMade = true;
       return true;
     }
 
@@ -923,6 +953,7 @@ namespace SM3E
       ActiveRoomState.MyEnemyGfx.EnemyIDs.RemoveAt (EnemyGfxIndex);
       ActiveRoomState.MyEnemyGfx.Palettes.RemoveAt (EnemyGfxIndex);
       ActiveRoomState.MyEnemyGfx.MyEnemyTypes.RemoveAt (EnemyGfxIndex);
+      ChangesMade = true;
       return true;
     }
 
@@ -936,6 +967,7 @@ namespace SM3E
         ActiveFx.AddFxData (null);
       else
         ActiveFx.AddFxData (ActiveRoom.MyIncomingDoors.ToList () [doorIndex]);
+      ChangesMade = true;
       return true;
     }
 
@@ -945,6 +977,7 @@ namespace SM3E
       if (ActiveFx == null || FxDataIndex < 0 || FxDataIndex >= ActiveFx.FxDataCount)
         return false;
       ActiveFx.DeleteFxData (FxDataIndex);
+      ChangesMade = true;
       return true;
     }
 
@@ -983,8 +1016,8 @@ namespace SM3E
       case Fx d:
         Fxs           .Remove (d);
         break;
-      case SaveRoom d:
-        SaveRooms     .Remove (d);
+      case SaveStation d:
+        SaveStations     .Remove (d);
         break;
       case LevelData d:
         LevelDatas    .Remove (d);
@@ -1021,6 +1054,7 @@ namespace SM3E
       default:
         break;
       }
+      ChangesMade = true;
     }
 
   } // partial class Project

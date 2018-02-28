@@ -10,15 +10,17 @@ namespace SM3E
 {
 
 //========================================================================================
-// CLASS SAVE ROOM 
+// CLASS SAVE STATION 
 //========================================================================================
 
 
-  class SaveRoom: Data, IRepointable
+  class SaveStation: Data, IRepointable
   {
-    public const int SaveRoomsAddress = 0x0044C5; // Address where save rooms are stored
+    public const int SaveStationsAddress = 0x0044C5; // Address where save stations are stored
     public const int DefaultSize = 14;
     public const int Count = 151;
+    public static readonly int [] AreaOffsets = 
+      new int [] {0, 19, 38, 61, 79, 99, 117, 134, Count};
 
     public int RoomPtr; // LoROM address
     public int DoorPtr; // LoROM address
@@ -38,7 +40,7 @@ namespace SM3E
 
 
     // Constructor
-    public SaveRoom (): base ()
+    public SaveStation (): base ()
     {
       RoomPtr = 0;
       DoorPtr = 0;
@@ -130,6 +132,25 @@ namespace SM3E
         RoomPtr = MyRoom.StartAddressLR;
       if (MyDoor != null)
         DoorPtr = MyDoor.StartAddressLR;
+    }
+
+//----------------------------------------------------------------------------------------
+
+    public void SetRoom (Room target)
+    {
+      MyRoom?.UnreferenceMe (this);
+      MyRoom = null;
+      if (target?.ReferenceMe (this) ?? false)
+        MyRoom = target;
+    }
+
+
+    public void SetDoor (Door target)
+    {
+      MyDoor?.UnreferenceMe (this);
+      MyDoor = null;
+      if (target?.ReferenceMe (this) ?? false)
+        MyDoor = target;
     }
 
   } // class SaveRoom

@@ -15,10 +15,12 @@ namespace SM3E
 //========================================================================================
 // Events.
 
-    // Load and close
+    // Load and save
     public event EventHandler ProjectStartLoading;
     public event EventHandler ProjectFinishedLoading;
     public event LoadFailEventHandler ProjectFailedLoading;
+    public event EventHandler ProjectChanged;
+    public event EventHandler ProjectSaved;
     public event EventHandler ProjectClosed;
 
     // Area/room/state/... list changes.

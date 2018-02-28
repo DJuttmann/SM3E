@@ -24,6 +24,8 @@ namespace SM3E.UI
 
     bool QuietSelect = false;
 
+    public event EventHandler AddEnemy;
+
 
     // Constructor.
     public EnemyLayerTab ()
@@ -190,7 +192,7 @@ namespace SM3E.UI
 
     private void AddEnemy_Click (object sender, RoutedEventArgs e)
     {
-      MainProject.AddEnemy (64, 64);
+      AddEnemy?.Invoke (this, null);
     }
 
 

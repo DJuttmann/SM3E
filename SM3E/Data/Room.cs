@@ -549,7 +549,7 @@ namespace SM3E
 //========================================================================================
 
 
-  class Room: Data, IRepointable, IReferenceableBy <Door>
+  class Room: Data, IRepointable, IReferenceableBy <Door>, IReferenceableBy <SaveStation>
   {
     public const int HeaderSize = 11;
 
@@ -570,6 +570,7 @@ namespace SM3E
 
     public DoorSet MyDoorSet;
     public HashSet <Door> MyIncomingDoors;
+    public HashSet <SaveStation> MySaveStations;
 
     public override int Size
     {
@@ -614,6 +615,7 @@ namespace SM3E
       RoomStates = new List <RoomState> ();
       MyDoorSet = null;
       MyIncomingDoors = new HashSet <Door> ();
+      MySaveStations = new HashSet <SaveStation> ();
     }
 
 
@@ -794,10 +796,26 @@ namespace SM3E
     }
 
 
+    public bool ReferenceMe (SaveStation source)
+    {
+      MySaveStations.Add (source);
+      return true;
+    }
+
+
+    public int UnreferenceMe (SaveStation source)
+    {
+      MySaveStations.Remove (source);
+      return MySaveStations.Count;
+    }
+
+
     public void DetachAllReferences ()
     {
       foreach (Door d in MyIncomingDoors)
         d.SetDestination (null);
+      foreach (SaveStation s in MySaveStations)
+        s.SetRoom (null);
     }
 
 //----------------------------------------------------------------------------------------

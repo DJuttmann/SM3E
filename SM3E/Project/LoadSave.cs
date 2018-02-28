@@ -23,16 +23,31 @@ namespace SM3E
     public string RomFileName;
     public string ProjectFileName;
 
-    public bool ProjectLoaded {get; private set;}
+    public bool ProjectLoaded {get; private set;} = false;
+
+    private bool changesMade = false;
+    public bool ChangesMade
+    {
+      get {return changesMade;}
+      private set
+      {
+        changesMade = value;
+        if (changesMade)
+          ProjectChanged?.Invoke (this, null);
+      }
+    }
 
 
 //========================================================================================
-// Reading ROM data.
+// Load and close project.
 
    
     // Read all data from the ROM, guided by data from the projectfile.
     public void Load (string projectFile)
     {
+      if (ProjectLoaded)
+        Close ();
+
       List <Tuple <int, int, string>> rooms;
       List <Tuple <int, int, string>> doorAsms;
       List <Tuple <int, int, string>> setupAsms;
@@ -91,11 +106,12 @@ namespace SM3E
 
 
       ProjectLoaded = true;
+      ChangesMade = false;
       ProjectFinishedLoading?.Invoke (this, null);
     }
 
 
-    public void StartProject ()
+    public void Start ()
     {
       // Raise events.
       TileSetListChanged?.Invoke (this, new ListLoadEventArgs (-1));
@@ -110,6 +126,54 @@ namespace SM3E
       TileIndex = 0;
       BtsType = 0;
     }
+
+
+    public void Close ()
+    {
+      if (!ProjectLoaded)
+        return;
+
+      Rooms         .Clear ();
+      DoorSets      .Clear ();
+      Doors         .Clear ();
+      ScrollSets    .Clear ();
+      PlmSets       .Clear ();
+      ScrollPlmDatas.Clear ();
+      Backgrounds   .Clear ();
+      Fxs           .Clear ();
+      SaveStations     .Clear ();
+      LevelDatas    .Clear ();
+      EnemySets     .Clear ();
+      EnemyGfxs     .Clear ();
+      ScrollAsms    .Clear ();
+      DoorAsms      .Clear ();
+      SetupAsms     .Clear ();
+      MainAsms      .Clear ();
+      TileSets      .Clear ();
+      TileTables    .Clear ();
+      TileSheets    .Clear ();
+      Palettes      .Clear ();
+      AreaMaps      .Clear ();
+      PlmTypes      .Clear ();
+      EnemyTypes    .Clear ();
+
+      CurrentRom = null;
+      ProjectPath = String.Empty;
+      RomFileName = String.Empty;
+      ProjectFileName = String.Empty;
+
+      RoomTiles.Clear ();
+      MapTiles.Clear ();
+      BackgroundImage = null;
+
+      ChangesMade = false;
+      ProjectLoaded = false;
+      ProjectClosed?.Invoke (this, null);
+    }
+
+
+//========================================================================================
+// Reading ROM data.
 
 
     // Read the project file in Xml format.
@@ -287,7 +351,7 @@ namespace SM3E
         p.Connect (ScrollPlmDatas, PlmTypes);
       foreach (Fx f in Fxs)
         f.Connect (Doors);
-      foreach (SaveRoom s in SaveRooms)
+      foreach (SaveStation s in SaveStations)
         s.Connect (RoomsList, Doors);
       foreach (EnemySet e in EnemySets)
         e.Connect (EnemyTypes);
@@ -463,12 +527,12 @@ namespace SM3E
     // Read all save rooms from ROM.
     private void ReadSaveRooms (Rom rom)
     {
-      int address = SaveRoom.SaveRoomsAddress;
-      SaveRooms.Clear ();
-      for (int n = 0; n < SaveRoom.Count; n++) {
-        SaveRooms.Add (new SaveRoom ());
-        SaveRooms [n].ReadFromROM (rom, address);
-        address += SaveRoom.DefaultSize;
+      int address = SaveStation.SaveStationsAddress;
+      SaveStations.Clear ();
+      for (int n = 0; n < SaveStation.Count; n++) {
+        SaveStations.Add (new SaveStation ());
+        SaveStations [n].ReadFromROM (rom, address);
+        address += SaveStation.DefaultSize;
       }
     }
 
@@ -852,13 +916,6 @@ namespace SM3E
     {
       if (!ProjectLoaded)
         return;
-
-      // [wip] TESTING ONLY - don't overwrite source files.
-      // Tools.TrimFileExtension (ref RomFileName, out string extension);
-      // RomFileName += "_out.sfc";
-      // Tools.TrimFileExtension (ref ProjectFileName, out extension);
-      // ProjectFileName += "_out.xml";
-      // [wip] END OF TEST
       
       ReallocateAll ();
       RepointAll ();
@@ -906,6 +963,8 @@ namespace SM3E
       output.Close ();
 
       WriteProjectFileXml ();
+      ChangesMade = false;
+      ProjectSaved?.Invoke (this, null);
     }
 
   } // partial class project

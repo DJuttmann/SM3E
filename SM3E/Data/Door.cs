@@ -22,7 +22,8 @@ namespace SM3E
 //========================================================================================
 
 
-  class Door: Data, IRepointable, IReferenceableBy <DoorSet>, IReferenceableBy <Fx>
+  class Door: Data, IRepointable, IReferenceableBy <DoorSet>, IReferenceableBy <Fx>,
+                                  IReferenceableBy <SaveStation>
   {
     public const int DefaultSize = 12;
     public const int ElevatorPadSize = 2;
@@ -198,6 +199,20 @@ namespace SM3E
     }
 
 
+    public bool ReferenceMe (SaveStation source)
+    {
+      MyReferringData.Add (source);
+      return true;
+    }
+
+
+    public int UnreferenceMe (SaveStation source)
+    {
+      MyReferringData.Remove (source);
+      return MyReferringData.Count;
+    }
+
+
     public void DetachAllReferences ()
     {
       foreach (DoorSet d in MyDoorSets)
@@ -208,6 +223,9 @@ namespace SM3E
         {
         case Fx f:
           f.DeleteFxData (this);
+          break;
+        case SaveStation s:
+          s.SetDoor (null);
           break;
         default:
           break;
@@ -305,6 +323,17 @@ namespace SM3E
       MyScrollAsm = null;
       if (target?.ReferenceMe (this) ?? false)
         MyDoorAsm = target;
+    }
+
+
+    // Sets the area transition bit based on the door's area and its target's area.
+    public void ValidateAreaTransitionBit ()
+    {
+      if (MyDoorSets.Count == 0)
+        return;
+      DoorSet s = MyDoorSets.GetEnumerator ().Current;
+      if (s?.MyRoom?.Area != MyTargetRoom?.Area)
+        SetAreaTransitionBit (true);
     }
 
   } // Class Door

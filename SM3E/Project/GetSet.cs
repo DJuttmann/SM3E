@@ -152,6 +152,7 @@ namespace SM3E
         ActiveRoom.Height = (byte) height;
         RoomPositionChanged?.Invoke (this, null);
         LevelDataSelected (this, null); // stronger than modified because of size change
+        ChangesMade = true;
       }
     }
 
@@ -350,6 +351,7 @@ namespace SM3E
         ScreenYmax = rowMax / 16
       };
       LevelDataModified?.Invoke (this, e);
+      ChangesMade = true;
     }
 
 
@@ -379,6 +381,7 @@ namespace SM3E
         ScreenYmax = rowMax / 16
       };
       LevelDataModified?.Invoke (this, e);
+      ChangesMade = true;
     }
 
 
@@ -408,6 +411,7 @@ namespace SM3E
         ScreenYmax = rowMax / 16
       };
       LevelDataModified?.Invoke (this, e);
+      ChangesMade = true;
     }
 
 
@@ -467,6 +471,7 @@ namespace SM3E
         ScreenYmax = yMax
       };
       LevelDataModified?.Invoke (this, e);
+      ChangesMade = true;
     }
 
 
@@ -499,6 +504,7 @@ namespace SM3E
       ActivePlm.PosY = (byte) y;
       LevelDataModified?.Invoke (this, new LevelDataEventArgs () {AllScreens = true});
       PlmModified?.Invoke (this, null);
+      ChangesMade = true;
     }
 
 
@@ -529,6 +535,7 @@ namespace SM3E
         byte b0 = (byte) index;
         byte b1 = (byte) properties;
         ActivePlm.MainVariable = Tools.ConcatBytes (b0, b1);
+        ChangesMade = true;
       }
     }
 
@@ -559,6 +566,7 @@ namespace SM3E
       ActiveEnemy.PosY = (int) Math.Round (y * 16.0);
       LevelDataModified?.Invoke (this, new LevelDataEventArgs () {AllScreens = true});
       EnemyModified?.Invoke (this, null);
+      ChangesMade = true;
     }
 
 
@@ -570,6 +578,7 @@ namespace SM3E
       ActiveEnemy.PosY += (int) Math.Round (dy * 16.0);
       LevelDataModified?.Invoke (this, new LevelDataEventArgs () {AllScreens = true});
       EnemyModified?.Invoke (this, null);
+      ChangesMade = true;
     }
 
 
@@ -590,6 +599,7 @@ namespace SM3E
         ActiveEnemy.PosY = y;
         LevelDataModified?.Invoke (this, new LevelDataEventArgs () {AllScreens = true});
         EnemyModified?.Invoke (this, null);
+        ChangesMade = true;
       }
     }
 
@@ -615,6 +625,7 @@ namespace SM3E
       ActiveEnemy.Tilemaps = tilemaps;
       ActiveEnemy.Speed = speed;
       ActiveEnemy.Speed2 = speed2;
+      ChangesMade = true;
     }
 
 
@@ -633,7 +644,10 @@ namespace SM3E
     {
       EnemyGfx e = ActiveRoomState?.MyEnemyGfx;
       if (e != null && EnemyGfxIndex >= 0 && EnemyGfxIndex < e.EnemyGfxCount)
+      {
         e.Palettes [EnemyGfxIndex] = (int) palette;
+        ChangesMade = true;
+      }
     }
 
 
@@ -690,6 +704,7 @@ namespace SM3E
         return;
       ActiveFxData.LiquidSurfaceStart = surfaceStart;
       FxDataModified?.Invoke (this, null);
+      ChangesMade = true;
     }
 
 
@@ -699,6 +714,7 @@ namespace SM3E
         return;
       ActiveFxData.LiquidSurfaceNew = surfaceNew;
       FxDataModified?.Invoke (this, null);
+      ChangesMade = true;
     }
 
 
@@ -708,6 +724,7 @@ namespace SM3E
         return;
       ActiveFxData.LiquidSurfaceSpeed = surfaceSpeed;
       FxDataModified?.Invoke (this, null);
+      ChangesMade = true;
     }
 
 
@@ -717,6 +734,7 @@ namespace SM3E
         return;
       ActiveFxData.LiquidSurfaceDelay = (byte) surfaceDelay;
       FxDataModified?.Invoke (this, null);
+      ChangesMade = true;
     }
 
 
@@ -726,6 +744,7 @@ namespace SM3E
         return;
       ActiveFxData.FxType = (byte) fxType;
       FxDataModified?.Invoke (this, null);
+      ChangesMade = true;
     }
 
 
@@ -735,6 +754,7 @@ namespace SM3E
         return;
       ActiveFxData.FxBitA = (byte) fxBitA;
       FxDataModified?.Invoke (this, null);
+      ChangesMade = true;
     }
 
 
@@ -744,6 +764,7 @@ namespace SM3E
         return;
       ActiveFxData.FxBitB = (byte) fxBitB;
       FxDataModified?.Invoke (this, null);
+      ChangesMade = true;
     }
 
 
@@ -753,6 +774,7 @@ namespace SM3E
         return;
       ActiveFxData.FxBitC = (byte) liquidOptions;
       FxDataModified?.Invoke (this, null);
+      ChangesMade = true;
     }
 
 
@@ -762,6 +784,7 @@ namespace SM3E
         return;
       ActiveFxData.PaletteFxBitflags = (byte) paletteOptions;
       FxDataModified?.Invoke (this, null);
+      ChangesMade = true;
     }
 
 
@@ -771,6 +794,7 @@ namespace SM3E
         return;
       ActiveFxData.TileAnimationBitflags = (byte) animationOptions;
       FxDataModified?.Invoke (this, null);
+      ChangesMade = true;
     }
 
 
@@ -780,6 +804,7 @@ namespace SM3E
         return;
       ActiveFxData.PaletteBlend = (byte) paletteBlend;
       FxDataModified?.Invoke (this, null);
+      ChangesMade = true;
     }
 
 
@@ -837,6 +862,7 @@ namespace SM3E
       HandlingSelection = true;
       DoorListChanged?.Invoke (this, new ListLoadEventArgs (DoorIndex));
       HandlingSelection = false;
+      ChangesMade = true;
     }
 
 
@@ -849,6 +875,7 @@ namespace SM3E
       ActiveDoor.ElevatorPad = isElevatorPad;
       ActiveDoor.SetDirection (direction);
       ActiveDoor.SetDoorCloses (closes);
+      ChangesMade = true;
     }
 
 
@@ -882,6 +909,7 @@ namespace SM3E
         }
       }
       MapDataModified?.Invoke (this, null);
+      ChangesMade = true;
     }
 
 
@@ -944,6 +972,7 @@ namespace SM3E
         };
         LevelDataModified?.Invoke (this, e);
         RoomStateDataModified?.Invoke (this, null);
+        ChangesMade = true;
       }
     }
 
@@ -956,6 +985,7 @@ namespace SM3E
       Asm target = index >= 0 && index < SetupAsms.Count ? (Asm) MainAsms [index] : null;
       ActiveRoomState.SetSetupAsm (target, out Asm deleteAsm);
       RoomStateDataModified?.Invoke (this, null);
+      ChangesMade = true;
     }
 
 
@@ -967,6 +997,7 @@ namespace SM3E
       Asm target = index >= 0 && index < MainAsms.Count ? (Asm) MainAsms [index] : null;
       ActiveRoomState.SetMainAsm (target, out Asm deleteAsm);
       RoomStateDataModified?.Invoke (this, null);
+      ChangesMade = true;
     }
 
 //----------------------------------------------------------------------------------------
@@ -1010,6 +1041,7 @@ namespace SM3E
 
       RoomStateDataModified?.Invoke (this, null);
       LevelDataSelected?.Invoke (this, null);
+      ChangesMade = true;
     }
 
 
@@ -1045,6 +1077,7 @@ namespace SM3E
       ForceSelectScrollData (0);
       ScrollDataListChanged?.Invoke (this, new ListLoadEventArgs (-1));
       HandlingSelection = false;
+      ChangesMade = true;
     }
 
 
@@ -1078,6 +1111,7 @@ namespace SM3E
       ForceSelectPlm (0);
       PlmListChanged?.Invoke (this, new ListLoadEventArgs (-1));
       HandlingSelection = false;
+      ChangesMade = true;
     }
 
 
@@ -1111,6 +1145,7 @@ namespace SM3E
       ForceSelectEnemy (0);
       EnemyListChanged?.Invoke (this, new ListLoadEventArgs (-1));
       HandlingSelection = false;
+      ChangesMade = true;
     }
 
 
@@ -1143,6 +1178,7 @@ namespace SM3E
       ForceSelectEnemyGfx (0);
       EnemyGfxListChanged?.Invoke (this, new ListLoadEventArgs (-1));
       HandlingSelection = false;
+      ChangesMade = true;
     }
 
 
@@ -1172,6 +1208,7 @@ namespace SM3E
 
       RoomStateDataModified?.Invoke (this, null);
       LevelDataModified?.Invoke (this, new LevelDataEventArgs () {AllScreens = true});
+      ChangesMade = true;
     }
 
 
@@ -1217,6 +1254,7 @@ namespace SM3E
       ScrollAsms.Remove (deleteData);
 
       DoorDataModified?.Invoke (this, null);
+      ChangesMade = true;
     }
 
 
@@ -1236,6 +1274,7 @@ namespace SM3E
       ScrollAsms.Remove (deleteData);
 
       DoorDataModified?.Invoke (this, null);
+      ChangesMade = true;
     }
 
 
@@ -1290,6 +1329,86 @@ namespace SM3E
       ScrollDataListChanged (this, new ListLoadEventArgs (ScrollDataIndex));
       RoomStateDataModified?.Invoke (this, null);
       LevelDataModified?.Invoke (this, new LevelDataEventArgs () {AllScreens = true});
+      ChangesMade = true;
+    }
+
+
+//========================================================================================
+// Save stations
+
+
+    // Save station names
+    public List <string> GetSaveStationNames (int areaIndex)
+    {
+      var names = new List <string> ();
+      if (areaIndex >= 0 && areaIndex < AreaCount)
+      {
+        int offset = SaveStation.AreaOffsets [areaIndex];
+        int max = SaveStation.AreaOffsets [areaIndex + 1];
+        for (int i = 0; offset + i < max; i++)
+        {
+          SaveStation s = (SaveStation) SaveStations [offset + i];
+          string name = Tools.IntToHex (i, 2) + " ";
+          name += s.MyRoom?.Name ?? String.Empty;
+          names.Add (name);
+        }
+      }
+      return names;
+    }
+
+
+    SaveStation IndexToSaveStation (int areaIndex, int saveIndex)
+    {
+      if (areaIndex < 0 || areaIndex >= AreaCount)
+        return null;
+      int offset = SaveStation.AreaOffsets [areaIndex];
+      int max = SaveStation.AreaOffsets [areaIndex + 1];
+      if (saveIndex < 0 || offset + saveIndex >= max)
+        return null;
+      return (SaveStation) SaveStations [offset + saveIndex];
+    }
+
+
+    public void GetSaveStationRoomDoor (int areaIndex, int saveIndex,
+                                        out int roomIndex, out int doorIndex)
+    {
+      roomIndex = -1;
+      doorIndex = -1;
+      SaveStation s = IndexToSaveStation (areaIndex, saveIndex);
+      if (s != null)
+      {
+        roomIndex = Rooms [areaIndex].FindIndex (x => x == s.MyRoom);
+        if (roomIndex == -1)
+          return;
+        Room r = (Room) Rooms [areaIndex] [roomIndex];
+        doorIndex = r.MyIncomingDoors.ToList ().FindIndex (x => x == s.MyDoor);
+      }
+    }
+
+
+    public List <string> GetIncomingDoorNames (int areaIndex, int roomIndex)
+    {
+      var names = new List <string> ();
+      if (areaIndex < 0 || areaIndex >= AreaCount ||
+          roomIndex < 0 || roomIndex >= Rooms [areaIndex].Count)
+        return names;
+
+      Room room = (Room) Rooms [areaIndex] [roomIndex];
+      foreach (Door d in room.MyIncomingDoors)
+      {
+        if (d.MyDoorSets.Count > 0)
+        {
+          DoorSet doorset =  d.MyDoorSets.First <DoorSet> ();
+          string name = "Door ";
+          name += Tools.IntToHex (doorset.MyDoors.FindIndex (x => x == d));
+          name += " " + d.MyDoorSets.First <DoorSet> ().MyRoom.Name;
+          names.Add (name);
+        }
+        else
+          names.Add ("[unused door]");
+      }
+      return names;
+
     }
 
   } // partial class Project

@@ -83,6 +83,12 @@ namespace SM3E
     // Loads a 16x16 tile from a tileset into a bitmap image.
     private BlitImage Tile16ToImage (int tilesetIndex, int index)
     {
+      if (TileSetIndex == IndexNone)
+      {
+        BlitImage img = new BlitImage (16, 16);
+        img.Clear ();
+        return img;
+      }        
       TileSet t = (TileSet) TileSets [tilesetIndex];
       byte [] data = t.RenderTile (index);
       return new BlitImage (data, 16);

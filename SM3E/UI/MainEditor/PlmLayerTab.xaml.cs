@@ -24,6 +24,8 @@ namespace SM3E.UI
 
     private bool QuietSelect = false;
 
+    public event EventHandler AddPlm;
+
 
     // Constructor.
     public PlmLayerTab()
@@ -140,7 +142,7 @@ namespace SM3E.UI
 
     private void AddPlm_Click (object sender, RoutedEventArgs e)
     {
-      MainProject.AddPlm (0, 0);
+      AddPlm?.Invoke (this, null);
     }
 
 

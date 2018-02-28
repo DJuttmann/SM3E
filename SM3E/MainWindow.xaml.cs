@@ -30,7 +30,6 @@ namespace SM3E
   /// </summary>
   public partial class MainWindow: Window
   {
-    // Fields
     Project MainProject;
 
     ProjectLoadStatus Status = ProjectLoadStatus.NotLoaded;
@@ -50,6 +49,8 @@ namespace SM3E
       MainProject.ProjectFinishedLoading += ProjectFinishedLoading;
       MainProject.ProjectFailedLoading += ProjectFailedLoading;
       MainProject.ProjectClosed += ProjectClosed;
+      MainProject.ProjectChanged += ProjectChanged;
+      MainProject.ProjectSaved += ProjectSaved;
 
       EditorView.SetProject (MainProject);
     }
@@ -58,7 +59,8 @@ namespace SM3E
 //========================================================================================
 // Project Loading and Saving
 
-
+    
+    // Wait till the project is loaded, then prepare the editor if loaded successfully.
     private void WaitProjectLoaded (string projectPath, string projectFileName,
                                     string romFileName)
     {
@@ -75,7 +77,7 @@ namespace SM3E
 
       if (Status == ProjectLoadStatus.Loaded)
       {
-        MainProject.StartProject ();
+        MainProject.Start ();
         if (projectPath != null && projectFileName != null && romFileName != null)
         {
           MainProject.ProjectPath = projectPath;
@@ -83,16 +85,26 @@ namespace SM3E
           MainProject.RomFileName = romFileName;
         }
         EditorView.IsEnabled = true;
+        MenuNew.IsEnabled = false;
+        MenuOpen.IsEnabled = false;
+        MenuSave.IsEnabled = true;
+        MenuClose.IsEnabled = true;
+        MenuSaveStations.IsEnabled = true;
+        StatusMessage.Content = "Loaded project " + MainProject.ProjectFileName;
       }
+      else
+        StatusMessage.Content = "Failed to load project " + MainProject.ProjectFileName;
     }
 
 
+    // Set the project status marker to loaded.
     private void ProjectFinishedLoading (object sender, EventArgs e)
     {
       Status = ProjectLoadStatus.Loaded;
     }
 
 
+    // Set the project status marker to not loaded, show error message.
     private void ProjectFailedLoading (object sender, LoadFailEventArgs e)
     {
       Status = ProjectLoadStatus.NotLoaded;
@@ -121,12 +133,33 @@ namespace SM3E
     }
 
 
-    private void ProjectClosed (object sender, EventArgs e)
+    private void ProjectChanged (object sender, EventArgs e)
     {
-      EditorView.IsEnabled = false;
+      StatusMessage.Content = String.Empty;
     }
 
 
+    private void ProjectSaved (object sender, EventArgs e)
+    {
+      StatusMessage.Content = "Project saved to " + MainProject.ProjectFileName;
+    }
+
+
+    private void ProjectClosed (object sender, EventArgs e)
+    {
+      EditorView.IsEnabled = false;
+      MenuNew.IsEnabled = true;
+      MenuOpen.IsEnabled = true;
+      MenuSave.IsEnabled = false;
+      MenuClose.IsEnabled = false;
+      MenuSaveStations.IsEnabled = false;
+    }
+
+
+//========================================================================================
+// Event handlers
+
+    
     private void NewProject_Click (object sender, RoutedEventArgs e)
     {
       var window = new UI.NewProjectWindow (MainProject);
@@ -158,18 +191,53 @@ namespace SM3E
 
     private void SaveProject_Click (object sender, RoutedEventArgs e)
     {
-
+      MainProject.Save ();
     }
 
 
-//========================================================================================
-// Event handlers
-
-
-    private void MainWindow_Close (object sender, EventArgs e)
+    private void CloseProject_Click (object sender, RoutedEventArgs e)
     {
-      MainProject.Save ();
+      if (MainProject.ChangesMade)
+      {
+        var m = MessageBox.Show ("Save changes to " + MainProject.ProjectFileName,
+                                 "Unsaved changed", MessageBoxButton.YesNoCancel,
+                                 MessageBoxImage.Warning);
+        if (m == MessageBoxResult.Yes)
+          MainProject.Save ();
+        if (m == MessageBoxResult.Cancel)
+          return;
+      }
+      MainProject.Close ();
+    }
+
+
+    private void Quit_Click (object sender, RoutedEventArgs e)
+    {
+      Application.Current.MainWindow.Close ();
+    }
+
+
+    private void MainWindow_Close (object sender, System.ComponentModel.CancelEventArgs e)
+    {
+      if (MainProject.ChangesMade)
+      {
+        var m = MessageBox.Show ("Save changes to " + MainProject.ProjectFileName,
+                                 "Unsaved changed", MessageBoxButton.YesNoCancel,
+                                 MessageBoxImage.Warning);
+        if (m == MessageBoxResult.Yes)
+          MainProject.Save ();
+        if (m == MessageBoxResult.Cancel)
+          e.Cancel = true;
+      }
       Logging.Close ();
+    }
+
+
+    private void SaveStations_Click (object sender, RoutedEventArgs e)
+    {
+      var window = new UI.SaveStationEditor (MainProject);
+      window.Owner = Window.GetWindow (this);
+      window.ShowDialog ();
     }
 
   } // partial class MainWindow

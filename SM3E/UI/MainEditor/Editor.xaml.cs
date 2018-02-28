@@ -62,6 +62,8 @@ namespace SM3E.UI
       MainProject.EnemyModified += PlmEnemySelected;
 
       NavigateView.ScreenSelected += LevelDataScrollToScreen;
+      EnemyLayerEditor.AddEnemy += AddEnemy;
+      PlmLayerEditor.AddPlm += AddPlm;
 
       NavigateView.SetProject (MainProject);
       PropertiesView.SetProject (MainProject);
@@ -231,6 +233,21 @@ namespace SM3E.UI
     {
       UpdateLevelDataMarker ();
     }
+
+
+    private void AddEnemy (object sender, EventArgs e)
+    {
+      LevelData.GetCenter (out double x, out double y);
+      MainProject.AddEnemy (Convert.ToInt32 (x * 16), Convert.ToInt32 (y * 16));
+    }
+
+
+    private void AddPlm (object sender, EventArgs e)
+    {
+      LevelData.GetCenter (out int x, out int y);
+      MainProject.AddPlm (x, y);
+    }
+
 
 //========================================================================================
 // Event handlers

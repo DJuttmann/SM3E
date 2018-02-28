@@ -73,8 +73,8 @@ namespace SM3E
     [RegisteredData ("fxs")]
     private List <Data> Fxs;
 
-    [RegisteredData ("saverooms")]
-    private List <Data> SaveRooms;
+    [RegisteredData ("savestations")]
+    private List <Data> SaveStations;
 
     [RegisteredData ("leveldatas")]
     private List <Data> LevelDatas;
@@ -131,7 +131,7 @@ namespace SM3E
       ScrollPlmDatas = new List <Data> ();
       Backgrounds    = new List <Data> ();
       Fxs            = new List <Data> ();
-      SaveRooms      = new List <Data> ();
+      SaveStations      = new List <Data> ();
       LevelDatas     = new List <Data> ();
       EnemySets      = new List <Data> ();
       EnemyGfxs      = new List <Data> ();
@@ -349,6 +349,7 @@ namespace SM3E
 
             RaiseChangeEvents (a);
             HandlingSelection = false;
+            ChangesMade = true;
           }
         }
       }
@@ -369,6 +370,7 @@ namespace SM3E
           HandlingSelection = true;
           RoomListChanged (this, new ListLoadEventArgs (RoomIndex));
           HandlingSelection = false;
+          ChangesMade = true;
         }
       }
     }
@@ -386,6 +388,7 @@ namespace SM3E
         {
           ActiveRoom.UpScroller = (byte) value;
           RoomDataModified?.Invoke (this, null);
+          ChangesMade = true;
         }
       }
     }
@@ -403,6 +406,7 @@ namespace SM3E
         {
           ActiveRoom.DownScroller = (byte) value;
           RoomDataModified?.Invoke (this, null);
+          ChangesMade = true;
         }
       }
     }
@@ -420,6 +424,7 @@ namespace SM3E
         {
           ActiveRoom.SpecialGfxBitflag = (byte) value;
           RoomDataModified?.Invoke (this, null);
+          ChangesMade = true;
         }
       }
     }
@@ -450,6 +455,7 @@ namespace SM3E
             RoomStateListChanged?.Invoke (this, new ListLoadEventArgs (RoomStateIndex));
             HandlingSelection = false;
           }
+          ChangesMade = true;
         }
       }
     }
@@ -470,6 +476,7 @@ namespace SM3E
         {
           ActiveRoom.RoomStateHeaders [RoomStateIndex].Value = (byte) value;
           RoomStateDataModified?.Invoke (this, null);
+          ChangesMade = true;
         }
       }
     }
@@ -487,6 +494,7 @@ namespace SM3E
         {
           ActiveRoomState.SongSet = (byte) value;
           RoomStateDataModified?.Invoke (this, null);
+          ChangesMade = true;
         }
       }
     }
@@ -504,6 +512,7 @@ namespace SM3E
         {
           ActiveRoomState.PlayIndex = (byte) value;
           RoomStateDataModified?.Invoke (this, null);
+          ChangesMade = true;
         }
       }
     }
@@ -521,6 +530,7 @@ namespace SM3E
         {
           ActiveRoomState.BackgroundScrolling = value;
           RoomStateDataModified?.Invoke (this, null);
+          ChangesMade = true;
         }
       }
     }
@@ -544,6 +554,7 @@ namespace SM3E
             ScreenYmax = RoomHeightInScreens - 1
           };
           LevelDataModified?.Invoke (this, e);
+          ChangesMade = true;
         }
       }
     }
@@ -1047,7 +1058,6 @@ namespace SM3E
       }
     }
 
-
 //---------------------------------------------------------------------------------------------------
 // Other.
 
@@ -1085,6 +1095,7 @@ namespace SM3E
         {
           ActiveRoom.MapX = (byte) value;
           RoomPositionChanged?.Invoke (this, null);
+          ChangesMade = true;
         }
       }
     }
@@ -1097,6 +1108,7 @@ namespace SM3E
         {
           ActiveRoom.MapY = (byte) value;
           RoomPositionChanged?.Invoke (this, null);
+          ChangesMade = true;
         }
       }
     }

@@ -159,6 +159,9 @@
     <Compile Include="UI\MainEditor\ChildWindows\NewFxDataWindow.xaml.cs">
       <DependentUpon>NewFxDataWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\SpecialEditors\SaveStationEditor.xaml.cs">
+      <DependentUpon>SaveStationEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\UITools\HexBox.xaml.cs">
       <DependentUpon>HexBox.xaml</DependentUpon>
     </Compile>
@@ -267,6 +270,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\MainEditor\ChildWindows\NewFxDataWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\SpecialEditors\SaveStationEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
