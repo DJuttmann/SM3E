@@ -35,7 +35,7 @@
     </Grid>
 
     <!-- SELECT ROOM -->
-    <Grid Grid.Column="2">
+    <Grid x:Name="RoomGrid" Grid.Column="2">
       <Grid.RowDefinitions>
         <RowDefinition Height="25"/>
         <RowDefinition Height="8*"/>
@@ -45,7 +45,7 @@
     </Grid>
 
     <!-- EDIT OTHER DATA -->
-    <Grid Grid.Column="3">
+    <Grid x:Name="DoorGrid" Grid.Column="3">
       <Grid.RowDefinitions>
         <RowDefinition Height="25"/>
         <RowDefinition Height="120"/>
@@ -62,16 +62,16 @@
       <Label   Grid.Row="0" Content="Set Door" HorizontalAlignment="Left" Width="100" Margin="4,-1,0,-5" FontSize="16" FontWeight="Bold"/>
       <ListBox Grid.Row="1" x:Name="DoorListBox" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8,4,8,4" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="Door_SelectionChanged"/>
       <Label   Grid.Row="3" Margin="4,-3,0,-3" Content="Door BTS" HorizontalAlignment="Left"/>
-      <TextBox Grid.Row="3" x:Name="PositionInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4"/>
+      <TextBox Grid.Row="3" x:Name="PositionInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4" LostFocus="Submit" KeyDown="Validate"/>
       <Label   Grid.Row="4" Margin="4,-3,0,-3" Content="Save X" HorizontalAlignment="Left"/>
-      <TextBox Grid.Row="4" x:Name="SaveXInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4"/>
+      <TextBox Grid.Row="4" x:Name="SaveXInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4" LostFocus="Submit" KeyDown="Validate"/>
       <Label   Grid.Row="5" Margin="4,-3,0,-3" Content="Save Y" HorizontalAlignment="Left"/>
-      <TextBox Grid.Row="5" x:Name="SaveYInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4"/>
+      <TextBox Grid.Row="5" x:Name="SaveYInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4" LostFocus="Submit" KeyDown="Validate"/>
       <Label   Grid.Row="6" Margin="4,-3,0,-3" Content="Samus X" HorizontalAlignment="Left"/>
-      <TextBox Grid.Row="6" x:Name="SamusXInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4"/>
+      <TextBox Grid.Row="6" x:Name="SamusXInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4" LostFocus="Submit" KeyDown="Validate"/>
       <Label   Grid.Row="7" Margin="4,-3,0,-3" Content="Samus Y" HorizontalAlignment="Left"/>
-      <TextBox Grid.Row="7" x:Name="SamusYInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4"/>
-      <Button  Grid.Row="9" Content="Exit" Width="100" Height="20" HorizontalAlignment="Right" Margin="0,0,8,0" Click="ExitClick"/>
+      <TextBox Grid.Row="7" x:Name="SamusYInput" Margin="75,2,8,2" HorizontalAlignment="Stretch" FontFamily="Courier New" Text="0000" MaxLength="4" LostFocus="Submit" KeyDown="Validate"/>
+      <Button  Grid.Row="9" x:Name="SaveButton" Content="Save" Width="100" Height="20" HorizontalAlignment="Right" Margin="0,0,8,0" Click="SaveClick" IsEnabled="False"/>
     </Grid>
   </Grid>
 </Window>

@@ -1408,7 +1408,69 @@ namespace SM3E
           names.Add ("[unused door]");
       }
       return names;
+    }
 
+
+    public void SetSaveRoomReferences (int areaIndex, int saveIndex,
+                                       int roomIndex, int doorIndex)
+    {
+      SaveStation s = IndexToSaveStation (areaIndex, saveIndex);
+      if (s == null || roomIndex < -1 || roomIndex > Rooms [areaIndex].Count)
+        return;
+      ChangesMade = true;
+      if (roomIndex == -1)
+      {
+        s.SetRoom (null);
+        s.SetDoor (null);
+        return;
+      }
+      Room r = (Room) Rooms [areaIndex] [roomIndex];
+      s.SetRoom (r);
+      if (doorIndex < -1 || doorIndex > r.MyIncomingDoors.Count)
+        return;
+      if (doorIndex == -1)
+      {
+        s.SetDoor (null);
+        return;
+      }
+      s.SetDoor (r.MyIncomingDoors.ToArray () [doorIndex]);
+    }
+
+
+    public void GetSaveStationValues (int areaIndex, int saveIndex,
+                                      out int doorBts, out int screenX, out int screenY,
+                                      out int samusX, out int samusY)
+    {
+      doorBts = 0;
+      screenX = 0;
+      screenY = 0;
+      samusX = 0;
+      samusY = 0;
+      SaveStation s = IndexToSaveStation (areaIndex, saveIndex);
+      if (s == null)
+        return;
+      doorBts = s.DoorBts;
+      screenX = s.ScreenX;
+      screenY = s.ScreenY;
+      samusX = s.SamusX;
+      samusY = s.SamusY;
+      ChangesMade = true;
+    }
+
+
+    public void SetSaveStationValues (int areaIndex, int saveIndex,
+                                      int doorBts, int screenX, int screenY,
+                                      int samusX, int samusY)
+    {
+      SaveStation s = IndexToSaveStation (areaIndex, saveIndex);
+      if (s == null)
+        return;
+      s.DoorBts = doorBts;
+      s.ScreenX = screenX;
+      s.ScreenY = screenY;
+      s.SamusX = samusX;
+      s.SamusY = samusY;
+      ChangesMade = true;
     }
 
   } // partial class Project
